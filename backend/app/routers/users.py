@@ -99,8 +99,6 @@ async def edit_user_settings(
     user_settings = user_to_edit.settings
 
     if profile_image:
-        if not os.path.exists(app_settings.profile_images_path):
-            os.makedirs(app_settings.profile_images_path)
         filename = f"{user_to_edit.email}" + profile_image.filename[-4:]
         with open(app_settings.profile_images_path + filename, "wb") as my_file:
             content = await profile_image.read()

@@ -40,10 +40,6 @@ async def upload_recorded_audio_bytes(
         raise RoomNotFound(room_name)
     number = len(room.recordings)
 
-    temp_dir = "data/temp/"
-    if not os.path.exists(temp_dir):
-        os.mkdir(temp_dir)
-
     new_filename, location, duration = convert_and_save_file(browser, file, room_name, number)
 
     new_recording = Recording(
@@ -76,8 +72,6 @@ async def upload_new_recording_file(
     number = len(room.recordings)
 
     temp_dir = "data/temp/"
-    if not os.path.exists(temp_dir):
-        os.makedirs(temp_dir)
     filename = f"{datetime.now().strftime('%d-%m-%Y')}-{room_name}-{str(number+1)}" + file.filename[-4:]
 
     with open(temp_dir + filename, "wb") as my_file:
@@ -86,10 +80,10 @@ async def upload_new_recording_file(
         my_file.close()
 
     if file.filename.endswith(".wav"):
-        dir_ = app_settings.recordings_path
-        if not os.path.exists(dir_):
-            os.mkdir(dir_)
-        shutil.copyfile(temp_dir + filename, dir_ + filename)
+        shutil.copyfile(
+            temp_dir + filename,
+            f"{app_settings.rooms_path}{room.name}/{app_settings.recordings_path}{filename}"
+        )
         duration = get_duration(filename=temp_dir + filename)
     else:
         filename, duration = convert_to_wav_and_save_file(temp_dir, filename)
@@ -121,9 +115,8 @@ async def get_recording_file(
         db: Session = Depends(get_db),
         current_user: user_schemas.User = Depends(get_current_user)
 ):
-    dir_ = app_settings.recordings_path
-    file_path = os.path.join(dir_, filename)
     recording = Recording.get_recording_by_filename_for_user(db, filename, current_user)
+    file_path = f"{app_settings.rooms_path}{recording.room_name}/{app_settings.recordings_path}{filename}"
     if recording and os.path.exists(file_path):
         if not st or not et:
             return FileResponse(file_path, media_type="audio/wav")
@@ -197,7 +190,8 @@ async def delete_recording(
     if not recording_to_delete:
         raise RecordingNotFound(recording_id)
 
-    file_path = app_settings.recordings_path + recording_to_delete.filename
+    file_path = f"{app_settings.rooms_path}{recording_to_delete.room_name}/{app_settings.recordings_path}" \
+                + recording_to_delete.filename
     try:
         os.remove(file_path)
     except Exception as e:

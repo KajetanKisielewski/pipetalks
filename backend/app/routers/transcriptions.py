@@ -27,9 +27,8 @@ async def get_transcription_file(
         db: Session = Depends(get_db),
         current_user: user_schemas.User = Depends(get_current_user),
 ):
-    dir_ = app_settings.transcriptions_path
-    file_path = os.path.join(dir_, filename)
     transcription = Transcription.get_transcription_by_filename_for_user(db, filename, current_user)
+    file_path = f"{app_settings.rooms_path}{transcription.room_name}/{app_settings.transcriptions_path}{filename}"
     if transcription and os.path.exists(file_path):
         with open(file_path, "r") as file:
             file_text = file.read()
@@ -99,10 +98,6 @@ async def save_stream_transcription(
         raise RoomNotFound(request.room_name)
     number = len(room.transcriptions)
 
-    data_dir = "data/"
-    if not os.path.exists(data_dir):
-        os.makedirs(data_dir)
-
     transcription_filename = f"{datetime.now().strftime('%d-%m-%Y')}-{request.room_name}-{str(number+1)}.txt"
     transcription = Transcription(
         filename=transcription_filename,
@@ -113,15 +108,11 @@ async def save_stream_transcription(
     db.commit()
     db.refresh(transcription)
 
-    dir_ = app_settings.transcriptions_path
-    if not os.path.exists(dir_):
-        os.mkdir(dir_)
-
     background_tasks.add_task(
         save_autocorrected_text,
         text=request.text,
         transcription_filename=transcription_filename,
-        directory=dir_
+        directory=f"{app_settings.rooms_path}{room.name}/{app_settings.transcriptions_path}"
     )
     return {"info": f"File saved.'"}
 
@@ -138,7 +129,8 @@ async def delete_transcription(
     if not transcription_to_delete:
         raise TranscriptionNotFound(transcription_id)
 
-    file_path = app_settings.transcriptions_path + transcription_to_delete.filename
+    file_path = f"{app_settings.rooms_path}{transcription_to_delete.room_name}/{app_settings.transcriptions_path}" \
+                + transcription_to_delete.filename
     try:
         os.remove(file_path)
     except Exception as e:

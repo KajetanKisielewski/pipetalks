@@ -73,6 +73,12 @@ async def create_room(
     db.add(room)
     db.commit()
     db.refresh(room)
+    if not os.path.exists(f"{app_settings.rooms_path}{request.name}/"):
+        os.mkdir(f"{app_settings.rooms_path}{request.name}/")
+    if not os.path.exists(f"{app_settings.rooms_path}{request.name}/{app_settings.recordings_path}"):
+        os.mkdir(f"{app_settings.rooms_path}{request.name}/{app_settings.recordings_path}")
+    if not os.path.exists(f"{app_settings.rooms_path}{request.name}/{app_settings.transcriptions_path}"):
+        os.mkdir(f"{app_settings.rooms_path}{request.name}/{app_settings.transcriptions_path}")
     return {"info": f"Room '{request.name}' saved"}
 
 
@@ -89,14 +95,16 @@ async def delete_room(
         raise RoomNotFound
 
     for transcription in room_to_delete.transcriptions:
-        file_path = app_settings.transcriptions_path + transcription.filename
+        file_path = f"{app_settings.rooms_path}{room_to_delete.name}/" \
+                    f"{app_settings.transcriptions_path}{transcription.filename}"
         try:
             os.remove(file_path)
         except Exception as e:
             print({"Error": e})
 
     for recording in room_to_delete.recordings:
-        file_path = app_settings.recordings_path + recording.filename
+        file_path = f"{app_settings.rooms_path}{room_to_delete.name}/" \
+                    f"{app_settings.recordings_path}{recording.filename}"
         try:
             os.remove(file_path)
         except Exception as e:

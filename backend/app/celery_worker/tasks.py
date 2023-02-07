@@ -1,5 +1,4 @@
 import logging
-import os
 from datetime import datetime
 
 from celery import Task
@@ -14,7 +13,6 @@ from models.user import User
 from utils.cloud_storage_client import get_client
 from utils.cloud_transcript_file import transcript_big_bucket_file_gcp
 from utils.autocorrect_nlp import save_autocorrected_text
-from exceptions.exceptions import UserNotFound, RecordingNotFound
 
 logging.getLogger(__name__)
 app_settings = get_settings()
@@ -51,7 +49,8 @@ def transcript(recording_name: str, user_email: str):
             status_code=status.HTTP_404_NOT_FOUND,
             detail=f"Recording with filename '{recording_name}' not found."
         )
-    recording_filepath = app_settings.recordings_path + recording.filename
+    recording_filepath = \
+        f"{app_settings.rooms_path}{recording.room_name}/{app_settings.recordings_path}{recording.filename}"
 
     storage_client.upload(recording.filename, recording_filepath)
     blob_uri = storage_client.get_blob_uri(recording.filename)
@@ -70,12 +69,10 @@ def transcript(recording_name: str, user_email: str):
         transcription_text += \
             f"[{timestamp}] - [{user.name}] - [{timestamps[:-1]}] - {words.strip()}.\n"
 
-    dir_ = app_settings.transcriptions_path
-    if not os.path.exists(dir_):
-        os.mkdir(dir_)
-
     transcription_filename = f"{recording.filename.split('.')[0]}.txt"
-    save_autocorrected_text(transcription_text, transcription_filename, dir_)
+    transcription_filepath = \
+        f"{app_settings.rooms_path}{recording.room_name}/{app_settings.transcriptions_path}{transcription_filename}"
+    save_autocorrected_text(transcription_text, transcription_filepath)
 
     transcription = Transcription(
         filename=transcription_filename,

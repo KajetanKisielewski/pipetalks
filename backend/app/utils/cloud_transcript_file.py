@@ -40,7 +40,6 @@ def transcript_big_bucket_file_gcp(media_uri):
     audio = speech.RecognitionAudio(uri=media_uri)
     detail_config = dict(
         encoding=speech.RecognitionConfig.AudioEncoding.LINEAR16,
-        sample_rate_hertz=48000,
         language_code="pl-PL",
         enable_automatic_punctuation=True,
         use_enhanced=True,

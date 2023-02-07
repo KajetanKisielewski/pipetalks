@@ -31,6 +31,7 @@ class Settings(BaseSettings):
     root_path: str
     domain: str
     recordings_path: str
+    rooms_path: str
     transcriptions_path: str
     profile_images_path: str
 

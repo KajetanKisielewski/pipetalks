@@ -49,8 +49,8 @@ def autocorrect_with_punctuation(text: str):
     return auto_capitalize(text_with_punctuation)
 
 
-def save_autocorrected_text(text: str, transcription_filename: str, directory: str):
-    with open(directory + transcription_filename, 'a') as file:
+def save_autocorrected_text(text: str, transcription_filepath: str):
+    with open(transcription_filepath, 'a') as file:
         text_list = text.split('\n')
         for text in text_list:
             text_ = text.split(' - ')
