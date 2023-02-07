@@ -17,6 +17,8 @@ class User(Base):
     email = Column(EmailType, unique=True, nullable=False)
     password = Column(Text)
     name = Column(String(32), nullable=False)
+    is_active = Column(Boolean, default=True)
+    is_admin = Column(Boolean, default=False)
     updated_at = Column(DateTime(timezone=True), onupdate=func.now())
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     settings = relationship(

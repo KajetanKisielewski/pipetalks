@@ -111,7 +111,7 @@ async def delete_room(
     "/rooms/{room_name}",
     status_code=status.HTTP_202_ACCEPTED
 )
-async def add_user_to_room(
+async def join_room(
         room_name: str,
         current_user: user_schemas.User = Depends(get_current_user),
         db: Session = Depends(get_db)

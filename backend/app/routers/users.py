@@ -10,7 +10,6 @@ from db.database import get_db
 from exceptions.exceptions import UserNotFound
 from auth.jwt_helper import get_current_user
 from settings import get_settings
-from auth.hash import Hash
 from utils.images_tasks import resize_image
 
 
@@ -60,13 +59,33 @@ async def read_user(
 
 @router.put(
     "/me",
+    response_model=user_schemas.UserDetail,
+    status_code=status.HTTP_202_ACCEPTED
+)
+async def edit_user(
+        request: user_schemas.UserEdit,
+        db: Session = Depends(get_db),
+        current_user: user_schemas.User = Depends(get_current_user),
+):
+    user_to_edit = User.get_user_by_id(db, str(current_user.id))
+    if not user_to_edit:
+        raise UserNotFound(str(current_user.id))
+    if request.name:
+        user_to_edit.name = request.name
+    if request.password:
+        user_to_edit.password = request.password
+    db.commit()
+    db.refresh(user_to_edit)
+    return user_to_edit
+
+
+@router.put(
+    "/me/settings",
     status_code=status.HTTP_202_ACCEPTED,
     response_model=user_schemas.UserDetail
 )
-async def edit_user(
+async def edit_user_settings(
         background_tasks: BackgroundTasks,
-        name: str | None = Form(None),
-        password: str | None = Form(None),
         profile_image: UploadFile | None = None,
         language: str | None = Form(None),
         auto_translate: bool | None = Form(None),
@@ -78,11 +97,6 @@ async def edit_user(
     if not user_to_edit:
         raise UserNotFound(str(current_user.id))
     user_settings = user_to_edit.settings
-
-    if name:
-        user_to_edit.name = name
-    if password:
-        user_to_edit.password = Hash.get_password_hash(password)
 
     if profile_image:
         if not os.path.exists(app_settings.profile_images_path):
@@ -116,6 +130,5 @@ async def edit_user(
         user_settings.auto_translate = auto_translate
 
     db.commit()
-    db.refresh(user_to_edit)
     db.refresh(user_settings)
     return user_to_edit

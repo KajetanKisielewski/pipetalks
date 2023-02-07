@@ -5,6 +5,8 @@ Revises:
 Create Date: 2023-02-07 07:25:03.411101
 
 """
+import uuid
+from auth.hash import Hash
 from alembic import op
 import sqlalchemy as sa
 from sqlalchemy.dialects import postgresql
@@ -39,11 +41,13 @@ def upgrade() -> None:
     sa.PrimaryKeyConstraint('id'),
     sa.UniqueConstraint('name')
     )
-    op.create_table('user',
+    users_table = op.create_table('user',
     sa.Column('id', postgresql.UUID(as_uuid=True), nullable=False),
     sa.Column('email', sqlalchemy_utils.types.email.EmailType(length=255), nullable=False),
     sa.Column('password', sa.Text(), nullable=True),
     sa.Column('name', sa.String(length=32), nullable=False),
+    sa.Column('is_active', sa.Boolean(), nullable=True),
+    sa.Column('is_admin', sa.Boolean(), nullable=True),
     sa.Column('updated_at', sa.DateTime(timezone=True), nullable=True),
     sa.Column('created_at', sa.DateTime(timezone=True), server_default=sa.text('now()'), nullable=True),
     sa.PrimaryKeyConstraint('id'),
@@ -74,7 +78,7 @@ def upgrade() -> None:
     sa.ForeignKeyConstraint(['room_name'], ['room.name'], ondelete='CASCADE'),
     sa.PrimaryKeyConstraint('id')
     )
-    op.create_table('user_settings',
+    user_settings = op.create_table('user_settings',
     sa.Column('id', postgresql.UUID(as_uuid=True), nullable=False),
     sa.Column('image_URL', sa.String(length=256), nullable=True),
     sa.Column('language', sqlalchemy_utils.types.choice.ChoiceType(LANGUAGES), nullable=True),
@@ -83,6 +87,34 @@ def upgrade() -> None:
     sa.ForeignKeyConstraint(['id'], ['user.id'], ondelete='CASCADE'),
     sa.PrimaryKeyConstraint('id')
     )
+
+    op.bulk_insert(
+        users_table,
+        [
+            {
+                "id": uuid.UUID("00000000-0000-4000-a000-000000000000"),
+                "email": "admin@admin.com",
+                "password": Hash.get_password_hash("admin"),
+                "name": "Admin",
+                "is_active": True,
+                "is_admin": True
+            }
+        ]
+    )
+
+    op.bulk_insert(
+        user_settings,
+        [
+            {
+                "id": uuid.UUID("00000000-0000-4000-a000-000000000000"),
+                "image_URL": None,
+                "language": 'pl-PL',
+                "auto_translate": False,
+                "translate_language": 'pl-PL'
+            }
+        ]
+    )
+
     # ### end Alembic commands ###
 
 

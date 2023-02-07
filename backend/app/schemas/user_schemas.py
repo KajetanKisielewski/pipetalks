@@ -14,10 +14,6 @@ class UserSettings(BaseConfig):
     translate_language: Any
 
 
-class UserBase(BaseConfig):
-    email: EmailStr
-
-
 class ForgotPassword(BaseConfig):
     email: EmailStr
 
@@ -28,9 +24,10 @@ class ResetPassword(BaseConfig):
     confirm_password: str
 
 
-class User(UserBase):
-    name: str
+class User(BaseConfig):
     id: UUID
+    name: str
+    email: EmailStr
 
 
 class UserDetail(User):
@@ -39,7 +36,17 @@ class UserDetail(User):
     settings: UserSettings
 
 
-class UserCreate(UserBase):
+class UserEdit(BaseConfig):
+    name: Optional[str]
+    password: Optional[str]
+
+    def __init__(self, **data: Any):
+        super().__init__(**data)
+        self.password = Hash.get_password_hash(self.password)
+
+
+class UserCreate(UserEdit):
+    email: EmailStr
     name: str
     password: str
 
