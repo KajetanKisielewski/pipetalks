@@ -23,11 +23,6 @@ class Room(Base):
         back_populates="room",
         cascade="all, delete-orphan"
     )
-    transcriptions = relationship(
-        "Transcription",
-        back_populates="room",
-        cascade="all, delete-orphan"
-    )
     users = relationship(
         "User",
         secondary=room_user_association_table,

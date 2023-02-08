@@ -1,7 +1,6 @@
 from fastapi import APIRouter, status, Depends, UploadFile, HTTPException, Response, File, Form, BackgroundTasks
 from fastapi.responses import FileResponse
 from sqlalchemy.orm import Session
-from pydantic import parse_obj_as
 
 import os
 import shutil
@@ -46,7 +45,8 @@ async def upload_recorded_audio_bytes(
         filename=new_filename,
         duration=duration,
         room_name=room_name,
-        url=app_settings.domain + app_settings.root_path + "/recording-file/" + new_filename
+        url=app_settings.domain + app_settings.root_path + "/recording-file/" + new_filename,
+        user_email=current_user.email
     )
     db.add(new_recording)
     db.commit()
@@ -93,7 +93,8 @@ async def upload_new_recording_file(
         filename=filename,
         duration=duration,
         room_name=room_name,
-        url=app_settings.domain + app_settings.root_path + "/recordings/file/" + filename
+        url=app_settings.domain + app_settings.root_path + "/recordings/file/" + filename,
+        user_email=current_user.email
     )
     db.add(new_recording)
     db.commit()
@@ -153,31 +154,6 @@ async def get_recording_info(
     return recording
 
 
-@router.get(
-    "/recordings",
-    status_code=status.HTTP_200_OK,
-)
-async def get_all_recordings(
-        db: Session = Depends(get_db),
-        current_user: user_schemas.User = Depends(get_current_user),
-        page: int = 1,
-        page_size: int = 10
-):
-    recordings = Recording.get_all_recordings_for_user(db, current_user)
-    first = (page - 1) * page_size
-    last = first + page_size
-    recordings_model = parse_obj_as(list[recording_schemas.Recording], recordings)
-    response = recording_schemas.RecordingPagination(
-        recordings_model,
-        "/api/v1/recordings",
-        first,
-        last,
-        page,
-        page_size
-    )
-    return response
-
-
 @router.delete(
     "/recordings/{recording_id}"
 )
@@ -196,6 +172,14 @@ async def delete_recording(
         os.remove(file_path)
     except Exception as e:
         print({"Error": e})
+
+    if recording_to_delete.transcription:
+        file_path = f"{app_settings.rooms_path}{recording_to_delete.room.name}/" \
+                    f"{app_settings.transcriptions_path}{recording_to_delete.transcription.filename}"
+        try:
+            os.remove(file_path)
+        except Exception as e:
+            print({"Error": e})
 
     db.delete(recording_to_delete)
     db.commit()

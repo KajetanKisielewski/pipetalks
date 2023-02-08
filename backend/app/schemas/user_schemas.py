@@ -45,7 +45,7 @@ class UserEdit(BaseConfig):
         self.password = Hash.get_password_hash(self.password)
 
 
-class UserCreate(UserEdit):
+class UserCreate(BaseConfig):
     email: EmailStr
     name: str
     password: str

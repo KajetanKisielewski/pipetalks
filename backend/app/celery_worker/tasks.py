@@ -77,7 +77,7 @@ def transcript(recording_name: str, user_email: str):
     transcription = Transcription(
         filename=transcription_filename,
         url=app_settings.domain + app_settings.root_path + "/transcriptions/file/" + transcription_filename,
-        room_name=recording.room_name
+        recording_id=recording.id
     )
     db_session.add(transcription)
     db_session.commit()

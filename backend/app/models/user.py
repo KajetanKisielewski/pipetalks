@@ -27,6 +27,10 @@ class User(Base):
         uselist=False,
         cascade="all, delete-orphan"
     )
+    recordings = relationship(
+        "Recording",
+        back_populates="user"
+    )
 
     def __repr__(self):
         return f"<id: {self.id}, email: {self.email}>"

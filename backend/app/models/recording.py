@@ -1,6 +1,7 @@
 from sqlalchemy import Column, Integer, DateTime, String, Float, ForeignKey
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
+from sqlalchemy_utils import EmailType
 
 from db.database import Base
 from .room import Room
@@ -14,7 +15,21 @@ class Recording(Base):
     url = Column(String(256), nullable=False)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     room_name = Column(String, ForeignKey("room.name", ondelete='CASCADE'))
-    room = relationship("Room", back_populates="recordings")
+    room = relationship(
+        "Room",
+        back_populates="recordings"
+    )
+    transcription = relationship(
+        "Transcription",
+        back_populates="recording",
+        uselist=False,
+        cascade="all, delete-orphan",
+    )
+    user_email = Column(EmailType, ForeignKey("user.email", ondelete='SET NULL'))
+    user = relationship(
+        "User",
+        back_populates="recordings"
+    )
 
     def __repr__(self):
         return f"<id: {self.id}, length: {self.length}>"
