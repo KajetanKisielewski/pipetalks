@@ -5,7 +5,7 @@ from sqlalchemy.orm import Session
 
 from models.transcription import Transcription
 from schemas import transcription_schemas, user_schemas
-from auth.jwt_helper import get_current_user
+from auth.jwt_helper import check_if_active_user
 from exceptions.exceptions import TranscriptionNotFound
 from settings import get_settings
 
@@ -21,7 +21,7 @@ router = APIRouter(prefix=f"{app_settings.root_path}", tags=["Transcriptions"])
 async def get_transcription_file(
         filename: str,
         db: Session = Depends(get_db),
-        current_user: user_schemas.User = Depends(get_current_user),
+        current_user: user_schemas.User = Depends(check_if_active_user),
 ):
     transcription = Transcription.get_transcription_by_filename_for_user(db, filename, current_user)
     file_path = \
@@ -44,7 +44,7 @@ async def get_transcription_file(
 async def get_transcription_info(
         transcription_id: int,
         db: Session = Depends(get_db),
-        current_user: user_schemas.User = Depends(get_current_user),
+        current_user: user_schemas.User = Depends(check_if_active_user),
 ):
     transcription = Transcription.get_transcription_by_id_for_user(db, transcription_id, current_user)
     if not transcription:

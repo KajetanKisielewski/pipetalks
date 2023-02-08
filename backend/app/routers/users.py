@@ -8,7 +8,7 @@ from schemas import user_schemas
 from models.user import User, UserSettings
 from db.database import get_db
 from exceptions.exceptions import UserNotFound
-from auth.jwt_helper import get_current_user
+from auth.jwt_helper import check_if_active_user, check_if_superuser
 from settings import get_settings
 from utils.images_tasks import resize_image
 
@@ -20,7 +20,7 @@ router = APIRouter(prefix=f"{app_settings.root_path}", tags=["Users"])
 @router.get(
     "/users",
     status_code=status.HTTP_200_OK,
-    dependencies=[Depends(get_current_user)]
+    dependencies=[Depends(check_if_active_user)]
 )
 async def read_all_users(
         db: Session = Depends(get_db),
@@ -42,6 +42,31 @@ async def read_all_users(
     return response
 
 
+@router.put(
+    "/users/{user_id}",
+    response_model=user_schemas.UserDetail,
+    status_code=status.HTTP_202_ACCEPTED,
+    dependencies=[Depends(check_if_superuser)]
+)
+async def edit_user_status(
+        user_id: str,
+        request: user_schemas.UserStatus,
+        db: Session = Depends(get_db),
+):
+    user = User.get_user_by_id(db, str(user_id))
+    if not user:
+        raise UserNotFound(str(user_id))
+    print(user)
+    print(request)
+    if request.is_admin in [False, True]:
+        user.is_admin = request.is_admin
+    if request.is_active in [False, True]:
+        user.is_active = request.is_active
+    db.commit()
+    db.refresh(user)
+    return user
+
+
 @router.get(
     "/me",
     response_model=user_schemas.UserDetail,
@@ -49,7 +74,7 @@ async def read_all_users(
 )
 async def read_user(
         db: Session = Depends(get_db),
-        current_user: user_schemas.User = Depends(get_current_user),
+        current_user: user_schemas.User = Depends(check_if_active_user),
 ):
     user = User.get_user_by_id(db, str(current_user.id))
     if not user:
@@ -65,7 +90,7 @@ async def read_user(
 async def edit_user(
         request: user_schemas.UserEdit,
         db: Session = Depends(get_db),
-        current_user: user_schemas.User = Depends(get_current_user),
+        current_user: user_schemas.User = Depends(check_if_active_user),
 ):
     user_to_edit = User.get_user_by_id(db, str(current_user.id))
     if not user_to_edit:
@@ -91,7 +116,7 @@ async def edit_user_settings(
         auto_translate: bool | None = Form(None),
         translate_language: str | None = Form(None),
         db: Session = Depends(get_db),
-        current_user: user_schemas.User = Depends(get_current_user)
+        current_user: user_schemas.User = Depends(check_if_active_user)
 ):
     user_to_edit = User.get_user_by_id(db, str(current_user.id))
     if not user_to_edit:
