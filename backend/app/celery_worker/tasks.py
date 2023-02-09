@@ -4,6 +4,8 @@ from datetime import datetime
 from celery import Task
 from fastapi import HTTPException, status
 
+from langdetect import detect
+
 from .celery import app
 from db.database import db_session
 from settings import get_settings
@@ -55,7 +57,7 @@ def transcript(recording_name: str, user_email: str):
     storage_client.upload(recording.filename, recording_filepath)
     blob_uri = storage_client.get_blob_uri(recording.filename)
     blob_uri = blob_uri.replace('/o/', '/')
-    result = transcript_big_bucket_file_gcp(blob_uri)
+    result = transcript_big_bucket_file_gcp(blob_uri, user.settings.language.code)
 
     transcription_text = ''
     for result in result.results:
@@ -73,11 +75,13 @@ def transcript(recording_name: str, user_email: str):
     transcription_filepath = \
         f"{app_settings.rooms_path}{recording.room_name}/{app_settings.transcriptions_path}{transcription_filename}"
     save_autocorrected_text(transcription_text, transcription_filepath)
+    language = detect(transcription_text)
 
     transcription = Transcription(
         filename=transcription_filename,
         url=app_settings.domain + app_settings.root_path + "/transcriptions/file/" + transcription_filename,
-        room_name=recording.room_name
+        recording_id=recording.id,
+        language=language
     )
     db_session.add(transcription)
     db_session.commit()

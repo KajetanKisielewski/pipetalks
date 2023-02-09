@@ -1,6 +1,8 @@
 from typing import Optional
 from datetime import datetime
-from .helpers import BaseConfig, CustomPagination
+from pydantic import EmailStr
+from .helpers import BaseConfig
+from .transcription_schemas import Transcription
 
 
 class Recording(BaseConfig):
@@ -9,8 +11,6 @@ class Recording(BaseConfig):
     duration: float
     url: str
     room_name: str
+    user_email: EmailStr
     created_at: Optional[datetime]
-
-
-class RecordingPagination(CustomPagination):
-    records: list[Recording] = []
+    transcription: Optional[Transcription]

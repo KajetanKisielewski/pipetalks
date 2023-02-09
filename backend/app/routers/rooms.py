@@ -2,14 +2,15 @@ import os
 from fastapi import APIRouter, status, Depends, Response
 from db.database import get_db
 from sqlalchemy.orm import Session
+from sqlalchemy.exc import IntegrityError
 from pydantic import parse_obj_as
 
 from models.room import Room
 from models.user import User
 from schemas import room_schemas, user_schemas
-from auth.jwt_helper import get_current_user
+from auth.jwt_helper import check_if_active_user, check_if_superuser
 from settings import get_settings
-from exceptions.exceptions import RoomNotFound
+from exceptions.exceptions import RoomNotFound, RoomName
 
 app_settings = get_settings()
 router = APIRouter(prefix=f"{app_settings.root_path}", tags=["Rooms"])
@@ -18,12 +19,12 @@ router = APIRouter(prefix=f"{app_settings.root_path}", tags=["Rooms"])
 @router.get(
     "/rooms/{room_name}",
     status_code=status.HTTP_200_OK,
-    response_model=room_schemas.Room
+    response_model=room_schemas.RoomDetail
 )
 async def get_room_info(
         room_name: str,
         db: Session = Depends(get_db),
-        current_user: user_schemas.User = Depends(get_current_user),
+        current_user: user_schemas.User = Depends(check_if_active_user),
 ):
     room = Room.get_room_by_name_for_user(db, room_name, current_user)
     if not room:
@@ -37,7 +38,7 @@ async def get_room_info(
 )
 async def get_all_rooms(
         db: Session = Depends(get_db),
-        current_user: user_schemas.User = Depends(get_current_user),
+        current_user: user_schemas.User = Depends(check_if_active_user),
         page: int = 1,
         page_size: int = 10
 ):
@@ -62,17 +63,20 @@ async def get_all_rooms(
 )
 async def create_room(
         request: room_schemas.RoomCreate,
-        current_user: user_schemas.User = Depends(get_current_user),
+        current_user: user_schemas.User = Depends(check_if_active_user),
         db: Session = Depends(get_db)
 ):
-    user = User.get_user_by_email(db, current_user.email)
-    room = Room(
-        name=request.name,
-        users=[user]
-    )
-    db.add(room)
-    db.commit()
-    db.refresh(room)
+    try:
+        user = User.get_user_by_email(db, current_user.email)
+        room = Room(
+            name=request.name,
+            users=[user]
+        )
+        db.add(room)
+        db.commit()
+        db.refresh(room)
+    except IntegrityError:
+        raise RoomName(request.name)
     if not os.path.exists(f"{app_settings.rooms_path}{request.name}/"):
         os.mkdir(f"{app_settings.rooms_path}{request.name}/")
     if not os.path.exists(f"{app_settings.rooms_path}{request.name}/{app_settings.recordings_path}"):
@@ -87,20 +91,12 @@ async def create_room(
 )
 async def delete_room(
         room_name: str,
-        current_user: user_schemas.User = Depends(get_current_user),
+        current_user: user_schemas.User = Depends(check_if_superuser),
         db: Session = Depends(get_db)
 ):
     room_to_delete = Room.get_room_by_name_for_user(db, room_name, current_user)
     if not room_to_delete:
         raise RoomNotFound
-
-    for transcription in room_to_delete.transcriptions:
-        file_path = f"{app_settings.rooms_path}{room_to_delete.name}/" \
-                    f"{app_settings.transcriptions_path}{transcription.filename}"
-        try:
-            os.remove(file_path)
-        except Exception as e:
-            print({"Error": e})
 
     for recording in room_to_delete.recordings:
         file_path = f"{app_settings.rooms_path}{room_to_delete.name}/" \
@@ -121,7 +117,7 @@ async def delete_room(
 )
 async def join_room(
         room_name: str,
-        current_user: user_schemas.User = Depends(get_current_user),
+        current_user: user_schemas.User = Depends(check_if_active_user),
         db: Session = Depends(get_db)
 ):
     room_to_edit = Room.get_room_by_name(db, room_name)

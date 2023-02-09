@@ -31,6 +31,8 @@ class User(BaseConfig):
 
 
 class UserDetail(User):
+    is_active: bool
+    is_admin: bool
     updated_at: Optional[datetime]
     created_at: Optional[datetime]
     settings: UserSettings
@@ -45,7 +47,7 @@ class UserEdit(BaseConfig):
         self.password = Hash.get_password_hash(self.password)
 
 
-class UserCreate(UserEdit):
+class UserCreate(BaseConfig):
     email: EmailStr
     name: str
     password: str
@@ -57,3 +59,8 @@ class UserCreate(UserEdit):
 
 class UserPagination(CustomPagination):
     records: list[User] = []
+
+
+class UserStatus(BaseConfig):
+    is_admin: Optional[bool]
+    is_active: Optional[bool]

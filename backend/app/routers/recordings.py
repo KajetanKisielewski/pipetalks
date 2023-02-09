@@ -1,7 +1,6 @@
 from fastapi import APIRouter, status, Depends, UploadFile, HTTPException, Response, File, Form, BackgroundTasks
 from fastapi.responses import FileResponse
 from sqlalchemy.orm import Session
-from pydantic import parse_obj_as
 
 import os
 import shutil
@@ -15,7 +14,7 @@ from models.recording import Recording
 from models.room import Room
 from utils.audio_files_tasks import convert_to_wav_and_save_file, convert_and_save_file, delete_audio_file
 from schemas import recording_schemas, user_schemas
-from auth.jwt_helper import get_current_user
+from auth.jwt_helper import check_if_active_user
 from settings import get_settings
 from exceptions.exceptions import RecordingNotFound, RoomNotFound
 from celery_worker.tasks import transcript
@@ -32,7 +31,7 @@ async def upload_recorded_audio_bytes(
         file: bytes = File(),
         browser: str = Form(),
         room_name: str = Form(),
-        current_user: user_schemas.User = Depends(get_current_user),
+        current_user: user_schemas.User = Depends(check_if_active_user),
         db: Session = Depends(get_db)
 ):
     room = Room.get_room_by_name_for_user(db, room_name, current_user)
@@ -46,7 +45,8 @@ async def upload_recorded_audio_bytes(
         filename=new_filename,
         duration=duration,
         room_name=room_name,
-        url=app_settings.domain + app_settings.root_path + "/recording-file/" + new_filename
+        url=app_settings.domain + app_settings.root_path + "/recording-file/" + new_filename,
+        user_email=current_user.email
     )
     db.add(new_recording)
     db.commit()
@@ -64,7 +64,7 @@ async def upload_new_recording_file(
         file: UploadFile,
         room_name: str = Form(),
         db: Session = Depends(get_db),
-        current_user: user_schemas.User = Depends(get_current_user),
+        current_user: user_schemas.User = Depends(check_if_active_user),
 ):
     room = Room.get_room_by_name_for_user(db, room_name, current_user)
     if not room:
@@ -93,7 +93,8 @@ async def upload_new_recording_file(
         filename=filename,
         duration=duration,
         room_name=room_name,
-        url=app_settings.domain + app_settings.root_path + "/recordings/file/" + filename
+        url=app_settings.domain + app_settings.root_path + "/recordings/file/" + filename,
+        user_email=current_user.email
     )
     db.add(new_recording)
     db.commit()
@@ -113,7 +114,7 @@ async def get_recording_file(
         st: float | None = None,
         et: float | None = None,
         db: Session = Depends(get_db),
-        current_user: user_schemas.User = Depends(get_current_user)
+        current_user: user_schemas.User = Depends(check_if_active_user)
 ):
     recording = Recording.get_recording_by_filename_for_user(db, filename, current_user)
     file_path = f"{app_settings.rooms_path}{recording.room_name}/{app_settings.recordings_path}{filename}"
@@ -145,7 +146,7 @@ async def get_recording_file(
 async def get_recording_info(
         recording_id: int,
         db: Session = Depends(get_db),
-        current_user: user_schemas.User = Depends(get_current_user),
+        current_user: user_schemas.User = Depends(check_if_active_user),
 ):
     recording = Recording.get_recording_by_id_for_user(db, recording_id, current_user)
     if not recording:
@@ -153,37 +154,12 @@ async def get_recording_info(
     return recording
 
 
-@router.get(
-    "/recordings",
-    status_code=status.HTTP_200_OK,
-)
-async def get_all_recordings(
-        db: Session = Depends(get_db),
-        current_user: user_schemas.User = Depends(get_current_user),
-        page: int = 1,
-        page_size: int = 10
-):
-    recordings = Recording.get_all_recordings_for_user(db, current_user)
-    first = (page - 1) * page_size
-    last = first + page_size
-    recordings_model = parse_obj_as(list[recording_schemas.Recording], recordings)
-    response = recording_schemas.RecordingPagination(
-        recordings_model,
-        "/api/v1/recordings",
-        first,
-        last,
-        page,
-        page_size
-    )
-    return response
-
-
 @router.delete(
     "/recordings/{recording_id}"
 )
 async def delete_recording(
         recording_id: int,
-        current_user: user_schemas.User = Depends(get_current_user),
+        current_user: user_schemas.User = Depends(check_if_active_user),
         db: Session = Depends(get_db),
 ):
     recording_to_delete = Recording.get_recording_by_id_for_user(db, recording_id, current_user)
@@ -196,6 +172,14 @@ async def delete_recording(
         os.remove(file_path)
     except Exception as e:
         print({"Error": e})
+
+    if recording_to_delete.transcription:
+        file_path = f"{app_settings.rooms_path}{recording_to_delete.room.name}/" \
+                    f"{app_settings.transcriptions_path}{recording_to_delete.transcription.filename}"
+        try:
+            os.remove(file_path)
+        except Exception as e:
+            print({"Error": e})
 
     db.delete(recording_to_delete)
     db.commit()

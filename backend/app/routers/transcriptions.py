@@ -1,17 +1,15 @@
 import os
-from fastapi import APIRouter, status, Depends, Response, HTTPException, BackgroundTasks
+from fastapi import APIRouter, status, Depends, HTTPException
 from db.database import get_db
 from sqlalchemy.orm import Session
-from pydantic import parse_obj_as
-from datetime import datetime
 
 from models.transcription import Transcription
-from models.room import Room
+from models.user import User
 from schemas import transcription_schemas, user_schemas
-from auth.jwt_helper import get_current_user
-from exceptions.exceptions import TranscriptionNotFound, RoomNotFound
+from auth.jwt_helper import check_if_active_user
+from exceptions.exceptions import TranscriptionNotFound
 from settings import get_settings
-from utils.autocorrect_nlp import save_autocorrected_text
+from utils.cloud_translate import translate_text
 
 app_settings = get_settings()
 router = APIRouter(prefix=f"{app_settings.root_path}", tags=["Transcriptions"])
@@ -25,17 +23,15 @@ router = APIRouter(prefix=f"{app_settings.root_path}", tags=["Transcriptions"])
 async def get_transcription_file(
         filename: str,
         db: Session = Depends(get_db),
-        current_user: user_schemas.User = Depends(get_current_user),
+        current_user: user_schemas.User = Depends(check_if_active_user),
 ):
     transcription = Transcription.get_transcription_by_filename_for_user(db, filename, current_user)
-    file_path = f"{app_settings.rooms_path}{transcription.room_name}/{app_settings.transcriptions_path}{filename}"
+    file_path = \
+        f"{app_settings.rooms_path}{transcription.recording.room_name}/{app_settings.transcriptions_path}{filename}"
     if transcription and os.path.exists(file_path):
         with open(file_path, "r") as file:
             file_text = file.read()
-        return {
-            "room_name": transcription.room_name,
-            "text": file_text
-        }
+        return {"text": file_text}
     raise HTTPException(
         status_code=status.HTTP_404_NOT_FOUND,
         detail="File not found."
@@ -50,7 +46,7 @@ async def get_transcription_file(
 async def get_transcription_info(
         transcription_id: int,
         db: Session = Depends(get_db),
-        current_user: user_schemas.User = Depends(get_current_user),
+        current_user: user_schemas.User = Depends(check_if_active_user),
 ):
     transcription = Transcription.get_transcription_by_id_for_user(db, transcription_id, current_user)
     if not transcription:
@@ -59,83 +55,26 @@ async def get_transcription_info(
 
 
 @router.get(
-    "/transcriptions",
-    status_code=status.HTTP_200_OK
+    "/transcriptions/{transcription_id}/translation",
+    status_code=status.HTTP_200_OK,
+    response_model=transcription_schemas.TranscriptionText
 )
-async def get_all_transcriptions(
-        db: Session = Depends(get_db),
-        current_user: user_schemas.User = Depends(get_current_user),
-        page: int = 1,
-        page_size: int = 10
-):
-    transcriptions = Transcription.get_all_transcriptions_for_user(db, current_user)
-    first = (page - 1) * page_size
-    last = first + page_size
-    transcriptions_model = parse_obj_as(list[transcription_schemas.Transcription], transcriptions)
-    response = transcription_schemas.TranscriptionPagination(
-        transcriptions_model,
-        "/api/v1/transcriptions",
-        first,
-        last,
-        page,
-        page_size
-    )
-    return response
-
-
-@router.post(
-    "/transcriptions",
-    status_code=status.HTTP_201_CREATED
-)
-async def save_stream_transcription(
-        background_tasks: BackgroundTasks,
-        request: transcription_schemas.TranscriptionText,
-        current_user: user_schemas.User = Depends(get_current_user),
-        db: Session = Depends(get_db)
-):
-    room = Room.get_room_by_name_for_user(db, request.room_name, current_user)
-    if not room:
-        raise RoomNotFound(request.room_name)
-    number = len(room.transcriptions)
-
-    transcription_filename = f"{datetime.now().strftime('%d-%m-%Y')}-{request.room_name}-{str(number+1)}.txt"
-    transcription = Transcription(
-        filename=transcription_filename,
-        room_name=request.room_name,
-        url=app_settings.domain + app_settings.root_path + "/transcriptions/file/" + transcription_filename,
-    )
-    db.add(transcription)
-    db.commit()
-    db.refresh(transcription)
-
-    background_tasks.add_task(
-        save_autocorrected_text,
-        text=request.text,
-        transcription_filename=transcription_filename,
-        directory=f"{app_settings.rooms_path}{room.name}/{app_settings.transcriptions_path}"
-    )
-    return {"info": f"File saved.'"}
-
-
-@router.delete(
-    "/transcriptions/{transcription_id}"
-)
-async def delete_transcription(
+async def get_transcription_translation(
         transcription_id: int,
         db: Session = Depends(get_db),
-        current_user: user_schemas.User = Depends(get_current_user),
+        current_user: user_schemas.User = Depends(check_if_active_user),
 ):
-    transcription_to_delete = Transcription.get_transcription_by_id_for_user(db, transcription_id, current_user)
-    if not transcription_to_delete:
+    transcription = Transcription.get_transcription_by_id_for_user(db, transcription_id, current_user)
+    if not transcription:
         raise TranscriptionNotFound(transcription_id)
-
-    file_path = f"{app_settings.rooms_path}{transcription_to_delete.room_name}/{app_settings.transcriptions_path}" \
-                + transcription_to_delete.filename
-    try:
-        os.remove(file_path)
-    except Exception as e:
-        print({"Error": e})
-
-    db.delete(transcription_to_delete)
-    db.commit()
-    return Response(status_code=status.HTTP_204_NO_CONTENT)
+    file_path = f"{app_settings.rooms_path}{transcription.recording.room_name}/" \
+                f"{app_settings.transcriptions_path}{transcription.filename}"
+    if os.path.exists(file_path):
+        with open(file_path, "r") as file:
+            file_text = file.read()
+        user = User.get_user_by_email(db, current_user.email)
+        return {"text": translate_text(user.settings.translate_language.code, file_text)}
+    raise HTTPException(
+        status_code=status.HTTP_404_NOT_FOUND,
+        detail="File not found."
+    )

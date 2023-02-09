@@ -27,6 +27,10 @@ class User(Base):
         uselist=False,
         cascade="all, delete-orphan"
     )
+    recordings = relationship(
+        "Recording",
+        back_populates="user"
+    )
 
     def __repr__(self):
         return f"<id: {self.id}, email: {self.email}>"
@@ -55,7 +59,10 @@ class User(Base):
 class UserSettings(Base):
     LANGUAGES = [
         ('pl-PL', 'Polski'),
-        ('en-EN', 'English')
+        ('en-US', 'English'),
+        ('de-DE', 'Deutsch'),
+        ('fr-FR', 'Francais'),
+        ('es-ES', 'Espanol'),
     ]
 
     __tablename__ = "user_settings"

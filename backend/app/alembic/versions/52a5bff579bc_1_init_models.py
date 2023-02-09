@@ -20,7 +20,10 @@ depends_on = None
 
 LANGUAGES = [
         ('pl-PL', 'Polski'),
-        ('en-EN', 'English')
+        ('en-US', 'English'),
+        ('de-DE', 'Deutsch'),
+        ('fr-FR', 'Francais'),
+        ('es-ES', 'Espanol'),
     ]
 
 
@@ -110,7 +113,7 @@ def upgrade() -> None:
                 "image_URL": None,
                 "language": 'pl-PL',
                 "auto_translate": False,
-                "translate_language": 'pl-PL'
+                "translate_language": 'en-US'
             }
         ]
     )

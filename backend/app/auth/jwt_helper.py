@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
 from sqlalchemy.orm import Session
 from jose import JWTError, jwt
@@ -10,6 +10,7 @@ from models.user import User
 from auth.hash import Hash
 from exceptions.exceptions import CredentialsException
 from settings import get_settings
+from schemas import user_schemas
 
 
 router = APIRouter(tags=["Auth"])
@@ -59,3 +60,21 @@ def get_current_user(
     if user is None:
         raise CredentialsException
     return user
+
+
+def check_if_active_user(current_user: user_schemas.UserDetail = Depends(get_current_user)):
+    if not current_user.is_active:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Not authenticated (inactive user)."
+        )
+    return current_user
+
+
+def check_if_superuser(current_user: user_schemas.UserDetail = Depends(get_current_user)):
+    if not current_user.is_admin:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Not authenticated as admin."
+        )
+    return current_user

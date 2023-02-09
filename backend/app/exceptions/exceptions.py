@@ -40,3 +40,11 @@ class RoomNotFound(HTTPException):
             status_code=status.HTTP_404_NOT_FOUND,
             detail=f"Room with name '{room_name}' not found."
         )
+
+
+class RoomName(HTTPException):
+    def __init__(self, room_name: str):
+        super().__init__(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=f"Room name '{room_name}' not available. Try again."
+        )
