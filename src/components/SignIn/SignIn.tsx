@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { Container, Avatar, Button, CssBaseline, TextField, Link, Grid, Box, Typography } from '@mui/material';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 
-import useFetch from 'hooks/useFetch';
+import { useFetch } from 'hooks';
 import useLocalStorage from 'hooks/useLocalStorage';
 import { path } from 'helpers/configs';
 

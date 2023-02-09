@@ -5,7 +5,7 @@ import { Container, Avatar, Button, CssBaseline, TextField, Link, Grid, Box, Typ
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 
 
-import useFetch from 'hooks/useFetch';
+import { useFetch } from 'hooks';
 import { path } from 'helpers/configs';
 
 

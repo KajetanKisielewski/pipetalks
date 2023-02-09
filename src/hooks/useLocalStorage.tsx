@@ -1,12 +1,3 @@
-interface SignInResponse {
-  access_token: string;
-}
-
-interface UseLocalStorage {
-  getLocalStorage: () => SignInResponse;
-  setLocalStorage: (signInResponse: SignInResponse) => void;
-}
-
 const useLocalStorage = (): UseLocalStorage => {
   const setLocalStorage = (signInResponse: SignInResponse): void =>
     window.localStorage.setItem('signInResponse', JSON.stringify(signInResponse));
