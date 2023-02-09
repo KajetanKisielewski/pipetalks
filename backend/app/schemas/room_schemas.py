@@ -1,5 +1,6 @@
 from typing import Optional
 from datetime import datetime
+from pydantic import EmailStr
 from .helpers import BaseConfig, CustomPagination
 from .recording_schemas import Recording
 from .user_schemas import User
@@ -7,6 +8,7 @@ from .user_schemas import User
 
 class Room(BaseConfig):
     name: str
+    private: bool
     created_at: Optional[datetime]
     users: Optional[list[User]] = []
 
@@ -16,7 +18,9 @@ class RoomDetail(Room):
 
 
 class RoomCreate(BaseConfig):
-    name: str
+    name: Optional[str]
+    user_email: Optional[EmailStr]
+    private: Optional[bool]
 
 
 class RoomPagination(CustomPagination):

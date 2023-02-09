@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, DateTime, String, Table, ForeignKey
+from sqlalchemy import Column, Integer, DateTime, String, Table, ForeignKey, Boolean
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
 
@@ -17,6 +17,7 @@ class Room(Base):
     __tablename__ = "room"
     id = Column(Integer, primary_key=True, autoincrement=True)
     name = Column(String, unique=True)
+    private = Column(Boolean, default=False)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     recordings = relationship(
         "Recording",

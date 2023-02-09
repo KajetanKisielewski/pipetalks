@@ -1,5 +1,7 @@
 import os
-from fastapi import APIRouter, status, Depends, Response
+import uuid
+
+from fastapi import APIRouter, status, Depends, Response, HTTPException
 from db.database import get_db
 from sqlalchemy.orm import Session
 from sqlalchemy.exc import IntegrityError
@@ -10,7 +12,7 @@ from models.user import User
 from schemas import room_schemas, user_schemas
 from auth.jwt_helper import check_if_active_user, check_if_superuser
 from settings import get_settings
-from exceptions.exceptions import RoomNotFound, RoomName
+from exceptions.exceptions import RoomNotFound, RoomName, UserNotFound
 
 app_settings = get_settings()
 router = APIRouter(prefix=f"{app_settings.root_path}", tags=["Rooms"])
@@ -66,12 +68,25 @@ async def create_room(
         current_user: user_schemas.User = Depends(check_if_active_user),
         db: Session = Depends(get_db)
 ):
+    user = User.get_user_by_email(db, current_user.email)
     try:
-        user = User.get_user_by_email(db, current_user.email)
-        room = Room(
-            name=request.name,
-            users=[user]
-        )
+        if not request.private and request.name:
+            room = Room(
+                name=request.name,
+                users=[user],
+                private=False
+            )
+        elif request.private and request.user_email:
+            second_user = User.get_user_by_email(db, request.user_email)
+            if not second_user:
+                raise UserNotFound(request.user_email)
+            room = Room(
+                name=str(uuid.uuid4()),
+                users=[user, second_user],
+                private=True
+            )
+        else:
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST)
         db.add(room)
         db.commit()
         db.refresh(room)
@@ -83,7 +98,7 @@ async def create_room(
         os.mkdir(f"{app_settings.rooms_path}{request.name}/{app_settings.recordings_path}")
     if not os.path.exists(f"{app_settings.rooms_path}{request.name}/{app_settings.transcriptions_path}"):
         os.mkdir(f"{app_settings.rooms_path}{request.name}/{app_settings.transcriptions_path}")
-    return {"info": f"Room '{request.name}' saved"}
+    return {"info": f"Room created."}
 
 
 @router.delete(
@@ -121,8 +136,8 @@ async def join_room(
         db: Session = Depends(get_db)
 ):
     room_to_edit = Room.get_room_by_name(db, room_name)
-    if not room_to_edit:
-        raise RoomNotFound
+    if not room_to_edit or room_to_edit.private:
+        raise RoomNotFound(room_name)
 
     user_to_add = User.get_user_by_email(db, current_user.email)
     room_to_edit.users.append(user_to_add)
