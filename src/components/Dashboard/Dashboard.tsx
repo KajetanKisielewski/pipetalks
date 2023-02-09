@@ -17,6 +17,16 @@ import SettingsIcon from '@mui/icons-material/Settings';
 
 import { mainListItems } from './listItems';
 
+
+
+
+
+import ChannelsList from './ChannelsList/ChannelsList';
+import DirectMessagesList from './DirectMessagesList/DirectMessageLists';
+
+
+
+
 const drawerWidth: number = 240;
 
 interface AppBarProps extends MuiAppBarProps {
@@ -128,8 +138,9 @@ const Dashboard = (): JSX.Element => {
           </Toolbar>
           <Divider />
           <List component="nav">
-            {mainListItems}
+            <ChannelsList />
             <Divider sx={{ my: 1 }} />
+            <DirectMessagesList />
           </List>
         </Drawer>
         <Box
