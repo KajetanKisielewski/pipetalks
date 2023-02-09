@@ -41,6 +41,10 @@ google-cloud-storage==2.6.0
 # cloud speech
 google-cloud-speech==2.16.2
 
+# cloud translate
+google-cloud-translate==3.10.1
+langdetect==1.0.9
+
 #nlp
 autocorrect==2.6.1
 deepmultilingualpunctuation==1.0.1

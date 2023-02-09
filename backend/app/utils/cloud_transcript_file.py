@@ -30,7 +30,7 @@ def transcript_small_local_file_gcp(media_file_name):
     return response
 
 
-def transcript_big_bucket_file_gcp(media_uri):
+def transcript_big_bucket_file_gcp(media_uri, language):
     """
     Uses Google speech-to-text to transcript file that is longer than 60 sec or weights more than 10MB.
     File has to be uploaded to Cloud Storage bucket.
@@ -40,7 +40,8 @@ def transcript_big_bucket_file_gcp(media_uri):
     audio = speech.RecognitionAudio(uri=media_uri)
     detail_config = dict(
         encoding=speech.RecognitionConfig.AudioEncoding.LINEAR16,
-        language_code="pl-PL",
+        language_code=language,
+        alternative_language_codes=["en-US"],
         enable_automatic_punctuation=True,
         use_enhanced=True,
         model='latest_long',

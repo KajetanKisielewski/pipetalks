@@ -59,7 +59,10 @@ class User(Base):
 class UserSettings(Base):
     LANGUAGES = [
         ('pl-PL', 'Polski'),
-        ('en-EN', 'English')
+        ('en-US', 'English'),
+        ('de-DE', 'Deutsch'),
+        ('fr-FR', 'Francais'),
+        ('es-ES', 'Espanol'),
     ]
 
     __tablename__ = "user_settings"

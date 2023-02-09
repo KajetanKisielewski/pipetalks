@@ -11,6 +11,7 @@ class Transcription(Base):
     id = Column(Integer, primary_key=True, autoincrement=True)
     filename = Column(String(256), nullable=False)
     url = Column(String(256), nullable=False)
+    language = Column(String(32), nullable=False)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     recording_id = Column(Integer, ForeignKey("recording.id", ondelete='CASCADE'))
     recording = relationship("Recording", back_populates="transcription")
