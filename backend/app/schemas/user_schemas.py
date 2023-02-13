@@ -14,6 +14,10 @@ class UserSettings(BaseConfig):
     translate_language: Any
 
 
+class UserImage(BaseConfig):
+    image_URL: Optional[str]
+
+
 class ForgotPassword(BaseConfig):
     email: EmailStr
 
@@ -28,6 +32,12 @@ class User(BaseConfig):
     id: UUID
     name: str
     email: EmailStr
+
+
+class UserWithImage(BaseConfig):
+    name: str
+    email: EmailStr
+    settings: UserImage
 
 
 class UserDetail(User):
