@@ -9,11 +9,9 @@ const useMediaRecorder = (): MediaRecorderData => {
     const [audioBlob, setAudioBlob] = React.useState<Blob>(null);
     const [audioUrl, setAudioUrl] = React.useState('');
     const { sendRecord } = useFetch();
-
-    const name  = currentContent?.name || '';
-
     const constraints = { audio: true, video: false };
     const browserName = detectBrowserName();
+    const name = currentContent?.name || '';
     
     React.useEffect(() => {
         if(!currentContent) return;

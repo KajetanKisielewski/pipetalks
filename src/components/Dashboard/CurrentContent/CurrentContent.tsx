@@ -14,8 +14,6 @@ const CurrentContent = (props: any): JSX.Element => {
 
     const { name, createdAt, recordings } = currentContent;
 
-    console.log('rec' , recordings)
-
     const convertData = (): string => {
         const date = new Date(createdAt);
         return date.toISOString().split('T')[0];
@@ -41,32 +39,19 @@ const CurrentContent = (props: any): JSX.Element => {
 
     const handleStopRecording = () => {
         stopRecordingAudio();
-        clearMediaRecorderState()
-        dispatch(setIsRecording(false))
+        clearMediaRecorderState();
+        dispatch(setIsRecording(false));
     }
 
     const renderContent = () => {
         return recordings.map( record => {
-            const {id, userEmail, createdAt, filename, transcription } = record;
-
-            console.log('rec' , record);
+            const {id, user: { email, name, settings: { imageUrl } }, createdAt, filename, transcription } = record;
 
             const transcribeName = transcription?.filename || '';
+            const convertedTime = convertTime(createdAt);
 
            return(
-            <Box key={id} sx={{ margin: '5px 5px', borderBottom: '1px solid #01579b' }}>
-                <Box component="div" sx={{ display: 'flex', justifyContent: 'flex-start', alignItems: 'center', fontSize: '12px', marginBottom: '5px' }}>
-                    <Box component="span" m="{1}" sx={{ paddingLeft: '5px' }}>
-                        {userEmail}
-                    </Box>
-                    <Box component="span" m="{1}" sx={{ paddingLeft: '5px', fontSize: '10px' }}>
-                        {convertTime(createdAt)}
-                    </Box>
-                </Box>
-                <Box>
-                    <CurrentContentThread audioName={filename} transcribeName={transcribeName} />
-                </Box>
-            </Box>
+                <CurrentContentThread key={id} name={name} createdAt={convertedTime} audioName={filename} transcribeName={transcribeName} imageUrl={imageUrl}/>
            )
         })
     }

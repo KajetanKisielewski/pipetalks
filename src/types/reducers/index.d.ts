@@ -52,7 +52,13 @@ interface CurrentContentData  {
             url: string;
         }
         url: string;
-        userEmail: string;
+        user: {
+            email: string;
+            name: string;
+            settings: {
+                imageUrl: null;
+            }
+        }
     }[]
     users: {
         id: string;

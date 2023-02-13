@@ -45,7 +45,7 @@ async def upload_recorded_audio_bytes(
         filename=new_filename,
         duration=duration,
         room_name=room_name,
-        url=app_settings.domain + app_settings.root_path + "/recording/file/" + new_filename,
+        url=app_settings.domain + app_settings.root_path + "/recordings/file/" + new_filename,
         user_email=current_user.email
     )
     db.add(new_recording)

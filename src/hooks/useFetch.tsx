@@ -97,9 +97,27 @@ const useFetch = (): UseFetch => {
             .catch((err) => console.log('error' , err) );
     }
 
+    const getUserAvatar = (filename: string) => {
+        const additionalPath = `profile-image/${filename}`;
+        const options = { 
+            method: 'GET', 
+            headers: { Authorization: `Bearer ${access_token}` } 
+        };
+
+        const { mainPath } = serverEndpoints;
+        const url = mainPath + additionalPath;
+        
+        return fetch(url, options)
+        .then((resp) => {
+            if (resp.ok) return resp.blob();
+        
+            return Promise.reject(resp);
+        })
+        .catch((err) => console.log('error' , err) );
+    }
 
 
-    return { signIn, signUp, getAllChannels, getAllUsers, getChannelData, getTranscribe, getRecording, sendRecord };
+    return { signIn, signUp, getAllChannels, getAllUsers, getChannelData, getTranscribe, getRecording, sendRecord, getUserAvatar };
 }
 
 export default useFetch;

@@ -9,6 +9,7 @@ interface UseFetch {
     getTranscribe: (filename: string) => Promise<TranscribeReponse>;
     getRecording: (filename: string) => Promise<Blob | void>;
     sendRecord: (recordData: FormData) => Promise<RecordDataResponse>;
+    getUserAvatar: (filename: string) => Promise<unknown>;
 }
 
 interface SignInAndUpResponse {
@@ -69,7 +70,13 @@ interface ChannelResponse {
             url: string;
         }
         url: string;
-        userEmail: string;
+        user: {
+            email: string;
+            name: string;
+            settings: {
+                imageUrl: null;
+            }
+        }
     }[]
     users: {
         id: string;
