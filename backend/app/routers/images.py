@@ -1,6 +1,5 @@
 import os
 
-
 from fastapi import APIRouter, status, HTTPException
 from fastapi.responses import FileResponse
 from settings import get_settings

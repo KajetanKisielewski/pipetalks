@@ -17,7 +17,7 @@ class Room(Base):
     __tablename__ = "room"
     id = Column(Integer, primary_key=True, autoincrement=True)
     name = Column(String, unique=True)
-    private = Column(Boolean, default=False)
+    is_public = Column(Boolean, default=True)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     recordings = relationship(
         "Recording",
@@ -40,3 +40,7 @@ class Room(Base):
     @staticmethod
     def get_room_by_name(db, room_name):
         return db.query(Room).filter(Room.name == room_name).first()
+
+    @staticmethod
+    def get_all_public_rooms(db):
+        return db.query(Room).filter(Room.is_public == True).all()

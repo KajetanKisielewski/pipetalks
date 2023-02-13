@@ -76,12 +76,18 @@ def transcript(recording_name: str, user_email: str):
         f"{app_settings.rooms_path}{recording.room_name}/{app_settings.transcriptions_path}{transcription_filename}"
     save_autocorrected_text(transcription_text, transcription_filepath)
     language = detect(transcription_text)
-
+    languages = {
+        'pl': 'pl-PL',
+        'en': 'en-US',
+        'de': 'de-DE',
+        'fr': 'fr-FR',
+        'es': 'es-ES',
+    }
     transcription = Transcription(
         filename=transcription_filename,
         url=app_settings.domain + app_settings.root_path + "/transcriptions/file/" + transcription_filename,
         recording_id=recording.id,
-        language=language
+        language=languages[language]
     )
     db_session.add(transcription)
     db_session.commit()

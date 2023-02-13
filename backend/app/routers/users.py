@@ -1,5 +1,3 @@
-import os
-
 from fastapi import APIRouter, status, Depends, UploadFile, Form, BackgroundTasks, HTTPException
 from sqlalchemy.orm import Session
 from pydantic import parse_obj_as
@@ -56,8 +54,6 @@ async def edit_user_status(
     user = User.get_user_by_id(db, str(user_id))
     if not user:
         raise UserNotFound(str(user_id))
-    print(user)
-    print(request)
     if request.is_admin in [False, True]:
         user.is_admin = request.is_admin
     if request.is_active in [False, True]:

@@ -6,18 +6,18 @@ from pydub import AudioSegment
 import subprocess
 import os
 from datetime import datetime
+from settings import get_settings
+
+app_settings = get_settings()
 
 
 def convert_and_save_file(browser: str, file: bytes, room_name: str, number: int):
     """
     Converts and saves given audio file in bytes to WAV audio extension.
     """
-    dir_ = f"data/recordings/"
-    if not os.path.exists(dir_):
-        os.mkdir(dir_)
 
     filename = f"{datetime.now().strftime('%d-%m-%Y')}-{room_name}-{str(number+1)}.wav"
-    final_file_location = f"{dir_}/{filename}"
+    final_file_location = f"{app_settings.rooms_path}{room_name}/{app_settings.recordings_path}{filename}"
 
     if browser == "chrome":
         temp_file_location = f"data/temp/{filename}.webm"
