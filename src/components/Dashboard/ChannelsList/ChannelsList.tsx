@@ -21,7 +21,7 @@ const ChannelsList = (): JSX.Element => {
     const getAllChannelsData = async (): Promise<void> => {
         const data = await getAllChannels()
         const channelsData = data.records;
-        
+
         channelsData.forEach( (channel: ChannelsListData) =>  dispatch(setChannelsListData(channel)) )
     }
 
@@ -45,7 +45,7 @@ const ChannelsList = (): JSX.Element => {
         <ListItemIcon>
             {channelsListDisplay ? <ExpandLess /> : <ExpandMore />}
         </ListItemIcon>
-        <ListItemText primary="Channels List" />
+        <ListItemText primary="Channels List" sx={{ marginLeft: '-15px', paddingRight: '15px' }} />
       </ListItemButton>
 
       <Collapse in={channelsListDisplay} timeout="auto" unmountOnExit>

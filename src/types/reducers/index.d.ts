@@ -26,7 +26,42 @@ interface DirectMessageListData {
     email: string,
 }
     
- interface DirectMessagesInitState {
+interface DirectMessagesInitState {
     directMessagesListDisplay: boolean;
     directMessagesListData: DirectMessageListData[]
+}
+
+
+// CurrentContentReducer
+
+interface CurrentContentData  {
+    createdAt: string;
+    name: string;
+    private: boolean;
+    recordings: {
+        createdAt: string;
+        duration: number;
+        filename: string;
+        id: number;
+        roomName: string;
+        transcription: {
+            createdAt: string;
+            filename: string;
+            id: number;
+            language: string;
+            url: string;
+        }
+        url: string;
+        userEmail: string;
+    }[]
+    users: {
+        id: string;
+        name: string;
+        email: string;
+    }[]
+}
+
+interface CurrentContentInitState {
+    currentContent: CurrentContentData;
+    isRecording: boolean;
 }

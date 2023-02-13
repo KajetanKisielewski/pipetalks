@@ -2,10 +2,12 @@ import { combineReducers, configureStore, ThunkAction, Action } from '@reduxjs/t
 
 import ChannelsListReducer from 'reducers/ChannelsListReducer';
 import DirectMessagesListReducer from 'reducers/DirectMessagesListReducer';
+import CurrentContentReducer from 'reducers/CurrentContentReducer';
 
 const reducer = combineReducers({
   channelsList: ChannelsListReducer,
   directMessagesList: DirectMessagesListReducer,
+  currentContent: CurrentContentReducer,
 });
 
 export const store = configureStore({ reducer });

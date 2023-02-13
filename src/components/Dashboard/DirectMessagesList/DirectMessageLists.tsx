@@ -45,7 +45,7 @@ const DirectMessagesList = (): JSX.Element => {
             <ListItemIcon>
                 {directMessagesListDisplay ? <ExpandLess /> : <ExpandMore />}
             </ListItemIcon>
-            <ListItemText primary="Direct Messages" />
+            <ListItemText primary="Direct Messages" sx={{ marginLeft: '-15px', paddingRight: '15px' }} />
           </ListItemButton>
     
           <Collapse in={directMessagesListDisplay} timeout="auto" unmountOnExit>

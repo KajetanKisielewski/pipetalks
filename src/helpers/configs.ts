@@ -4,6 +4,7 @@ export const serverEndpoints = {
     register: 'register',
     channels: 'rooms',
     users: 'users',
+    recording: 'recordings',
 };
 
 export const path = {
