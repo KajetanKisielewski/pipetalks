@@ -69,6 +69,16 @@ const useFetch = (): UseFetch => {
         return _fetch({additionalPath, options});
     };
 
+    const getUserData = () => {
+        const additionalPath = `me`;
+        const options = { 
+            method: 'GET', 
+            headers: { Authorization: `Bearer ${access_token}` } 
+        };
+
+        return _fetch({additionalPath, options});
+    }
+
     const getTranscribe = (filename: string): Promise<TranscribeReponse> => {
         const additionalPath = `transcriptions/file/${filename}`;
         const options = { 
@@ -117,7 +127,7 @@ const useFetch = (): UseFetch => {
     }
 
 
-    return { signIn, signUp, getAllChannels, getAllUsers, getChannelData, getTranscribe, getRecording, sendRecord, getUserAvatar };
+    return { signIn, signUp, getAllChannels, getAllUsers, getChannelData, getTranscribe, getRecording, sendRecord, getUserAvatar, getUserData };
 }
 
 export default useFetch;

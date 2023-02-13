@@ -1,15 +1,23 @@
 import React from 'react';
 
-import {Box, CssBaseline, Toolbar, List, Typography, Divider, Badge, IconButton } from '@mui/material';
-import SettingsIcon from '@mui/icons-material/Settings';
+import {Box, CssBaseline, Toolbar, List, Typography, Divider } from '@mui/material';
 
+import { setUserData } from 'reducers/UserDataReducer'
+import { useFetch, useAppDispatch } from 'hooks'
 
 import ChannelsList from './ChannelsList/ChannelsList';
 import DirectMessagesList from './DirectMessagesList/DirectMessageLists';
 import CurrentContent from './CurrentContent/CurrentContent';
+import Settings from './Settings/Settings';
 
 
 const Dashboard = (): JSX.Element => {
+  const dispatch = useAppDispatch();
+  const { getUserData } = useFetch();
+
+  React.useEffect(() => {
+    getUserData().then(resp => dispatch(setUserData(resp)))
+  },[])
 
   return (
       <Box sx={{ display: 'flex', flexDirection: 'column', backgroundColor: '#b3e5fc', height: '100vh', overflow: 'hidden' }}>
@@ -25,11 +33,7 @@ const Dashboard = (): JSX.Element => {
           >
             Pipetalks
           </Typography>
-          <IconButton color="inherit">
-            <Badge badgeContent={0} color="secondary">
-              <SettingsIcon />
-            </Badge>
-          </IconButton>
+          <Settings />
         </Toolbar>
 
         <Box component='div' sx={{ display: 'flex' }}>

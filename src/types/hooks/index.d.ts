@@ -10,6 +10,7 @@ interface UseFetch {
     getRecording: (filename: string) => Promise<Blob | void>;
     sendRecord: (recordData: FormData) => Promise<RecordDataResponse>;
     getUserAvatar: (filename: string) => Promise<unknown>;
+    getUserData: () => Promise<unknown>;
 }
 
 interface SignInAndUpResponse {
@@ -27,8 +28,7 @@ interface AllChannelsResponse {
     records: {
         name: string
         createdAt: string;
-        recordings: [],
-        transcriptions: [],
+        private: boolean;
         users: {
             id: string;
             name: string;

@@ -3,8 +3,7 @@
 interface ChannelsListData {
     name: string;
     createdAt: string;
-    recordings: [];
-    transcriptions: [];
+    private: boolean;
     users: {
       id: string;
       name: string;
@@ -70,4 +69,30 @@ interface CurrentContentData  {
 interface CurrentContentInitState {
     currentContent: CurrentContentData;
     isRecording: boolean;
+}
+
+// UserDataReducer
+
+interface UserDataInitState {
+    userData: {
+        id: string,
+        name: string,
+        email: string,
+        isActive: boolean,
+        isAdmin: boolean,
+        updatedAt: null,
+        createdAt: string,
+        settings: {
+          imageUrl: string;
+          language: {
+            code: string;
+            value: string;
+          },
+          autoTranslate: boolean,
+          translateLanguage: {
+            code: string;
+            value: string;
+          }
+        }
+      }
 }

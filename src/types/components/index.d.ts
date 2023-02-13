@@ -2,6 +2,7 @@
 
 interface ChannelItemProps {
     name: string;
+    private?: boolean;
 }
 
 // ChannelsList
@@ -9,8 +10,7 @@ interface ChannelItemProps {
 interface ChannelsListData {
     name: string;
     createdAt: string;
-    recordings: [];
-    transcriptions: [];
+    private: boolean;
     users: {
       id: string;
       name: string;

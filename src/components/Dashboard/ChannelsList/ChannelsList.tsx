@@ -34,7 +34,7 @@ const ChannelsList = (): JSX.Element => {
 
         return channelsListData.map( channel => {
             const { name } = channel;
-            return <ChannelItem key={name} name={name}/>
+            return <ChannelItem key={name} name={name} />
         })
     }
 
