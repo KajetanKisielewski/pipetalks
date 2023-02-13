@@ -55,3 +55,7 @@ pytest==7.2.0
 # asynchronous jobs
 celery==5.2.7
 flower==1.2.0
+
+# sockets
+python-socketio==5.7.2
+websocket-client==1.5.1

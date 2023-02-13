@@ -5,6 +5,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from routers import transcriptions, auth, recordings, users, rooms, images
 from settings import get_settings
+from socket_events.socket_events import socket_app
 
 app_settings = get_settings()
 
@@ -36,6 +37,9 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+# Socket.io
+app.mount("/", socket_app)
 
 # Create directories
 data_dir = "data/"
