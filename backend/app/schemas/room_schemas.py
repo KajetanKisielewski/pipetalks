@@ -8,7 +8,7 @@ from .user_schemas import User
 
 class Room(BaseConfig):
     name: str
-    private: bool
+    is_public: bool
     created_at: Optional[datetime]
     users: Optional[list[User]] = []
 
@@ -18,10 +18,13 @@ class RoomDetail(Room):
 
 
 class RoomCreate(BaseConfig):
-    name: Optional[str]
-    user_email: Optional[EmailStr]
-    private: Optional[bool]
+    name: str
+    is_public: Optional[bool]
 
 
 class RoomPagination(CustomPagination):
     records: list[Room] = []
+
+
+class RoomUsers(BaseConfig):
+    user_emails: Optional[list[EmailStr]] = []

@@ -71,7 +71,7 @@ class UserSettings(Base):
     image_URL = Column(String(256), nullable=True, default=None)
     language = Column(ChoiceType(LANGUAGES), default='pl-PL')
     auto_translate = Column(Boolean, default=False)
-    translate_language = Column(ChoiceType(LANGUAGES), default='pl-PL')
+    translate_language = Column(ChoiceType(LANGUAGES), default='en-US')
 
     def __repr__(self):
         return f"<id: {self.id}, user: {self.user.email}>"
