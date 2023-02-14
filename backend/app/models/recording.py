@@ -5,6 +5,7 @@ from sqlalchemy_utils import EmailType
 
 from db.database import Base
 from .room import Room
+from .direct_channel import DirectChannel
 
 
 class Recording(Base):
@@ -17,6 +18,11 @@ class Recording(Base):
     room_name = Column(String, ForeignKey("room.name", ondelete='CASCADE'))
     room = relationship(
         "Room",
+        back_populates="recordings"
+    )
+    direct_channel_id = Column(Integer, ForeignKey("direct_channel.id", ondelete='CASCADE'))
+    direct_channel = relationship(
+        "DirectChannel",
         back_populates="recordings"
     )
     transcription = relationship(

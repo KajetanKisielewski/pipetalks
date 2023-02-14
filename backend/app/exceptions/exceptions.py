@@ -42,6 +42,14 @@ class RoomNotFound(HTTPException):
         )
 
 
+class DirectChannelNotFound(HTTPException):
+    def __init__(self):
+        super().__init__(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Direct channel not found."
+        )
+
+
 class WrongRoomName(HTTPException):
     def __init__(self, room_name: str):
         super().__init__(
