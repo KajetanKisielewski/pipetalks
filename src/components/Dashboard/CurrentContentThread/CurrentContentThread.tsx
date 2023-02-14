@@ -8,7 +8,7 @@ const CurrentContentThread = (props: any): JSX.Element => {
     const [blob, setBlob] = React.useState<any>(null)
     const [text, setText] = React.useState<any>(null)
     const [userImage, setUserImage] = React.useState<any>(null)
-    const { getTranscribe, getRecording, getUserAvatar } = useFetch();
+    const { getTranscriptionFile, getRecording, getUserAvatar } = useFetch();
 
     const { name, createdAt, audioName, transcribeName, imageUrl } = props;
 
@@ -20,7 +20,7 @@ const CurrentContentThread = (props: any): JSX.Element => {
     },[])
     
     React.useEffect(() => {
-        getTranscribe(transcribeName).then( resp => {
+        getTranscriptionFile(transcribeName).then( resp => {
             const extractedTextData = extractTextData(resp.text);
             setText(extractedTextData[0][1]);
         })

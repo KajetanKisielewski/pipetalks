@@ -10,15 +10,15 @@ import DirectMessageItem from '../DirectMessageItem/DirectMessageItem';
 
 const DirectMessagesList = (): JSX.Element => {
     const dispatch = useAppDispatch();
-    const { getAllUsers } = useFetch();
+    const { getAllUsersData } = useFetch();
     const { directMessagesListDisplay, directMessagesListData } = useAppSelector((state) => state.directMessagesList);
     
     React.useEffect(() => {
-        getAllUsersData();
+        getAllUsersDataData();
     },[]);
 
-    const getAllUsersData = async (): Promise<void> => {
-        const data = await getAllUsers()
+    const getAllUsersDataData = async (): Promise<void> => {
+        const data = await getAllUsersData()
         const usersData = data.records;
 
         usersData.forEach( (userData: DirectMessageListData) =>  dispatch(setDirectMessagesListData(userData)) )

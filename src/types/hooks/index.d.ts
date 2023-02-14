@@ -1,12 +1,23 @@
 // useFetch
 
+interface FetchProps {
+    options: {
+        method: string;
+        body?: URLSearchParams | string | FormData;
+        headers?: {
+            Authorization: string;
+        }
+    }
+    additionalPath: string;
+}
+
 interface UseFetch {
     signIn: (userData: URLSearchParams) => Promise<SignInAndUpResponse>;
     signUp: (userData: any) => Promise<SignInAndUpResponse>;
-    getAllChannels: () => Promise<AllChannelsResponse>;
-    getAllUsers: () => Promise<AllUsersResponse>;
+    getAllChannelsData: () => Promise<AllChannelsResponse>;
+    getAllUsersData: () => Promise<AllUsersResponse>;
     getChannelData: (channelName: string) => Promise<ChannelResponse>;
-    getTranscribe: (filename: string) => Promise<TranscribeReponse>;
+    getTranscriptionFile: (filename: string) => Promise<TranscribeReponse>;
     getRecording: (filename: string) => Promise<Blob | void>;
     sendRecord: (recordData: FormData) => Promise<RecordDataResponse>;
     getUserAvatar: (filename: string) => Promise<unknown>;

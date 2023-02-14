@@ -1,12 +1,25 @@
-import { _fetch } from "helpers/fetchProvider";
+import { _fetch, _fetchBlob } from "helpers/fetchProvider";
 import { serverEndpoints } from "helpers/configs";
 import useLocalStorage from "./useLocalStorage";
 
 
 const useFetch = (): UseFetch => {
-    const { login, register, channels, users, recording } = serverEndpoints;
+    const { login, register, channels, usersData, recording, userData } = serverEndpoints;
     const { getLocalStorage } = useLocalStorage();
     const { access_token } = getLocalStorage() || {};
+
+    // Transcription
+
+    const getTranscriptionFile = (filename: string): Promise<TranscribeReponse> => {
+        const additionalPath = `transcriptions/file/${filename}`;
+        const options = { 
+            method: 'GET', 
+            headers: { Authorization: `Bearer ${access_token}` } 
+        };
+        return _fetch({additionalPath, options});
+    }
+
+    // Auth
 
     const signIn = (userData: URLSearchParams): Promise<SignInAndUpResponse> => {
         const additionalPath = login;
@@ -14,7 +27,6 @@ const useFetch = (): UseFetch => {
             method: 'POST', 
             body: userData,
         }
-
         return _fetch({ additionalPath, options })
     };
 
@@ -24,39 +36,10 @@ const useFetch = (): UseFetch => {
             method: 'POST', 
             body: JSON.stringify(userData),
         }
-
         return _fetch({ additionalPath, options })
     };
 
-    const getAllChannels = (): Promise<AllChannelsResponse> => {
-        const additionalPath = channels;
-        const options = { 
-            method: 'GET', 
-            headers: { Authorization: `Bearer ${access_token}` } 
-        }
-
-        return _fetch({ additionalPath, options })
-    }
-
-    const getAllUsers = (): Promise<AllUsersResponse> => {
-        const additionalPath = users;
-        const options = { 
-            method: 'GET', 
-            headers: { Authorization: `Bearer ${access_token}` } 
-        }
-
-        return _fetch({ additionalPath, options })
-    }
-
-    const getChannelData = (channelName: string): Promise<ChannelResponse> => {
-        const additionalPath = `${channels}/${channelName}`;
-        const options = { 
-            method: 'GET', 
-            headers: { Authorization: `Bearer ${access_token}` } 
-        }
-
-        return _fetch({ additionalPath, options })
-    }
+    // Recordings
 
     const sendRecord = (recordData: FormData): Promise<RecordDataResponse> => {
         const additionalPath = `recordings`;
@@ -69,65 +52,71 @@ const useFetch = (): UseFetch => {
         return _fetch({additionalPath, options});
     };
 
-    const getUserData = () => {
-        const additionalPath = `me`;
-        const options = { 
-            method: 'GET', 
-            headers: { Authorization: `Bearer ${access_token}` } 
-        };
-
-        return _fetch({additionalPath, options});
-    }
-
-    const getTranscribe = (filename: string): Promise<TranscribeReponse> => {
-        const additionalPath = `transcriptions/file/${filename}`;
-        const options = { 
-            method: 'GET', 
-            headers: { Authorization: `Bearer ${access_token}` } 
-        };
-
-        return _fetch({additionalPath, options});
-    }
-
     const getRecording = (filename: string): Promise<Blob | void> => {
-        const { mainPath } = serverEndpoints;
         const additionalPath = `${recording}/file/${filename}`;
         const options = { 
             method: 'GET', 
             headers: { Authorization: `Bearer ${access_token}` } 
         };
-        const url = mainPath + additionalPath;
-
-        return fetch(url, options)
-            .then((resp) => {
-                if (resp.ok) return resp.blob();
-            
-                return Promise.reject(resp);
-            })
-            .catch((err) => console.log('error' , err) );
+       return _fetchBlob({additionalPath, options});
     }
 
+
+    // Users
+
+    const getAllUsersData = (): Promise<AllUsersResponse> => {
+        const additionalPath = usersData;
+        const options = { 
+            method: 'GET', 
+            headers: { Authorization: `Bearer ${access_token}` } 
+        }
+        return _fetch({ additionalPath, options })
+    }
+
+    const getUserData = () => {
+        const additionalPath = userData;
+        const options = { 
+            method: 'GET', 
+            headers: { Authorization: `Bearer ${access_token}` } 
+        };
+        return _fetch({additionalPath, options});
+    }
+
+
+    // Rooms
+
+    const getAllChannelsData = (): Promise<AllChannelsResponse> => {
+        const additionalPath = channels;
+        const options = { 
+            method: 'GET', 
+            headers: { Authorization: `Bearer ${access_token}` } 
+        }
+        return _fetch({ additionalPath, options })
+    }
+
+    const getChannelData = (channelName: string): Promise<ChannelResponse> => {
+        const additionalPath = `${channels}/${channelName}`;
+        const options = { 
+            method: 'GET', 
+            headers: { Authorization: `Bearer ${access_token}` } 
+        }
+        return _fetch({ additionalPath, options })
+    }
+
+
+    // Images
+    
     const getUserAvatar = (filename: string) => {
         const additionalPath = `profile-image/${filename}`;
         const options = { 
             method: 'GET', 
             headers: { Authorization: `Bearer ${access_token}` } 
         };
-
-        const { mainPath } = serverEndpoints;
-        const url = mainPath + additionalPath;
-        
-        return fetch(url, options)
-        .then((resp) => {
-            if (resp.ok) return resp.blob();
-        
-            return Promise.reject(resp);
-        })
-        .catch((err) => console.log('error' , err) );
+        return _fetchBlob({additionalPath, options});
     }
 
 
-    return { signIn, signUp, getAllChannels, getAllUsers, getChannelData, getTranscribe, getRecording, sendRecord, getUserAvatar, getUserData };
+    return { signIn, signUp, getAllChannelsData, getAllUsersData, getChannelData, getTranscriptionFile, getRecording, sendRecord, getUserAvatar, getUserData };
 }
 
 export default useFetch;

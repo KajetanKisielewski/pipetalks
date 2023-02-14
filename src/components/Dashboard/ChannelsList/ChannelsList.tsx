@@ -11,15 +11,15 @@ import ChannelItem from "../ChannelItem/ChannelItem";
 
 const ChannelsList = (): JSX.Element => {
     const dispatch = useAppDispatch();
-    const { getAllChannels } = useFetch();
+    const { getAllChannelsData } = useFetch();
     const { channelsListDisplay, channelsListData } = useAppSelector((state) => state.channelsList);
 
     React.useEffect(() => {
-        getAllChannelsData()
+        getAllChannelsDataData()
     },[]);
 
-    const getAllChannelsData = async (): Promise<void> => {
-        const data = await getAllChannels()
+    const getAllChannelsDataData = async (): Promise<void> => {
+        const data = await getAllChannelsData()
         const channelsData = data.records;
 
         channelsData.forEach( (channel: ChannelsListData) =>  dispatch(setChannelsListData(channel)) )
