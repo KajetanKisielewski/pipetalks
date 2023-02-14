@@ -52,7 +52,7 @@ async def get_all_user_joined_rooms(
         all_rooms: bool | None = None
 ):
     """
-    ## Get info about all user rooms.
+    ## Get info about all rooms.
     Query parameters:
     - **page** - integer, default = 1
     - **page_size** - integer, default = 10
