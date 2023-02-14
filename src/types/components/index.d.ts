@@ -2,7 +2,7 @@
 
 interface ChannelItemProps {
     name: string;
-    private?: boolean;
+    isPublic: boolean;
 }
 
 // ChannelsList
@@ -10,7 +10,7 @@ interface ChannelItemProps {
 interface ChannelsListData {
     name: string;
     createdAt: string;
-    private: boolean;
+    isPublic: boolean;
     users: {
       id: string;
       name: string;

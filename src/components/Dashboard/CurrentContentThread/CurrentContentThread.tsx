@@ -27,7 +27,7 @@ const CurrentContentThread = (props: any): JSX.Element => {
     },[])
 
     React.useEffect(() => {
-        const imageFilename = imageUrl.split('/').pop();
+        const imageFilename = imageUrl?.split('/').pop();
 
         getUserAvatar(imageFilename).then( resp => {
             const img = URL.createObjectURL(resp as Blob);

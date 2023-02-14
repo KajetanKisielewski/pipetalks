@@ -3,7 +3,7 @@
 interface ChannelsListData {
     name: string;
     createdAt: string;
-    private: boolean;
+    isPublic: boolean;
     users: {
       id: string;
       name: string;
@@ -13,7 +13,9 @@ interface ChannelsListData {
   
 interface ChannelsListInitState {
     channelsListDisplay: boolean;
-    channelsListData: ChannelsListData[]
+    channelsListData: ChannelsListData[];
+    createChannelModal: boolean;
+    addUsersModal: boolean;
 }
   
 

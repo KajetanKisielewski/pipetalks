@@ -6,8 +6,9 @@ import { ExpandLess, ExpandMore } from "@mui/icons-material";
 import { useAppDispatch, useAppSelector, useFetch } from "hooks";
 import { setChannelsListDisplay, setChannelsListData } from 'reducers/ChannelsListReducer';
 
-import ChannelItem from "../ChannelItem/ChannelItem";
-
+import ChannelItem from '../ChannelItem/ChannelItem';
+import AddChannel from '../AddChannel/AddChannel';
+import CreateChannelModal from "../Modals/CreateChannelModal/CreateChannelModal";
 
 const ChannelsList = (): JSX.Element => {
     const dispatch = useAppDispatch();
@@ -33,8 +34,9 @@ const ChannelsList = (): JSX.Element => {
         if(!channelsListData) return;
 
         return channelsListData.map( channel => {
-            const { name } = channel;
-            return <ChannelItem key={name} name={name} />
+          console.log('ch', channel)
+            const { name, isPublic } = channel;
+            return <ChannelItem key={name} name={name} isPublic={isPublic} />
         })
     }
 
@@ -52,7 +54,11 @@ const ChannelsList = (): JSX.Element => {
         <List component="div" disablePadding>
             {renderChannels()}
         </List>
+
+        <AddChannel />
+        <CreateChannelModal />
       </Collapse>
+
     </List>
   );
 };

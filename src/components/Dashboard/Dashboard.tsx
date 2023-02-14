@@ -38,7 +38,7 @@ const Dashboard = (): JSX.Element => {
 
         <Box component='div' sx={{ display: 'flex' }}>
 
-          <List component="nav" sx={{ backgroundColor: '#81d4fa', borderRight: '2px solid #01579b' }}>
+          <List component="nav" sx={{ backgroundColor: '#81d4fa', borderRight: '2px solid #01579b', overflowY: 'scroll' }}>
             <ChannelsList />
             <Divider sx={{ my: 1 }} />
             <DirectMessagesList />

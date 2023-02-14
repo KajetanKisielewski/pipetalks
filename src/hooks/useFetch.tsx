@@ -76,7 +76,7 @@ const useFetch = (): UseFetch => {
     const getUserData = () => {
         const additionalPath = userData;
         const options = { 
-            method: 'GET', 
+            method: 'GET',
             headers: { Authorization: `Bearer ${access_token}` } 
         };
         return _fetch({additionalPath, options});
@@ -103,6 +103,32 @@ const useFetch = (): UseFetch => {
         return _fetch({ additionalPath, options })
     }
 
+    const createChannel = (channelData: { name: string, isPublic: boolean }) => {
+        const additionalPath = channels;
+        const options = { 
+            method: 'POST',
+            body: JSON.stringify(channelData),
+            headers: { 
+                'Content-Type': 'application/json',
+                Authorization: `Bearer ${access_token}` 
+            } 
+        }
+        return _fetch({ additionalPath, options })
+    }
+
+    const editRoomsUsers = (roomName: string, usersEmails: string[] ) => {
+        const additionalPath = `${channels}/${roomName}`;
+        const options = { 
+            method: 'POST',
+            body: JSON.stringify(usersEmails),
+            headers: { 
+                'Content-Type': 'application/json',
+                Authorization: `Bearer ${access_token}` 
+            } 
+        }
+        return _fetch({ additionalPath, options })
+    }
+
 
     // Images
     
@@ -116,7 +142,7 @@ const useFetch = (): UseFetch => {
     }
 
 
-    return { signIn, signUp, getAllChannelsData, getAllUsersData, getChannelData, getTranscriptionFile, getRecording, sendRecord, getUserAvatar, getUserData };
+    return { signIn, signUp, getAllChannelsData, getAllUsersData, getChannelData, getTranscriptionFile, getRecording, sendRecord, getUserAvatar, getUserData, createChannel, editRoomsUsers };
 }
 
 export default useFetch;

@@ -5,10 +5,16 @@ interface FetchProps {
         method: string;
         body?: URLSearchParams | string | FormData;
         headers?: {
-            Authorization: string;
+            'Content-Type'?: string,
+            Authorization?: string;
         }
     }
     additionalPath: string;
+}
+
+interface CreateChannelBody {
+    name: string;
+    isPublic: boolean;
 }
 
 interface UseFetch {
@@ -22,6 +28,8 @@ interface UseFetch {
     sendRecord: (recordData: FormData) => Promise<RecordDataResponse>;
     getUserAvatar: (filename: string) => Promise<unknown>;
     getUserData: () => Promise<unknown>;
+    createChannel: ( {name: string, isPublic: boolean} ) => Promise<unknown>;
+    editRoomsUsers: (roomName: string, usersEmails: string[]) => Promise<unknown>;
 }
 
 interface SignInAndUpResponse {
@@ -39,7 +47,7 @@ interface AllChannelsResponse {
     records: {
         name: string
         createdAt: string;
-        private: boolean;
+        isPublic: boolean;
         users: {
             id: string;
             name: string;
