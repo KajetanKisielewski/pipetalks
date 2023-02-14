@@ -14,6 +14,11 @@ router = APIRouter(prefix=f"{app_settings.root_path}", tags=["Images"])
     status_code=status.HTTP_200_OK
 )
 async def get_profile_image(filename: str):
+    """
+    ## Returns user's avatar image file.
+    Path parameters:
+    - **filename** - string
+    """
     file_path = os.path.join(app_settings.profile_images_path, filename)
     if os.path.exists(file_path):
         return FileResponse(file_path, media_type="image/jpeg")

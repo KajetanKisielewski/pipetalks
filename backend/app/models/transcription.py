@@ -4,6 +4,7 @@ from sqlalchemy.sql import func
 
 from db.database import Base
 from .recording import Recording
+from .room import Room
 
 
 class Transcription(Base):
@@ -26,9 +27,9 @@ class Transcription(Base):
     @staticmethod
     def get_transcription_by_id_for_user(db, transcription_id, user):
         return db.query(Transcription).filter(Transcription.id == transcription_id)\
-            .join(Recording).filter(Recording.user == user).first()
+            .join(Recording).join(Room).filter(Room.users.contains(user)).first()
 
     @staticmethod
     def get_transcription_by_filename_for_user(db, filename, user):
         return db.query(Transcription).filter(Transcription.filename == filename)\
-            .join(Recording).filter(Recording.user == user).first()
+            .join(Recording).join(Room).filter(Room.users.contains(user)).first()

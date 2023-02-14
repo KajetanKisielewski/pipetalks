@@ -25,6 +25,13 @@ async def get_transcription_info(
         db: Session = Depends(get_db),
         current_user: user_schemas.User = Depends(check_if_active_user),
 ):
+    """
+    ## Get info about one transcription.
+    Path parameters:
+    - **transcription_id** - integer
+
+    User authentication required.
+    """
     transcription = Transcription.get_transcription_by_id_for_user(db, transcription_id, current_user)
     if not transcription:
         raise TranscriptionNotFound()
@@ -42,6 +49,17 @@ async def get_transcription_file(
         db: Session = Depends(get_db),
         current_user: user_schemas.User = Depends(check_if_active_user),
 ):
+    """
+    ## Get transcription text.
+    Path parameters:
+    - **filename** - string
+
+    Query parameters:
+    - **translation** - boolean, optional - if set to true transcription will be translated to \
+    user's translation_language
+
+    User authentication required.
+    """
     transcription = Transcription.get_transcription_by_filename_for_user(db, filename, current_user)
     if not transcription:
         raise TranscriptionNotFound()

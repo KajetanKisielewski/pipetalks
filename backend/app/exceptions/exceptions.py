@@ -19,10 +19,10 @@ class CredentialsException(HTTPException):
 
 
 class RecordingNotFound(HTTPException):
-    def __init__(self, recording_id: int):
+    def __init__(self):
         super().__init__(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail=f"Recording with id '{recording_id}' not found."
+            detail=f"Recording not found."
         )
 
 

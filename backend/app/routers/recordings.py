@@ -34,6 +34,15 @@ async def upload_recorded_audio_bytes(
         current_user: user_schemas.User = Depends(check_if_active_user),
         db: Session = Depends(get_db)
 ):
+    """
+    ## Upload new recording.
+    FormData:
+    - **file** - bytes, .ogg or .webm format
+    - **browser** - string, name of used web browser
+    - **room_name** - string
+
+    User authentication required.
+    """
     room = Room.get_room_by_name_for_user(db, room_name, current_user)
     if not room:
         raise RoomNotFound(room_name)
@@ -66,6 +75,14 @@ async def upload_new_recording_file(
         db: Session = Depends(get_db),
         current_user: user_schemas.User = Depends(check_if_active_user),
 ):
+    """
+    ## Upload new recording.
+    FormData:
+    - **file** - bytes, .wav, .mp4, .mp3 or .m4a format
+    - **room_name** - string
+
+    User authentication required.
+    """
     room = Room.get_room_by_name_for_user(db, room_name, current_user)
     if not room:
         raise RoomNotFound(room_name)
@@ -116,9 +133,22 @@ async def get_recording_file(
         db: Session = Depends(get_db),
         current_user: user_schemas.User = Depends(check_if_active_user)
 ):
+    """
+    ## Get recording audio file.
+    Path parameters:
+    - **filename** - string
+
+    Query parameters:
+    - **st** - float, optional - start time in seconds, use if only part of audio file is required
+    - **et** - float, optional - end time in seconds, use if only part of audio file is required
+
+    User authentication required.
+    """
     recording = Recording.get_recording_by_filename_for_user(db, filename, current_user)
+    if not recording:
+        raise RecordingNotFound()
     file_path = f"{app_settings.rooms_path}{recording.room_name}/{app_settings.recordings_path}{filename}"
-    if recording and os.path.exists(file_path):
+    if os.path.exists(file_path):
         if not st or not et:
             return FileResponse(file_path, media_type="audio/wav")
         else:
@@ -148,9 +178,16 @@ async def get_recording_info(
         db: Session = Depends(get_db),
         current_user: user_schemas.User = Depends(check_if_active_user),
 ):
+    """
+    ## Get info about one recording.
+    Path parameters:
+    - **recording_id** - integer
+
+    User authentication required.
+    """
     recording = Recording.get_recording_by_id_for_user(db, recording_id, current_user)
     if not recording:
-        raise RecordingNotFound(recording_id)
+        raise RecordingNotFound()
     return recording
 
 
@@ -162,9 +199,16 @@ async def delete_recording(
         current_user: user_schemas.User = Depends(check_if_active_user),
         db: Session = Depends(get_db),
 ):
+    """
+    ## Delete one recording of current user.
+    Path parameters:
+    - **recording_id** - integer
+
+    User authentication required.
+    """
     recording_to_delete = Recording.get_recording_by_id_for_user(db, recording_id, current_user)
     if not recording_to_delete:
-        raise RecordingNotFound(recording_id)
+        raise RecordingNotFound()
 
     file_path = f"{app_settings.rooms_path}{recording_to_delete.room_name}/{app_settings.recordings_path}" \
                 + recording_to_delete.filename

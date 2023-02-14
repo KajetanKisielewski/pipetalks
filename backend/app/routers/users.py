@@ -25,6 +25,14 @@ async def read_all_users(
         page: int = 1,
         page_size: int = 10
 ):
+    """
+    ## Get list of all users.
+    Query parameters:
+    - **page** - integer, default = 1
+    - **page_size** - integer, default = 10
+
+    User authentication required.
+    """
     users = User.get_all_users(db)
     first = (page - 1) * page_size
     last = first + page_size
@@ -51,6 +59,16 @@ async def edit_user_status(
         request: user_schemas.UserStatus,
         db: Session = Depends(get_db),
 ):
+    """
+    ## Edit user is_admin and / or is_active status.
+    Path parameters:
+    - **user_id** - string, uuid format
+    Body:
+    - **is_admin** - boolean, optional
+    - **is_active** - boolean, optional
+
+    Admin authentication required.
+    """
     user = User.get_user_by_id(db, str(user_id))
     if not user:
         raise UserNotFound(str(user_id))
@@ -72,6 +90,10 @@ async def read_user(
         db: Session = Depends(get_db),
         current_user: user_schemas.User = Depends(check_if_active_user),
 ):
+    """
+    ## Get info about current user.
+    User authentication required.
+    """
     user = User.get_user_by_id(db, str(current_user.id))
     if not user:
         raise UserNotFound(str(current_user.id))
@@ -88,6 +110,14 @@ async def edit_user(
         db: Session = Depends(get_db),
         current_user: user_schemas.User = Depends(check_if_active_user),
 ):
+    """
+    ## Edit current user.
+    Body:
+    - **name** - string, optional
+    - **password** - string, optional
+
+    User authentication required.
+    """
     user_to_edit = User.get_user_by_id(db, str(current_user.id))
     if not user_to_edit:
         raise UserNotFound(str(current_user.id))
@@ -114,6 +144,16 @@ async def edit_user_settings(
         db: Session = Depends(get_db),
         current_user: user_schemas.User = Depends(check_if_active_user)
 ):
+    """
+    ## Edit current user settings.
+    FormData:
+    - **profile_image** - bytes, optional
+    - **language** - string, optional, only available from ["pl-PL", "en-US", "de-DE", "fr-FR", "es-ES"]
+    - **auto_translate** - bool, optional
+    - **translation_language** - string, optional, only available from ["pl-PL", "en-US", "de-DE", "fr-FR", "es-ES"]
+
+    User authentication required.
+    """
     user_to_edit = User.get_user_by_id(db, str(current_user.id))
     if not user_to_edit:
         raise UserNotFound(str(current_user.id))

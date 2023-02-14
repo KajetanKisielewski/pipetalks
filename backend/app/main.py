@@ -16,8 +16,9 @@ settings = get_settings()
 # FastAPI
 app = FastAPI(
     docs_url=f"{settings.root_path}/docs",
+    openapi_url=f"{settings.root_path}",
     version="1.0.0",
-    openapi_url=f"{settings.root_path}"
+    title="Pipetalks"
 )
 app.include_router(transcriptions.router)
 app.include_router(auth.router)
