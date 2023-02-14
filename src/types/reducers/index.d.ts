@@ -21,15 +21,8 @@ interface ChannelsListInitState {
 
 // DirectMessagesListReducer
 
-interface DirectMessageListData {
-    id: string,
-    name: string,
-    email: string,
-}
-    
 interface DirectMessagesInitState {
     directMessagesListDisplay: boolean;
-    directMessagesListData: DirectMessageListData[]
 }
 
 
@@ -75,6 +68,12 @@ interface CurrentContentInitState {
 
 // UserDataReducer
 
+interface usersData {
+    id: string,
+    name: string,
+    email: string,
+}
+
 interface UserDataInitState {
     userData: {
         id: string,
@@ -96,5 +95,6 @@ interface UserDataInitState {
             value: string;
           }
         }
-      }
+      },
+      usersData: usersData[]
 }

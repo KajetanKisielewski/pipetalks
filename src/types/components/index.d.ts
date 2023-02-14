@@ -25,9 +25,9 @@ interface DirectMessageItemProps {
     name: string;
 }
 
-// DirectMessagesList
+// DashBoard
 
-interface DirectMessageListData {
+interface UsersListData {
     id: string,
     name: string,
     email: string,

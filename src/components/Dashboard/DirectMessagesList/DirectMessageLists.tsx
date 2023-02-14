@@ -3,36 +3,26 @@ import React from 'react';
 import { List, ListItemButton, ListItemIcon, ListItemText, Collapse } from "@mui/material";
 import { ExpandLess, ExpandMore } from "@mui/icons-material";
 
-import { useAppDispatch, useAppSelector, useFetch } from "hooks";
-import { setDirectMessagesListDisplay, setDirectMessagesListData } from 'reducers/DirectMessagesListReducer';
+import { useAppDispatch, useAppSelector } from "hooks";
+import { setDirectMessagesListDisplay } from 'reducers/DirectMessagesListReducer';
+import { setUsersData } from 'reducers/UserDataReducer';
 
 import DirectMessageItem from '../DirectMessageItem/DirectMessageItem';
 
 const DirectMessagesList = (): JSX.Element => {
     const dispatch = useAppDispatch();
-    const { getAllUsersData } = useFetch();
-    const { directMessagesListDisplay, directMessagesListData } = useAppSelector((state) => state.directMessagesList);
-    
-    React.useEffect(() => {
-        getAllUsersDataData();
-    },[]);
-
-    const getAllUsersDataData = async (): Promise<void> => {
-        const data = await getAllUsersData()
-        const usersData = data.records;
-
-        usersData.forEach( (userData: DirectMessageListData) =>  dispatch(setDirectMessagesListData(userData)) )
-    }
+    const { directMessagesListDisplay } = useAppSelector((state) => state.directMessagesList);
+    const { usersData } = useAppSelector((state) => state.userData);
 
     const handleListCollapse = (): void => {
         dispatch(setDirectMessagesListDisplay(!directMessagesListDisplay) )
     };
 
     const renderDirectMessages = () => {
-        if(!directMessagesListData) return;
+        if(!usersData) return;
 
-        return directMessagesListData.map( directMessage => {
-            const { name } = directMessage;
+        return usersData.map( userData => {
+            const { name } = userData;
 
             return <DirectMessageItem key={name} name={name}/>
         })

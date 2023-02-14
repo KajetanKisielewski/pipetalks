@@ -34,7 +34,6 @@ const ChannelsList = (): JSX.Element => {
         if(!channelsListData) return;
 
         return channelsListData.map( channel => {
-          console.log('ch', channel)
             const { name, isPublic } = channel;
             return <ChannelItem key={name} name={name} isPublic={isPublic} />
         })
