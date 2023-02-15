@@ -4,6 +4,7 @@ from sqlalchemy.sql import func
 from sqlalchemy_utils import EmailType
 
 from db.database import Base
+from .user import User
 from .room import Room
 from .direct_channel import DirectChannel
 
@@ -41,15 +42,31 @@ class Recording(Base):
         return f"<id: {self.id}, length: {self.length}>"
 
     @staticmethod
-    def get_all_recordings_for_user(db, user):
-        return db.query(Recording).join(Room).filter(Room.users.contains(user)).all()
-
-    @staticmethod
     def get_recording_by_id_for_user(db, recording_id, user):
-        return db.query(Recording).filter(Recording.id == recording_id)\
-            .join(Room).filter(Room.users.contains(user)).first()
+        try:
+            recording = db.query(Recording).filter(Recording.id == recording_id).first()
+            if recording.room_name:
+                if user in recording.room.users:
+                    return recording
+            elif recording.direct_channel_id:
+                if user in recording.direct_channel.users:
+                    return recording
+            else:
+                return None
+        except AttributeError:
+            return None
 
     @staticmethod
     def get_recording_by_filename_for_user(db, filename, user):
-        return db.query(Recording).filter(Recording.filename == filename)\
-            .join(Room).filter(Room.users.contains(user)).first()
+        try:
+            recording = db.query(Recording).filter(Recording.filename == filename).first()
+            if recording.room_name:
+                if user in recording.room.users:
+                    return recording
+            elif recording.direct_channel_id:
+                if user in recording.direct_channel.users:
+                    return recording
+            else:
+                return None
+        except AttributeError:
+            return None

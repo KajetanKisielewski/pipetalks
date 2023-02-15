@@ -63,8 +63,13 @@ async def get_transcription_file(
     transcription = Transcription.get_transcription_by_filename_for_user(db, filename, current_user)
     if not transcription:
         raise TranscriptionNotFound()
-    file_path = f"{app_settings.rooms_path}{transcription.recording.room_name}/" \
-                f"{app_settings.transcriptions_path}{transcription.filename}"
+
+    if transcription.recording.room_name:
+        file_path = f"{app_settings.rooms_path}{transcription.recording.room_name}/" \
+                    f"{app_settings.transcriptions_path}{transcription.filename}"
+    else:
+        file_path = f"{app_settings.direct_channels_path}{transcription.recording.direct_channel_id}/" \
+                    f"{app_settings.transcriptions_path}{transcription.filename}"
 
     if os.path.exists(file_path):
         with open(file_path, "r") as file:

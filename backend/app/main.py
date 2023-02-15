@@ -20,13 +20,13 @@ app = FastAPI(
     version="1.0.0",
     title="Pipetalks"
 )
-app.include_router(transcriptions.router)
 app.include_router(auth.router)
-app.include_router(recordings.router)
 app.include_router(users.router)
-app.include_router(rooms.router)
-app.include_router(images.router)
 app.include_router(direct_channels.router)
+app.include_router(rooms.router)
+app.include_router(recordings.router)
+app.include_router(transcriptions.router)
+app.include_router(images.router)
 
 # CORS middleware
 origins = [

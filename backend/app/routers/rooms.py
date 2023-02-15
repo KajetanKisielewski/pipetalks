@@ -134,9 +134,16 @@ async def delete_room(
     """
     room_to_delete = Room.get_room_by_name_for_user(db, room_name, current_user)
     if not room_to_delete:
-        raise RoomNotFound
+        raise RoomNotFound(room_name)
 
     for recording in room_to_delete.recordings:
+        if recording.transcription:
+            transcription_file_path = f"{app_settings.rooms_path}{room_to_delete.name}/" \
+                    f"{app_settings.transcriptions_path}{recording.transcription.filename}"
+            try:
+                os.remove(transcription_file_path)
+            except Exception as e:
+                print({"Error": e})
         file_path = f"{app_settings.rooms_path}{room_to_delete.name}/" \
                     f"{app_settings.recordings_path}{recording.filename}"
         try:
@@ -171,6 +178,8 @@ async def edit_room_users(
     User authentication required.
     """
     room_to_edit = Room.get_room_by_name(db, room_name)
+    if not room_to_edit:
+        raise RoomNotFound(room_name)
     user = User.get_user_by_email(db, current_user.email)
 
     if room_to_edit.is_public or (not room_to_edit.is_public and user in room_to_edit.users):
@@ -186,3 +195,30 @@ async def edit_room_users(
     db.commit()
     db.refresh(room_to_edit)
     return {"info": f"Room '{room_name}' edited."}
+
+
+@router.put(
+    "/rooms/{room_name}/leave",
+    status_code=status.HTTP_202_ACCEPTED
+)
+async def leave_room(
+        room_name: str,
+        current_user: user_schemas.User = Depends(check_if_active_user),
+        db: Session = Depends(get_db)
+):
+    """
+    ## Leave room without deleting it.
+    Path parameters:
+    - **room_name** - string
+
+    User authentication required.
+    """
+    user = User.get_user_by_email(db, current_user.email)
+    room_to_edit = Room.get_room_by_name(db, room_name)
+    if not room_to_edit or user not in room_to_edit.users:
+        raise RoomNotFound(room_name)
+
+    room_to_edit.users.remove(user)
+    db.commit()
+    db.refresh(room_to_edit)
+    return {"info": f"Successfully left room '{room_name}'"}

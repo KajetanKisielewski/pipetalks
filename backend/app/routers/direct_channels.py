@@ -10,7 +10,7 @@ from models.user import User
 from schemas import direct_channels_schemas, user_schemas
 from auth.jwt_helper import check_if_active_user
 from settings import get_settings
-from exceptions.exceptions import UserNotFound, DirectChannelNotFound
+from exceptions.exceptions import UserNotFound
 
 app_settings = get_settings()
 router = APIRouter(prefix=f"{app_settings.root_path}", tags=["Direct Channels"])
@@ -54,7 +54,7 @@ async def get_all_direct_channels_for_user(
     status_code=status.HTTP_200_OK,
     response_model=direct_channels_schemas.DirectChannelDetail
 )
-async def get_channel_room_info(
+async def get_direct_channel_info(
         user_email: str,
         db: Session = Depends(get_db),
         current_user: user_schemas.User = Depends(check_if_active_user)
@@ -64,6 +64,8 @@ async def get_channel_room_info(
     Path parameters:
     - **user_email** - string - email of second participant of direct channel
 
+    Important - if direct channel with chosen user_email doesn't exist yet, it will be automatically created.
+
     User authentication required.
     """
     second_user = User.get_user_by_email(db, user_email)
@@ -71,13 +73,15 @@ async def get_channel_room_info(
         raise UserNotFound(user_email)
     direct_channel = DirectChannel.get_direct_channels_for_two_users(db, current_user, second_user)
     if not direct_channel:
-        raise DirectChannelNotFound()
+        request = direct_channels_schemas.DirectChannelCreate(user_email=user_email)
+        direct_channel = await create_direct_channel(request, current_user, db)
     return direct_channel
 
 
 @router.post(
     "/direct-channels",
-    status_code=status.HTTP_201_CREATED
+    status_code=status.HTTP_201_CREATED,
+    include_in_schema=False
 )
 async def create_direct_channel(
         request: direct_channels_schemas.DirectChannelCreate,
@@ -113,4 +117,4 @@ async def create_direct_channel(
         os.mkdir(f"{app_settings.direct_channels_path}{direct_channel.id}/{app_settings.recordings_path}")
     if not os.path.exists(f"{app_settings.direct_channels_path}{direct_channel.id}/{app_settings.transcriptions_path}"):
         os.mkdir(f"{app_settings.direct_channels_path}{direct_channel.id}/{app_settings.transcriptions_path}")
-    return {"info": f"Direct channel created."}
+    return direct_channel
