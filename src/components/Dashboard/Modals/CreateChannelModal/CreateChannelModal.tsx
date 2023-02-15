@@ -3,7 +3,7 @@ import { TextField, Backdrop, Box, Modal, Fade, Typography, Switch, Button } fro
 import CloseIcon from '@mui/icons-material/Close';
 
 import { useAppSelector, useAppDispatch, useFetch } from 'hooks';
-import { toggleCreateChannelModal } from 'reducers/ChannelsListReducer';
+import { toggleCreateChannelModal, toggleAddUsersModal, setCurrentlyCreatedChannel } from 'reducers/ChannelsListReducer';
 
 const style = {
   position: 'absolute' as 'absolute',
@@ -26,10 +26,14 @@ const CreateChannelModal = () => {
 
     const handleClose = () => dispatch(toggleCreateChannelModal(false))
 
+    
     const createNewChannel = (): void => {
-        const name = ( document.querySelector('#outlined-required') as HTMLInputElement ).value;
+      const name = ( document.querySelector('#outlined-required') as HTMLInputElement )?.value;
+
         createChannel({ name, isPublic });
         handleClose();
+        dispatch(setCurrentlyCreatedChannel(name));
+        dispatch(toggleAddUsersModal(true));
     }
 
   return (

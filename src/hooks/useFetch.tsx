@@ -116,10 +116,10 @@ const useFetch = (): UseFetch => {
         return _fetch({ additionalPath, options })
     }
 
-    const editRoomsUsers = (roomName: string, usersEmails: string[] ) => {
+    const editRoomsUsers = (roomName: string, usersEmails: any ) => {
         const additionalPath = `${channels}/${roomName}`;
         const options = { 
-            method: 'POST',
+            method: 'PUT',
             body: JSON.stringify(usersEmails),
             headers: { 
                 'Content-Type': 'application/json',

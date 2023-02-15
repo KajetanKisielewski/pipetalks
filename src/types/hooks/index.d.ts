@@ -13,7 +13,7 @@ interface FetchProps {
 }
 
 interface CreateChannelBody {
-    name: string;
+    channelName: string;
     isPublic: boolean;
 }
 
@@ -29,7 +29,7 @@ interface UseFetch {
     getUserAvatar: (filename: string) => Promise<unknown>;
     getUserData: () => Promise<unknown>;
     createChannel: ( {name: string, isPublic: boolean} ) => Promise<unknown>;
-    editRoomsUsers: (roomName: string, usersEmails: string[]) => Promise<unknown>;
+    editRoomsUsers: (roomName: string, usersEmails: any) => Promise<unknown>;
 }
 
 interface SignInAndUpResponse {

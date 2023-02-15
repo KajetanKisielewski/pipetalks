@@ -1,14 +1,15 @@
 import React from "react";
 
-import { List, ListItemButton, ListItemIcon, ListItemText, Collapse } from "@mui/material";
-import { ExpandLess, ExpandMore } from "@mui/icons-material";
+import { List, ListItemButton, ListItemIcon, ListItemText, Collapse } from '@mui/material';
+import { ExpandLess, ExpandMore } from '@mui/icons-material';
 
-import { useAppDispatch, useAppSelector, useFetch } from "hooks";
+import { useAppDispatch, useAppSelector, useFetch } from 'hooks';
 import { setChannelsListDisplay, setChannelsListData } from 'reducers/ChannelsListReducer';
 
 import ChannelItem from '../ChannelItem/ChannelItem';
 import AddChannel from '../AddChannel/AddChannel';
-import CreateChannelModal from "../Modals/CreateChannelModal/CreateChannelModal";
+import CreateChannelModal from '../Modals/CreateChannelModal/CreateChannelModal';
+import AddUsersToChannelModal from '../Modals/AddUsersToChannelModal/AddUsersToChannelModal'
 
 const ChannelsList = (): JSX.Element => {
     const dispatch = useAppDispatch();
@@ -56,6 +57,7 @@ const ChannelsList = (): JSX.Element => {
 
         <AddChannel />
         <CreateChannelModal />
+        <AddUsersToChannelModal />
       </Collapse>
 
     </List>

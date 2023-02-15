@@ -16,6 +16,7 @@ interface ChannelsListInitState {
     channelsListData: ChannelsListData[];
     createChannelModal: boolean;
     addUsersModal: boolean;
+    currentlyCreatedChannel: string;
 }
   
 
@@ -68,7 +69,7 @@ interface CurrentContentInitState {
 
 // UserDataReducer
 
-interface usersData {
+interface UsersData {
     id: string,
     name: string,
     email: string,
@@ -96,5 +97,5 @@ interface UserDataInitState {
           }
         }
       },
-      usersData: usersData[]
+      usersData: UsersData[]
 }

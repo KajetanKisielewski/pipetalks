@@ -5,6 +5,7 @@ const initState: ChannelsListInitState = {
   channelsListData: [],
   createChannelModal: false,
   addUsersModal: false,
+  currentlyCreatedChannel: null,
 };
 
 const slice = createSlice({
@@ -24,9 +25,12 @@ const slice = createSlice({
     toggleAddUsersModal: (state, action) => {
       state.addUsersModal = action.payload;
     },
+    setCurrentlyCreatedChannel: (state, action) => {
+      state.currentlyCreatedChannel = action.payload
+    }
   },
 });
 
-export const { setChannelsListDisplay, setChannelsListData, toggleCreateChannelModal, toggleAddUsersModal } = slice.actions;
+export const { setChannelsListDisplay, setChannelsListData, toggleCreateChannelModal, toggleAddUsersModal, setCurrentlyCreatedChannel } = slice.actions;
 
 export default slice.reducer;
