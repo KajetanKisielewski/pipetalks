@@ -35,7 +35,8 @@ class Room(Base):
 
     @staticmethod
     def get_room_by_name_for_user(db, room_name, user):
-        return db.query(Room).filter(Room.name == room_name).filter(Room.users.contains(user)).first()
+        room = db.query(Room).filter(Room.name == room_name).first()
+        return room if room.is_public else room if user in room.users else None
 
     @staticmethod
     def get_room_by_name(db, room_name):

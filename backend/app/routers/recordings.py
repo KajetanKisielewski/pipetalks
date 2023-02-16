@@ -51,7 +51,7 @@ async def upload_recorded_audio_bytes(
 
     if room_name:
         room = Room.get_room_by_name_for_user(db, room_name, current_user)
-        if not room:
+        if not room or current_user not in room.users:
             raise RoomNotFound(room_name)
         number = len(room.recordings)
     else:
@@ -103,7 +103,7 @@ async def upload_new_recording_file(
 
     if room_name:
         room = Room.get_room_by_name_for_user(db, room_name, current_user)
-        if not room:
+        if not room or current_user not in room.users:
             raise RoomNotFound(room_name)
         number = len(room.recordings)
         filename = f"{datetime.now().strftime('%d-%m-%Y')}-{room_name}-{str(number + 1)}" + file.filename[-4:]
