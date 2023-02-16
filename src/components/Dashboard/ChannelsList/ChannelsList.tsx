@@ -13,15 +13,15 @@ import AddUsersToChannelModal from '../Modals/AddUsersToChannelModal/AddUsersToC
 
 const ChannelsList = (): JSX.Element => {
     const dispatch = useAppDispatch();
-    const { getAllChannelsData } = useFetch();
+    const { getDataOfAllUserChannels } = useFetch();
     const { channelsListDisplay, channelsListData } = useAppSelector((state) => state.channelsList);
 
     React.useEffect(() => {
-        getAllChannelsDataData()
+        getDataOfAllUserChannelsData()
     },[]);
 
-    const getAllChannelsDataData = async (): Promise<void> => {
-        const data = await getAllChannelsData()
+    const getDataOfAllUserChannelsData = async (): Promise<void> => {
+        const data = await getDataOfAllUserChannels()
         const channelsData = data?.records;
 
         channelsData && channelsData.forEach( (channel: ChannelsListData) =>  dispatch(setChannelsListData(channel)) )

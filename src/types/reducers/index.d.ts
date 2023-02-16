@@ -17,6 +17,7 @@ interface ChannelsListInitState {
     createChannelModal: boolean;
     addUsersModal: boolean;
     currentlyCreatedChannel: string;
+    allChannelsListData: ChannelsListData[];
 }
   
 

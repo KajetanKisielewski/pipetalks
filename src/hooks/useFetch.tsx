@@ -85,8 +85,17 @@ const useFetch = (): UseFetch => {
 
     // Rooms
 
+    const getDataOfAllUserChannels = (): Promise<AllChannelsResponse> => {
+        const additionalPath = `${channels}`;
+        const options = { 
+            method: 'GET', 
+            headers: { Authorization: `Bearer ${access_token}` } 
+        }
+        return _fetch({ additionalPath, options })
+    }
+
     const getAllChannelsData = (): Promise<AllChannelsResponse> => {
-        const additionalPath = channels;
+        const additionalPath = `${channels}?all_rooms=true`;
         const options = { 
             method: 'GET', 
             headers: { Authorization: `Bearer ${access_token}` } 
@@ -155,7 +164,7 @@ const useFetch = (): UseFetch => {
     }
 
 
-    return { signIn, signUp, getAllChannelsData, getAllUsersData, getChannelData, getTranscriptionFile, getRecording, sendRecord, getUserAvatar, getUserData, createChannel, editChannelUsers, leaveChannel };
+    return { signIn, signUp, getDataOfAllUserChannels, getAllUsersData, getChannelData, getTranscriptionFile, getRecording, sendRecord, getUserAvatar, getUserData, createChannel, editChannelUsers, leaveChannel, getAllChannelsData };
 }
 
 export default useFetch;

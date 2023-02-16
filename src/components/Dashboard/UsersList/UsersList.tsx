@@ -20,7 +20,6 @@ const UsersList = (): JSX.Element => {
 
     for (let i = 0; i < usersData.length; i++) {
       const user = usersData[i];
-
       if (user.email.includes(searchQuery) || user.name.includes(searchQuery) && !( user.name === loggedUserName || user.email === loggedUserEmail )) {
         matchingUsers.push(user);
       }
@@ -49,7 +48,7 @@ const UsersList = (): JSX.Element => {
       <List>
         {usersData.map((user) => {
             const { id, email, name } = user
-            
+
             if(name === loggedUserName || email === loggedUserEmail) return;
             return (<UserItem key={id} user={user} /> );
         })}

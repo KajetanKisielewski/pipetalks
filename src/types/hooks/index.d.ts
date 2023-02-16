@@ -20,7 +20,8 @@ interface CreateChannelBody {
 interface UseFetch {
     signIn: (userData: URLSearchParams) => Promise<SignInAndUpResponse>;
     signUp: (userData: any) => Promise<SignInAndUpResponse>;
-    getAllChannelsData: () => Promise<AllChannelsResponse>;
+    getDataOfAllUserChannels: () => Promise<AllChannelsResponse>;
+    getAllChannelsData: () => Promise<AllChannelsResponse>
     getAllUsersData: () => Promise<AllUsersResponse>;
     getChannelData: (channelName: string) => Promise<ChannelResponse>;
     getTranscriptionFile: (filename: string) => Promise<TranscribeReponse>;

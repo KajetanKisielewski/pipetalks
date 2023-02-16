@@ -10,7 +10,7 @@ import StyledMenu from "./style";
 
 const AddChannel = (): JSX.Element => {
   const dispatch = useAppDispatch();
-  const { channelsListData } = useAppSelector((state) => state.channelsList);
+  const { allChannelsListData } = useAppSelector((state) => state.channelsList);
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
 
@@ -26,7 +26,7 @@ const AddChannel = (): JSX.Element => {
     dispatch(toggleCreateChannelModal(true));
   };
 
-  const handleBrowseChannels = () => dispatch( setBrowseChannelsContent(channelsListData) )
+  const handleBrowseChannels = () => dispatch( setBrowseChannelsContent(allChannelsListData) )
 
   return (
     <div>
