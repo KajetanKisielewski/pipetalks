@@ -5,12 +5,12 @@ import { useFetch, useAppSelector } from "hooks";
 
 const UserItem = ( { user }: UserItemProps ): JSX.Element => {
     const { name, email } = user;
-    const { editRoomsUsers } = useFetch();
+    const { editChannelUsers } = useFetch();
     const { currentlyCreatedChannel } = useAppSelector((state) => state.channelsList);
 
     const addUserToChannel = (userEmail: string): void => {
         const usersEmails = { userEmails: [userEmail] };
-        editRoomsUsers(currentlyCreatedChannel, usersEmails);
+        editChannelUsers(currentlyCreatedChannel, usersEmails);
     };
 
     return (

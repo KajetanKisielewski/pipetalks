@@ -8,8 +8,10 @@ import UserItem from "components/Dashboard/UserItem/UserItem";
 
 const UsersList = (): JSX.Element => {
   const [searchedQuery, setSearchedQuery] = React.useState("");
-  const { usersData } = useAppSelector((state) => state.userData);
+  const { userData, usersData } = useAppSelector((state) => state.userData);
   const dispatch = useAppDispatch();
+
+  const { name: loggedUserName , email: loggedUserEmail } = userData;
 
   const handleClose = () => dispatch(toggleAddUsersModal(false))
 
@@ -19,7 +21,7 @@ const UsersList = (): JSX.Element => {
     for (let i = 0; i < usersData.length; i++) {
       const user = usersData[i];
 
-      if (user.email.includes(searchQuery) || user.name.includes(searchQuery)) {
+      if (user.email.includes(searchQuery) || user.name.includes(searchQuery) && !( user.name === loggedUserName || user.email === loggedUserEmail )) {
         matchingUsers.push(user);
       }
     }
@@ -33,7 +35,7 @@ const UsersList = (): JSX.Element => {
     return (
       <List>
         {users.map((user) => {
-            const { id } = user
+            const { id, } = user
             return ( <UserItem key={id} user={user} /> )
         })}
       </List>
@@ -46,7 +48,9 @@ const UsersList = (): JSX.Element => {
     return (
       <List>
         {usersData.map((user) => {
-            const { id } = user
+            const { id, email, name } = user
+            
+            if(name === loggedUserName || email === loggedUserEmail) return;
             return (<UserItem key={id} user={user} /> );
         })}
       </List>

@@ -8,7 +8,7 @@ import { useAppDispatch, useAppSelector, useFetch } from "hooks";
 
 const BrowseChannels = () => {
     const dispatch = useAppDispatch();
-    const { editRoomsUsers, getChannelData } = useFetch();
+    const { editChannelUsers, getChannelData, leaveChannel } = useFetch();
     const { browseChannelsContent } = useAppSelector((state) => state.currentContent);
     const { userData } = useAppSelector((state) => state.userData);
 
@@ -22,14 +22,12 @@ const BrowseChannels = () => {
     const handleJoinChannel = (channelName: string): void => {
         const { email } = userData
         const usersEmails = { userEmails: [email] };
-        editRoomsUsers(channelName, usersEmails);
+        editChannelUsers(channelName, usersEmails);
     }
 
-    // const handleLeaveChannel = (channelName: string): void => {
-    //     const { email } = userData
-    //     const usersEmails = { userEmails: [email] };
-    //     editRoomsUsers(channelName, usersEmails);
-    // }
+    const handleLeaveChannel = (channelName: string): void => {
+        leaveChannel(channelName);
+    }
 
     const handleChannelContentDisplay = (channelName: string): void => {
         getChannelData(channelName)
@@ -45,7 +43,7 @@ const BrowseChannels = () => {
     const renderChannelList = () => {
         return browseChannelsContent.map( channel => {
             const { isPublic, name, users  } = channel;
-
+            console.log('ch' , channel)
             const isBelongs = whetherUserBelongsToChannel(users)
 
             return (
@@ -62,11 +60,11 @@ const BrowseChannels = () => {
                         </Button>
 
                         {isBelongs ? 
-                            <Button sx={{backgroundColor: 'black', mr: 2   }} >
+                            <Button sx={{backgroundColor: 'black', mr: 2 }} onClick={() => handleLeaveChannel(name)} >
                                 Leave
                             </Button>
                             :
-                            <Button sx={{backgroundColor: 'black', mr: 2   }} onClick={() => handleJoinChannel(name)} >
+                            <Button sx={{backgroundColor: 'black', mr: 2 }} onClick={() => handleJoinChannel(name)} >
                                 Join
                             </Button>
                         }

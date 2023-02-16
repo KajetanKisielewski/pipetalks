@@ -29,7 +29,8 @@ interface UseFetch {
     getUserAvatar: (filename: string) => Promise<unknown>;
     getUserData: () => Promise<unknown>;
     createChannel: ( {name: string, isPublic: boolean} ) => Promise<unknown>;
-    editRoomsUsers: (roomName: string, usersEmails: any) => Promise<unknown>;
+    editChannelUsers: (channelName: string, usersEmails: any) => Promise<unknown>;
+    leaveChannel: (channelName: string) => Promise<unknow>;
 }
 
 interface SignInAndUpResponse {

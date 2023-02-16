@@ -116,11 +116,24 @@ const useFetch = (): UseFetch => {
         return _fetch({ additionalPath, options })
     }
 
-    const editRoomsUsers = (roomName: string, usersEmails: any ) => {
-        const additionalPath = `${channels}/${roomName}`;
+    const editChannelUsers = (channelName: string, usersEmails: any ) => {
+        const additionalPath = `${channels}/${channelName}`;
         const options = { 
             method: 'PUT',
             body: JSON.stringify(usersEmails),
+            headers: { 
+                'Content-Type': 'application/json',
+                Authorization: `Bearer ${access_token}` 
+            } 
+        }
+        return _fetch({ additionalPath, options })
+    }
+
+    const leaveChannel = (channelName: string) => {
+        const additionalPath = `${channels}/${channelName}/leave`;
+        const options = { 
+            method: 'PUT',
+            body: JSON.stringify(channelName),
             headers: { 
                 'Content-Type': 'application/json',
                 Authorization: `Bearer ${access_token}` 
@@ -142,7 +155,7 @@ const useFetch = (): UseFetch => {
     }
 
 
-    return { signIn, signUp, getAllChannelsData, getAllUsersData, getChannelData, getTranscriptionFile, getRecording, sendRecord, getUserAvatar, getUserData, createChannel, editRoomsUsers };
+    return { signIn, signUp, getAllChannelsData, getAllUsersData, getChannelData, getTranscriptionFile, getRecording, sendRecord, getUserAvatar, getUserData, createChannel, editChannelUsers, leaveChannel };
 }
 
 export default useFetch;
