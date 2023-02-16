@@ -1,28 +1,30 @@
 import React from "react";
 
-import { List, ListItemButton, ListItemIcon, ListItemText, Collapse } from "@mui/material";
-import { ExpandLess, ExpandMore } from "@mui/icons-material";
+import { List, ListItemButton, ListItemIcon, ListItemText, Collapse } from '@mui/material';
+import { ExpandLess, ExpandMore } from '@mui/icons-material';
 
-import { useAppDispatch, useAppSelector, useFetch } from "hooks";
+import { useAppDispatch, useAppSelector, useFetch } from 'hooks';
 import { setChannelsListDisplay, setChannelsListData } from 'reducers/ChannelsListReducer';
 
-import ChannelItem from "../ChannelItem/ChannelItem";
-
+import ChannelItem from '../ChannelItem/ChannelItem';
+import AddChannel from '../AddChannel/AddChannel';
+import CreateChannelModal from '../Modals/CreateChannelModal/CreateChannelModal';
+import AddUsersToChannelModal from '../Modals/AddUsersToChannelModal/AddUsersToChannelModal'
 
 const ChannelsList = (): JSX.Element => {
     const dispatch = useAppDispatch();
-    const { getAllChannels } = useFetch();
+    const { getAllChannelsData } = useFetch();
     const { channelsListDisplay, channelsListData } = useAppSelector((state) => state.channelsList);
 
     React.useEffect(() => {
-        getAllChannelsData()
+        getAllChannelsDataData()
     },[]);
 
-    const getAllChannelsData = async (): Promise<void> => {
-        const data = await getAllChannels()
-        const channelsData = data.records;
-        
-        channelsData.forEach( (channel: ChannelsListData) =>  dispatch(setChannelsListData(channel)) )
+    const getAllChannelsDataData = async (): Promise<void> => {
+        const data = await getAllChannelsData()
+        const channelsData = data?.records;
+
+        channelsData && channelsData.forEach( (channel: ChannelsListData) =>  dispatch(setChannelsListData(channel)) )
     }
 
     const handleListCollapse = (): void => {
@@ -33,8 +35,8 @@ const ChannelsList = (): JSX.Element => {
         if(!channelsListData) return;
 
         return channelsListData.map( channel => {
-            const { name } = channel;
-            return <ChannelItem key={name} name={name}/>
+            const { name, isPublic } = channel;
+            return <ChannelItem key={name} name={name} isPublic={isPublic} />
         })
     }
 
@@ -45,14 +47,19 @@ const ChannelsList = (): JSX.Element => {
         <ListItemIcon>
             {channelsListDisplay ? <ExpandLess /> : <ExpandMore />}
         </ListItemIcon>
-        <ListItemText primary="Channels List" />
+        <ListItemText primary="Channels List" sx={{ marginLeft: '-15px', paddingRight: '15px' }} />
       </ListItemButton>
 
       <Collapse in={channelsListDisplay} timeout="auto" unmountOnExit>
         <List component="div" disablePadding>
             {renderChannels()}
         </List>
+
+        <AddChannel />
+        <CreateChannelModal />
+        <AddUsersToChannelModal />
       </Collapse>
+
     </List>
   );
 };

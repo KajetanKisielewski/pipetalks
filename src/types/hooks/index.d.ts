@@ -1,5 +1,37 @@
 // useFetch
 
+interface FetchProps {
+    options: {
+        method: string;
+        body?: URLSearchParams | string | FormData;
+        headers?: {
+            'Content-Type'?: string,
+            Authorization?: string;
+        }
+    }
+    additionalPath: string;
+}
+
+interface CreateChannelBody {
+    channelName: string;
+    isPublic: boolean;
+}
+
+interface UseFetch {
+    signIn: (userData: URLSearchParams) => Promise<SignInAndUpResponse>;
+    signUp: (userData: any) => Promise<SignInAndUpResponse>;
+    getAllChannelsData: () => Promise<AllChannelsResponse>;
+    getAllUsersData: () => Promise<AllUsersResponse>;
+    getChannelData: (channelName: string) => Promise<ChannelResponse>;
+    getTranscriptionFile: (filename: string) => Promise<TranscribeReponse>;
+    getRecording: (filename: string) => Promise<Blob | void>;
+    sendRecord: (recordData: FormData) => Promise<RecordDataResponse>;
+    getUserAvatar: (filename: string) => Promise<unknown>;
+    getUserData: () => Promise<unknown>;
+    createChannel: ( {name: string, isPublic: boolean} ) => Promise<unknown>;
+    editRoomsUsers: (roomName: string, usersEmails: any) => Promise<unknown>;
+}
+
 interface SignInAndUpResponse {
     "access_token": string;
 }
@@ -15,8 +47,7 @@ interface AllChannelsResponse {
     records: {
         name: string
         createdAt: string;
-        recordings: [],
-        transcriptions: [],
+        isPublic: boolean;
         users: {
             id: string;
             name: string;
@@ -40,6 +71,50 @@ interface AllUsersResponse {
     }[]
 }
 
+interface ChannelResponse {
+    createdAt: string;
+    name: string;
+    private: boolean;
+    recordings: {
+        createdAt: string;
+        duration: number;
+        filename: string;
+        id: number;
+        roomName: string;
+        transcription: {
+            createdAt: string;
+            filename: string;
+            id: number;
+            language: string;
+            url: string;
+        }
+        url: string;
+        user: {
+            email: string;
+            name: string;
+            settings: {
+                imageUrl: null;
+            }
+        }
+    }[]
+    users: {
+        id: string;
+        name: string;
+        email: string;
+    }[]
+}
+
+
+interface TranscribeReponse {
+    text: string;
+    roomName: string;
+};
+
+interface RecordDataResponse {
+    "info": "string"
+}
+  
+
 // useLocalStorage
 
 interface SignInResponse {
@@ -50,4 +125,14 @@ interface UseLocalStorage {
     getLocalStorage: () => SignInResponse;
     setLocalStorage: (signInResponse: SignInResponse) => void;
 }
-  
+
+
+// UseMediaRecorder
+
+interface MediaRecorderData {
+    startRecordingAudio: () => void;
+    stopRecordingAudio: () => void;
+    playRecord: () => void;
+    prepereRecord: () => Blob;
+    clearMediaRecorderState: () => void;
+}

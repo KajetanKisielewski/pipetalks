@@ -1,164 +1,76 @@
 import React from 'react';
-import { styled, createTheme, ThemeProvider } from '@mui/material/styles';
-import CssBaseline from '@mui/material/CssBaseline';
-import MuiDrawer from '@mui/material/Drawer';
-import Box from '@mui/material/Box';
-import MuiAppBar, { AppBarProps as MuiAppBarProps } from '@mui/material/AppBar';
-import Toolbar from '@mui/material/Toolbar';
-import List from '@mui/material/List';
-import Typography from '@mui/material/Typography';
-import Divider from '@mui/material/Divider';
-import IconButton from '@mui/material/IconButton';
-import Badge from '@mui/material/Badge';
 
-import MenuIcon from '@mui/icons-material/Menu';
-import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
-import SettingsIcon from '@mui/icons-material/Settings';
+import {Box, CssBaseline, Toolbar, List, Typography, Divider } from '@mui/material';
 
-import { mainListItems } from './listItems';
-
-
-
-
+import { setUserData } from 'reducers/UserDataReducer'
+import { useFetch, useAppDispatch } from 'hooks'
+import { setUsersData } from 'reducers/UserDataReducer';
 
 import ChannelsList from './ChannelsList/ChannelsList';
 import DirectMessagesList from './DirectMessagesList/DirectMessageLists';
+import CurrentChannelContent from './CurrentChannelContent/CurrentChannelContent';
+import Settings from './Settings/Settings';
+import BrowseChannels from './BrowseChannels/BrowseChannels';
 
-
-
-
-const drawerWidth: number = 240;
-
-interface AppBarProps extends MuiAppBarProps {
-  open?: boolean;
-}
-
-const AppBar = styled(MuiAppBar, {
-  shouldForwardProp: (prop) => prop !== 'open',
-})<AppBarProps>(({ theme, open }) => ({
-  zIndex: theme.zIndex.drawer + 1,
-  transition: theme.transitions.create(['width', 'margin'], {
-    easing: theme.transitions.easing.sharp,
-    duration: theme.transitions.duration.leavingScreen,
-  }),
-  ...(open && {
-    marginLeft: drawerWidth,
-    width: `calc(100% - ${drawerWidth}px)`,
-    transition: theme.transitions.create(['width', 'margin'], {
-      easing: theme.transitions.easing.sharp,
-      duration: theme.transitions.duration.enteringScreen,
-    }),
-  }),
-}));
-
-const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 'open' })(
-  ({ theme, open }) => ({
-    '& .MuiDrawer-paper': {
-      position: 'relative',
-      whiteSpace: 'nowrap',
-      width: drawerWidth,
-      transition: theme.transitions.create('width', {
-        easing: theme.transitions.easing.sharp,
-        duration: theme.transitions.duration.enteringScreen,
-      }),
-      boxSizing: 'border-box',
-      ...(!open && {
-        overflowX: 'hidden',
-        transition: theme.transitions.create('width', {
-          easing: theme.transitions.easing.sharp,
-          duration: theme.transitions.duration.leavingScreen,
-        }),
-        width: theme.spacing(7),
-        [theme.breakpoints.up('sm')]: {
-          width: theme.spacing(9),
-        },
-      }),
-    },
-  }),
-);
-
-const mdTheme = createTheme();
 
 const Dashboard = (): JSX.Element => {
-  const [open, setOpen] = React.useState(true);
-  const toggleDrawer = () => {
-    setOpen(!open);
-  };
+  const dispatch = useAppDispatch();
+  const { getUserData, getAllUsersData } = useFetch();
+
+  React.useEffect(() => {
+    getUserData().then(resp => dispatch(setUserData(resp)))
+  },[])
+
+  React.useEffect(() => {
+    getAllUsersDataData();
+  },[]);  
+
+  const getAllUsersDataData = async (): Promise<void> => {
+    const data = await getAllUsersData()
+    const usersData = data?.records;
+
+    usersData && usersData.forEach( (userData: UsersListData) =>  dispatch(setUsersData(userData)) )
+  } 
 
   return (
-    <ThemeProvider theme={mdTheme}>
-      <Box sx={{ display: 'flex' }}>
+      <Box sx={{ display: 'flex', flexDirection: 'column', backgroundColor: '#b3e5fc', height: '100vh', overflow: 'hidden' }}>
         <CssBaseline />
-        <AppBar position="absolute" open={open}>
-          <Toolbar
-            sx={{
-              pr: '24px', // keep right padding when drawer closed
-            }}
+        
+        <Toolbar sx={{ backgroundColor: '#448aff', height: '5vh', borderBottom: '2px solid #01579b' }}>
+          <Typography
+            component="h1"
+            variant="h6"
+            color="inherit"
+            noWrap
+            sx={{ flexGrow: 1 }}
           >
-            <IconButton
-              edge="start"
-              color="inherit"
-              aria-label="open drawer"
-              onClick={toggleDrawer}
-              sx={{
-                marginRight: '36px',
-                ...(open && { display: 'none' }),
-              }}
-            >
-              <MenuIcon />
-            </IconButton>
-            <Typography
-              component="h1"
-              variant="h6"
-              color="inherit"
-              noWrap
-              sx={{ flexGrow: 1 }}
-            >
-              Pipetalks
-            </Typography>
-            <IconButton color="inherit">
-              <Badge badgeContent={0} color="secondary">
-                <SettingsIcon />
-              </Badge>
-            </IconButton>
-          </Toolbar>
-        </AppBar>
-        <Drawer variant="permanent" open={open}>
-          <Toolbar
-            sx={{
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'flex-end',
-              px: [1],
-            }}
-          >
-            <IconButton onClick={toggleDrawer}>
-              <ChevronLeftIcon />
-            </IconButton>
-          </Toolbar>
-          <Divider />
-          <List component="nav">
+            Pipetalks
+          </Typography>
+          <Settings />
+        </Toolbar>
+
+        <Box component='div' sx={{ display: 'flex' }}>
+
+          <List component="nav" sx={{ backgroundColor: '#81d4fa', borderRight: '2px solid #01579b' }}>
             <ChannelsList />
             <Divider sx={{ my: 1 }} />
             <DirectMessagesList />
           </List>
-        </Drawer>
-        <Box
-          component="main"
-          sx={{
-            backgroundColor: (theme) =>
-              theme.palette.mode === 'light'
-                ? theme.palette.grey[100]
-                : theme.palette.grey[900],
-            flexGrow: 1,
-            height: '100vh',
-            overflow: 'auto',
-          }}
-        >
-          <Toolbar />
+
+          <Box
+            component="main"
+            sx={{
+              flexGrow: 1,
+              height: '95vh',
+              overflow: 'auto',
+            }}
+          >
+            <CurrentChannelContent />
+            <BrowseChannels />
+          </Box>
+
         </Box>
       </Box>
-    </ThemeProvider>
   );
 }
 

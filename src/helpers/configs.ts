@@ -3,7 +3,9 @@ export const serverEndpoints = {
     login: 'login',
     register: 'register',
     channels: 'rooms',
-    users: 'users',
+    usersData: 'users',
+    recording: 'recordings',
+    userData: 'me'
 };
 
 export const path = {

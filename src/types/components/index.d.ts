@@ -2,6 +2,7 @@
 
 interface ChannelItemProps {
     name: string;
+    isPublic: boolean;
 }
 
 // ChannelsList
@@ -9,8 +10,7 @@ interface ChannelItemProps {
 interface ChannelsListData {
     name: string;
     createdAt: string;
-    recordings: [];
-    transcriptions: [];
+    isPublic: boolean;
     users: {
       id: string;
       name: string;
@@ -25,10 +25,16 @@ interface DirectMessageItemProps {
     name: string;
 }
 
-// DirectMessagesList
+// DashBoard
 
-interface DirectMessageListData {
+interface UsersListData {
     id: string,
     name: string,
     email: string,
+}
+
+// UserItem
+
+interface UserItemProps {
+    user: UsersData;
 }

@@ -10,6 +10,9 @@ from settings import get_settings
 
 app_settings = get_settings()
 
+from settings import get_settings
+app_settings = get_settings()
+
 
 def convert_and_save_file(browser: str, file: bytes, room_name: str, direct_channel_id: int, number: int):
     """
