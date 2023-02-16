@@ -19,10 +19,10 @@ class CredentialsException(HTTPException):
 
 
 class RecordingNotFound(HTTPException):
-    def __init__(self, recording_id: int):
+    def __init__(self):
         super().__init__(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail=f"Recording with id '{recording_id}' not found."
+            detail=f"Recording not found."
         )
 
 
@@ -39,6 +39,14 @@ class RoomNotFound(HTTPException):
         super().__init__(
             status_code=status.HTTP_404_NOT_FOUND,
             detail=f"Room with name '{room_name}' not found."
+        )
+
+
+class DirectChannelNotFound(HTTPException):
+    def __init__(self):
+        super().__init__(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Direct channel not found."
         )
 
 

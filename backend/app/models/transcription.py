@@ -3,7 +3,6 @@ from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
 
 from db.database import Base
-from .recording import Recording
 
 
 class Transcription(Base):
@@ -20,15 +19,31 @@ class Transcription(Base):
         return f"<id: {self.id}, recording-id: {self.recording_id}>"
 
     @staticmethod
-    def get_all_transcriptions_for_user(db, user):
-        return db.query(Transcription).join(Recording).filter(Recording.user == user).all()
-
-    @staticmethod
     def get_transcription_by_id_for_user(db, transcription_id, user):
-        return db.query(Transcription).filter(Transcription.id == transcription_id)\
-            .join(Recording).filter(Recording.user == user).first()
+        try:
+            transcription = db.query(Transcription).filter(Transcription.id == transcription_id).first()
+            if transcription.recording.room_name:
+                if user in transcription.recording.room.users:
+                    return transcription
+            elif transcription.recording.direct_channel_id:
+                if user in transcription.recording.direct_channel.users:
+                    return transcription
+            else:
+                return None
+        except AttributeError:
+            return None
 
     @staticmethod
     def get_transcription_by_filename_for_user(db, filename, user):
-        return db.query(Transcription).filter(Transcription.filename == filename)\
-            .join(Recording).filter(Recording.user == user).first()
+        try:
+            transcription = db.query(Transcription).filter(Transcription.filename == filename).first()
+            if transcription.recording.room_name:
+                if user in transcription.recording.room.users:
+                    return transcription
+            elif transcription.recording.direct_channel_id:
+                if user in transcription.recording.direct_channel.users:
+                    return transcription
+            else:
+                return None
+        except AttributeError:
+            return None

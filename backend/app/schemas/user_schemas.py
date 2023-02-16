@@ -32,6 +32,7 @@ class User(BaseConfig):
     id: UUID
     name: str
     email: EmailStr
+    settings: UserImage
 
 
 class UserWithImage(BaseConfig):

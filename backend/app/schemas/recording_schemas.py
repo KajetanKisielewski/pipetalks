@@ -10,7 +10,8 @@ class Recording(BaseConfig):
     filename: str
     duration: float
     url: str
-    room_name: str
+    direct_channel_id: Optional[int] = None
+    room_name: Optional[str] = None
     user: UserWithImage
     created_at: Optional[datetime]
     transcription: Optional[Transcription]

@@ -3,7 +3,7 @@ import uvicorn
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from routers import transcriptions, auth, recordings, users, rooms, images
+from routers import transcriptions, auth, recordings, users, rooms, images, direct_channels
 from settings import get_settings
 from socket_events.socket_events import socket_app
 
@@ -16,14 +16,16 @@ settings = get_settings()
 # FastAPI
 app = FastAPI(
     docs_url=f"{settings.root_path}/docs",
+    openapi_url=f"{settings.root_path}",
     version="1.0.0",
-    openapi_url=f"{settings.root_path}"
+    title="Pipetalks"
 )
-app.include_router(transcriptions.router)
 app.include_router(auth.router)
-app.include_router(recordings.router)
 app.include_router(users.router)
+app.include_router(direct_channels.router)
 app.include_router(rooms.router)
+app.include_router(recordings.router)
+app.include_router(transcriptions.router)
 app.include_router(images.router)
 
 # CORS middleware
@@ -52,6 +54,8 @@ if not os.path.exists(app_settings.profile_images_path):
     os.makedirs(app_settings.profile_images_path)
 if not os.path.exists(app_settings.rooms_path):
     os.makedirs(app_settings.rooms_path)
+if not os.path.exists(app_settings.direct_channels_path):
+    os.makedirs(app_settings.direct_channels_path)
 
 
 if __name__ == '__main__':

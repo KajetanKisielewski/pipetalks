@@ -14,13 +14,18 @@ from settings import get_settings
 app_settings = get_settings()
 
 
-def convert_and_save_file(browser: str, file: bytes, room_name: str, number: int):
+def convert_and_save_file(browser: str, file: bytes, room_name: str, direct_channel_id: int, number: int):
     """
     Converts and saves given audio file in bytes to WAV audio extension.
     """
 
-    filename = f"{datetime.now().strftime('%d-%m-%Y')}-{room_name}-{str(number+1)}.wav"
-    final_file_location = f"{app_settings.rooms_path}{room_name}/{app_settings.recordings_path}{filename}"
+    if room_name:
+        filename = f"{datetime.now().strftime('%d-%m-%Y')}-{room_name}-{str(number+1)}.wav"
+        final_file_location = f"{app_settings.rooms_path}{room_name}/{app_settings.recordings_path}{filename}"
+    else:
+        filename = f"{datetime.now().strftime('%d-%m-%Y')}-{direct_channel_id}-{str(number + 1)}.wav"
+        final_file_location = f"{app_settings.direct_channels_path}{direct_channel_id}/" \
+                              f"{app_settings.recordings_path}{filename}"
 
     if browser == "chrome":
         temp_file_location = f"data/temp/{filename}.webm"
@@ -47,26 +52,22 @@ def convert_and_save_file(browser: str, file: bytes, room_name: str, number: int
     return filename, final_file_location, duration
 
 
-def convert_to_wav_and_save_file(filepath: str, filename: str):
+def convert_to_wav_and_save_file(temp_filepath: str, filename: str, filepath: str):
     """
     Converts audio file to WAV extension.
     """
     extension_list = ("mp4", "mp3", "m4a")
-    dir_ = f"data/recordings/"
-    if not os.path.exists(dir_):
-        os.mkdir(dir_)
-
     for extension in extension_list:
         if filename.lower().endswith(extension):
-            audio = AudioSegment.from_file(filepath + filename, extension)
+            audio = AudioSegment.from_file(temp_filepath + filename, extension)
             new_audio = audio.set_frame_rate(frame_rate=16000)
             new_filename = f"{filename.split('.')[0]}.wav"
-            new_filepath = f"{dir_}{new_filename}"
+            new_filepath = f"{filepath}{new_filename}"
             new_audio.export(new_filepath, format="wav")
             duration = get_duration(filename=new_filepath)
             return new_filename, duration
 
-    os.remove(filepath + filename)
+    os.remove(temp_filepath + filename)
     raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Unsupported file extension.")
 
 

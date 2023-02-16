@@ -40,19 +40,21 @@ def transcript(recording_name: str, user_email: str):
     Saves transcription to txt file and stores path and whole info in db.
     """
     user = User.get_user_by_email(db_session, user_email)
-    if not user:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail=f"User with email '{user_email}' not found."
-        )
     recording = Recording.get_recording_by_filename_for_user(db_session, recording_name, user)
-    if not recording:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail=f"Recording with filename '{recording_name}' not found."
-        )
-    recording_filepath = \
-        f"{app_settings.rooms_path}{recording.room_name}/{app_settings.recordings_path}{recording.filename}"
+
+    transcription_filename = f"{recording.filename.split('.')[0]}.txt"
+    if recording.room_name:
+        recording_filepath = \
+            f"{app_settings.rooms_path}{recording.room_name}/{app_settings.recordings_path}{recording.filename}"
+        transcription_filepath = \
+            f"{app_settings.rooms_path}{recording.room_name}/{app_settings.transcriptions_path}{transcription_filename}"
+    else:
+        recording_filepath = \
+            f"{app_settings.direct_channels_path}{recording.direct_channel_id}/" \
+            f"{app_settings.recordings_path}{recording.filename}"
+        transcription_filepath = \
+            f"{app_settings.direct_channels_path}{recording.direct_channel_id}/" \
+            f"{app_settings.transcriptions_path}{transcription_filename}"
 
     storage_client.upload(recording.filename, recording_filepath)
     blob_uri = storage_client.get_blob_uri(recording.filename)
@@ -71,9 +73,6 @@ def transcript(recording_name: str, user_email: str):
         transcription_text += \
             f"[{timestamp}] - [{user.name}] - [{timestamps[:-1]}] - {words.strip()}.\n"
 
-    transcription_filename = f"{recording.filename.split('.')[0]}.txt"
-    transcription_filepath = \
-        f"{app_settings.rooms_path}{recording.room_name}/{app_settings.transcriptions_path}{transcription_filename}"
     save_autocorrected_text(transcription_text, transcription_filepath)
     language = detect(transcription_text)
     languages = {

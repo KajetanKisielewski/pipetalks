@@ -28,6 +28,12 @@ async def login_for_access_token(
         form_data: OAuth2PasswordRequestForm = Depends(),
         db: Session = Depends(get_db)
 ):
+    """
+    ## Login with email and password.
+    FormData:
+    - **username**: string, required
+    - **password**: string, required
+    """
     user = authenticate_user(form_data.username, form_data.password, db)
     if not user:
         raise CredentialsException
@@ -48,6 +54,13 @@ async def register(
         request: user_schemas.UserCreate,
         db: Session = Depends(get_db),
 ):
+    """
+    ## Create new user.
+    Body:
+    - **email**: string, required, unique
+    - **name**: string, required
+    - **password**: string, required
+    """
     created_user = User(**request.dict())
     try:
         db.add(created_user)
@@ -75,6 +88,11 @@ async def forgot_password(
         request: user_schemas.ForgotPassword,
         db: Session = Depends(get_db),
 ):
+    """
+    ## Use if you forgot your password.
+    Body:
+    - **email**: required - reset password email will be sent to this address
+    """
     user = User.get_user_by_email(db, request.email).first()
     if not user:
         pass
@@ -104,6 +122,13 @@ async def reset_password(
         request: user_schemas.ResetPassword,
         db: Session = Depends(get_db)
 ):
+    """
+    ## Use after receiving forgot password email with details.
+    Body:
+    - **resetPasswordToken**: required - token from reset password email
+    - **newPassword**: required - have to match with confirmPassword
+    - **confirmPassword**: required - have to match with newPassword
+    """
     reset_token = ResetPassword.get_unused_by_reset_code(db, request.reset_password_token)
     if not reset_token:
         raise HTTPException(

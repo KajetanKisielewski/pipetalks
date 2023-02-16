@@ -27,6 +27,13 @@ async def get_room_info(
         db: Session = Depends(get_db),
         current_user: user_schemas.User = Depends(check_if_active_user),
 ):
+    """
+    ## Get detail info about one room that current user already joined.
+    Path parameters:
+    - **room_name** - string
+
+    User authentication required.
+    """
     room = Room.get_room_by_name_for_user(db, room_name, current_user)
     if not room:
         raise RoomNotFound(room_name)
@@ -44,6 +51,16 @@ async def get_all_user_joined_rooms(
         page_size: int = 10,
         all_rooms: bool | None = None
 ):
+    """
+    ## Get info about all rooms.
+    Query parameters:
+    - **page** - integer, default = 1
+    - **page_size** - integer, default = 10
+    - **all_rooms** - boolean, optional, default = None - if set to true, endpoint will return all user joined rooms \
+    + all not joined public rooms
+
+    User authentication required.
+    """
     rooms = Room.get_all_rooms_for_user(db, current_user)
     if all_rooms:
         rooms = list(set(rooms + Room.get_all_public_rooms(db)))
@@ -70,6 +87,14 @@ async def create_room(
         current_user: user_schemas.User = Depends(check_if_active_user),
         db: Session = Depends(get_db)
 ):
+    """
+    ## Create new room.
+    Body:
+    - **name** - string, unique, required
+    - **is_public** - boolean, optional, default = True
+
+    User authentication required.
+    """
     user = User.get_user_by_email(db, current_user.email)
     try:
         is_public = True if request.is_public in [True, None] else False
@@ -100,11 +125,25 @@ async def delete_room(
         current_user: user_schemas.User = Depends(check_if_superuser),
         db: Session = Depends(get_db)
 ):
+    """
+    ## Delete room.
+    Path parameters:
+    - **room_name** - string
+
+    Admin authentication required.
+    """
     room_to_delete = Room.get_room_by_name_for_user(db, room_name, current_user)
     if not room_to_delete:
-        raise RoomNotFound
+        raise RoomNotFound(room_name)
 
     for recording in room_to_delete.recordings:
+        if recording.transcription:
+            transcription_file_path = f"{app_settings.rooms_path}{room_to_delete.name}/" \
+                    f"{app_settings.transcriptions_path}{recording.transcription.filename}"
+            try:
+                os.remove(transcription_file_path)
+            except Exception as e:
+                print({"Error": e})
         file_path = f"{app_settings.rooms_path}{room_to_delete.name}/" \
                     f"{app_settings.recordings_path}{recording.filename}"
         try:
@@ -127,7 +166,20 @@ async def edit_room_users(
         current_user: user_schemas.User = Depends(check_if_active_user),
         db: Session = Depends(get_db)
 ):
+    """
+    ## Join new room or add new members to one that you already joined.
+    Path parameters:
+    - **room_name** - string
+
+    Body:
+    - **user_emails** - list of strings, optional - include if you want to add someone to the room \
+    or skip it and use this endpoint only to add current user to the room
+
+    User authentication required.
+    """
     room_to_edit = Room.get_room_by_name(db, room_name)
+    if not room_to_edit:
+        raise RoomNotFound(room_name)
     user = User.get_user_by_email(db, current_user.email)
 
     if room_to_edit.is_public or (not room_to_edit.is_public and user in room_to_edit.users):
@@ -143,3 +195,30 @@ async def edit_room_users(
     db.commit()
     db.refresh(room_to_edit)
     return {"info": f"Room '{room_name}' edited."}
+
+
+@router.put(
+    "/rooms/{room_name}/leave",
+    status_code=status.HTTP_202_ACCEPTED
+)
+async def leave_room(
+        room_name: str,
+        current_user: user_schemas.User = Depends(check_if_active_user),
+        db: Session = Depends(get_db)
+):
+    """
+    ## Leave room without deleting it.
+    Path parameters:
+    - **room_name** - string
+
+    User authentication required.
+    """
+    user = User.get_user_by_email(db, current_user.email)
+    room_to_edit = Room.get_room_by_name(db, room_name)
+    if not room_to_edit or user not in room_to_edit.users:
+        raise RoomNotFound(room_name)
+
+    room_to_edit.users.remove(user)
+    db.commit()
+    db.refresh(room_to_edit)
+    return {"info": f"Successfully left room '{room_name}'"}

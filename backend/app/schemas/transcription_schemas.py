@@ -1,6 +1,6 @@
 from typing import Optional
 from datetime import datetime
-from .helpers import BaseConfig, CustomPagination
+from .helpers import BaseConfig
 
 
 class Transcription(BaseConfig):
