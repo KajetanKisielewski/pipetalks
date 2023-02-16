@@ -6,7 +6,7 @@ import { toggleCreateChannelModal } from "reducers/ChannelsListReducer";
 import { setCurrentChannelContent } from 'reducers/CurrentContentReducer';
 import { useAppDispatch, useAppSelector, useFetch } from "hooks";
 
-const BrowseChannels = () => {
+const BrowseChannels = (): JSX.Element => {
     const dispatch = useAppDispatch();
     const { editChannelUsers, getChannelData, leaveChannel } = useFetch();
     const { browseChannelsContent } = useAppSelector((state) => state.currentContent);
@@ -14,7 +14,6 @@ const BrowseChannels = () => {
 
     if(!browseChannelsContent) return;
 
-    
     const handleCreateChannel = (): void => {
         dispatch(toggleCreateChannelModal(true));
     }
@@ -34,7 +33,7 @@ const BrowseChannels = () => {
             .then( resp => dispatch( setCurrentChannelContent(resp) ) )
     }
 
-    const whetherUserBelongsToChannel = (usersList: UsersListData[]) => {
+    const whetherUserBelongsToChannel = (usersList: UsersListData[]): boolean => {
         const { name } = userData
         if (usersList.some( (user) => user.name === name )) return true
     }
@@ -43,7 +42,6 @@ const BrowseChannels = () => {
     const renderChannelList = () => {
         return browseChannelsContent.map( channel => {
             const { isPublic, name, users  } = channel;
-            console.log('ch' , channel)
             const isBelongs = whetherUserBelongsToChannel(users)
 
             return (
@@ -58,7 +56,6 @@ const BrowseChannels = () => {
                         <Button sx={{backgroundColor: 'white', mr: 2  }} onClick={() => handleChannelContentDisplay(name)} >
                             View
                         </Button>
-
                         {isBelongs ? 
                             <Button sx={{backgroundColor: 'black', mr: 2 }} onClick={() => handleLeaveChannel(name)} >
                                 Leave

@@ -17,6 +17,7 @@ const AddChannel = (): JSX.Element => {
   const handleOpen = (event: React.MouseEvent<HTMLElement>): void => {
     setAnchorEl(event.currentTarget);
   };
+  
   const handleClose = (): void => {
     setAnchorEl(null);
   };

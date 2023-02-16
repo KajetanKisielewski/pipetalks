@@ -2,17 +2,35 @@ import React from 'react';
 import { Container, Box, Typography, Button } from '@mui/material';
 
 import { setIsRecording } from 'reducers/CurrentContentReducer';
-import { useAppSelector, useMediaRecorder, useAppDispatch } from 'hooks';
+import { useAppSelector, useMediaRecorder, useAppDispatch, useFetch } from 'hooks';
+import { setBrowseChannelsContent } from 'reducers/CurrentContentReducer';
 import CurrentChannelContentThread from '../CurrentChannelContentThread/CurrentChannelContentThread'
 
-const CurrentChannelContent = (props: any): JSX.Element => {
+const CurrentChannelContent = (): JSX.Element => {
     const { currentChannelContent, isRecording } = useAppSelector((state) => state.currentContent);
+    const { userData } = useAppSelector((state) => state.userData);
+    const { allChannelsListData } = useAppSelector((state) => state.channelsList);
     const { startRecordingAudio, stopRecordingAudio, clearMediaRecorderState } = useMediaRecorder();
     const dispatch = useAppDispatch();
+
+    const { editChannelUsers } = useFetch();
     
     if(!currentChannelContent) return;
 
-    const { name, createdAt, recordings } = currentChannelContent;
+    const { name, createdAt, recordings, users } = currentChannelContent;
+
+    const whetherUserBelongsToChannel = (usersList: UsersListData[]) => {
+        const { name } = userData
+        if (usersList.some( (user) => user.name === name )) return true
+    }
+
+    const handleJoinChannel = (channelName: string): void => {
+        const { email } = userData
+        const usersEmails = { userEmails: [email] };
+        editChannelUsers(channelName, usersEmails);
+    }
+
+    const handleBrowseChannels = () => dispatch( setBrowseChannelsContent(allChannelsListData) )
 
     const convertData = (): string => {
         const date = new Date(createdAt);
@@ -75,7 +93,8 @@ const CurrentChannelContent = (props: any): JSX.Element => {
 
             </Box>
 
-            <Box component="span" sx={{ marginBottom: '50px' }}>
+            {whetherUserBelongsToChannel(users) ? 
+                <Box component="span" sx={{ marginBottom: '50px' }}>
                 {isRecording ? 
                     <Button variant="contained" onClick={ handleStopRecording }>
                         Send a voice message
@@ -85,7 +104,20 @@ const CurrentChannelContent = (props: any): JSX.Element => {
                         Record a voice message
                     </Button>
                 }
-            </Box>
+                </Box>
+                :
+                <Box sx={{ marginBottom: '50px', display: 'flex' , flexDirection: 'column', alignItems: 'center', backgroundColor: 'rgba(149, 149, 149, 0.5)' }}>
+                    <Typography variant='h5'>
+                        Channel: {name}
+                    </Typography>
+                    <Button onClick={() => handleJoinChannel(name)} variant="contained" sx={{ mt: 2, mb: 2 }}>
+                        Join
+                    </Button>
+                    <Button variant="text" onClick={handleBrowseChannels}>
+                        Back To All Channels
+                    </Button>
+                </Box>
+            }
         </Container>
     )
 }

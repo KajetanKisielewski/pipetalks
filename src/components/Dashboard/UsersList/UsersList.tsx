@@ -27,7 +27,6 @@ const UsersList = (): JSX.Element => {
     return matchingUsers;
   };
 
-
   const renderSearchedUsers = (query: string) => {
     const users = searchededUsers(query);
 

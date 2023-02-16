@@ -10,7 +10,6 @@ const ChannelItem = (props: ChannelItemProps): JSX.Element => {
     const { getChannelData } = useFetch();
     const { name, isPublic } = props;
 
-
     const handleChannelContentDisplay = (): void => {
         getChannelData(name)
             .then( resp => dispatch( setCurrentChannelContent(resp) ) )
