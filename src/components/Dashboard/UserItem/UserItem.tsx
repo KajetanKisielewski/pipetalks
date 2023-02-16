@@ -3,10 +3,6 @@ import { ListItemButton, ListItemIcon, Avatar, ListItemText } from "@mui/materia
 
 import { useFetch, useAppSelector } from "hooks";
 
-interface UserItemProps {
-    user: UsersData;
-}
-
 const UserItem = ( { user }: UserItemProps ): JSX.Element => {
     const { name, email } = user;
     const { editRoomsUsers } = useFetch();

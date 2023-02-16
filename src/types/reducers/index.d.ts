@@ -27,12 +27,12 @@ interface DirectMessagesInitState {
 }
 
 
-// CurrentContentReducer
+// CurrentChannelContentReducer
 
-interface CurrentContentData  {
+interface CurrentChannelContentData  {
     createdAt: string;
     name: string;
-    private: boolean;
+    isPublic: boolean;
     recordings: {
         createdAt: string;
         duration: number;
@@ -62,9 +62,10 @@ interface CurrentContentData  {
     }[]
 }
 
-interface CurrentContentInitState {
-    currentContent: CurrentContentData;
+interface CurrentChannelContentInitState {
+    currentChannelContent: CurrentChannelContentData;
     isRecording: boolean;
+    browseChannelsContent: ChannelsListData[];
 }
 
 // UserDataReducer

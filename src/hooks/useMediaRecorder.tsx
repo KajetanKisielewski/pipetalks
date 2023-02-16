@@ -4,20 +4,20 @@ import { detectBrowserName } from 'helpers/browserDetect'
 import { useFetch, useAppSelector } from 'hooks';
 
 const useMediaRecorder = (): MediaRecorderData => {
-    const { currentContent } = useAppSelector((state) => state.currentContent);
+    const { currentChannelContent } = useAppSelector((state) => state.currentContent);
     const [mediaRecorder, setMediaRecorder] = React.useState<MediaRecorder>(new MediaRecorder(new MediaStream()));
     const [audioBlob, setAudioBlob] = React.useState<Blob>(null);
     const [audioUrl, setAudioUrl] = React.useState('');
     const { sendRecord } = useFetch();
     const constraints = { audio: true, video: false };
     const browserName = detectBrowserName();
-    const name = currentContent?.name || '';
+    const name = currentChannelContent?.name || '';
     
     React.useEffect(() => {
-        if(!currentContent) return;
+        if(!currentChannelContent) return;
 
         recorderInit();
-    }, [currentContent])
+    }, [currentChannelContent])
 
     const recorderInit = (): void => {
         if (!navigator.mediaDevices) return;

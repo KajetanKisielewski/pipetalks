@@ -3,16 +3,16 @@ import { Container, Box, Typography, Button } from '@mui/material';
 
 import { setIsRecording } from 'reducers/CurrentContentReducer';
 import { useAppSelector, useMediaRecorder, useAppDispatch } from 'hooks';
-import CurrentContentThread from '../CurrentContentThread/CurrentContentThread'
+import CurrentChannelContentThread from '../CurrentChannelContentThread/CurrentChannelContentThread'
 
-const CurrentContent = (props: any): JSX.Element => {
-    const { currentContent, isRecording } = useAppSelector((state) => state.currentContent);
+const CurrentChannelContent = (props: any): JSX.Element => {
+    const { currentChannelContent, isRecording } = useAppSelector((state) => state.currentContent);
     const { startRecordingAudio, stopRecordingAudio, clearMediaRecorderState } = useMediaRecorder();
     const dispatch = useAppDispatch();
+    
+    if(!currentChannelContent) return;
 
-    if(!currentContent) return;
-
-    const { name, createdAt, recordings } = currentContent;
+    const { name, createdAt, recordings } = currentChannelContent;
 
     const convertData = (): string => {
         const date = new Date(createdAt);
@@ -45,13 +45,13 @@ const CurrentContent = (props: any): JSX.Element => {
 
     const renderContent = () => {
         return recordings.map( record => {
-            const {id, user: { email, name, settings: { imageUrl } }, createdAt, filename, transcription } = record;
+            const {id, user: { name, settings: { imageUrl } }, createdAt, filename, transcription } = record;
 
             const transcribeName = transcription?.filename || '';
             const convertedTime = convertTime(createdAt);
 
            return(
-                <CurrentContentThread key={id} name={name} createdAt={convertedTime} audioName={filename} transcribeName={transcribeName} imageUrl={imageUrl}/>
+                <CurrentChannelContentThread key={id} name={name} createdAt={convertedTime} audioName={filename} transcribeName={transcribeName} imageUrl={imageUrl}/>
            )
         })
     }
@@ -90,4 +90,4 @@ const CurrentContent = (props: any): JSX.Element => {
     )
 }
 
-export default CurrentContent;
+export default CurrentChannelContent;

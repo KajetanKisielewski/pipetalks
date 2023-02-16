@@ -1,26 +1,29 @@
 import { createSlice } from '@reduxjs/toolkit';
 
-const initState: CurrentContentInitState = {
-  currentContent: null,
-  isRecording: false
+const initState: CurrentChannelContentInitState = {
+  currentChannelContent: null,
+  isRecording: false,
+  browseChannelsContent: null
 };
 
 const slice = createSlice({
-  name: 'channelsList',
+  name: 'currentContent',
   initialState: initState,
   reducers: {
-    setCurrentContent: (state, action) => {
-      state.currentContent = action.payload;
-    },
-    clearCurrentContent: (state, action) => {
-      state.currentContent = null
+    setCurrentChannelContent: (state, action) => {
+      state.browseChannelsContent = null;
+      state.currentChannelContent = action.payload;
     },
     setIsRecording: (state, action) => {
       state.isRecording = action.payload
-    }
+    },
+    setBrowseChannelsContent: (state, action) => {
+      state.currentChannelContent = null;
+      state.browseChannelsContent = action.payload;
+    },
   },
 });
 
-export const { setCurrentContent, clearCurrentContent, setIsRecording } = slice.actions;
+export const { setCurrentChannelContent, setIsRecording, setBrowseChannelsContent } = slice.actions;
 
 export default slice.reducer;

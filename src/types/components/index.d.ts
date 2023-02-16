@@ -32,3 +32,9 @@ interface UsersListData {
     name: string,
     email: string,
 }
+
+// UserItem
+
+interface UserItemProps {
+    user: UsersData;
+}

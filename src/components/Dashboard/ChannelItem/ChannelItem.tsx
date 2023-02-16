@@ -3,7 +3,7 @@ import { ListItemButton, ListItemIcon, ListItemText } from "@mui/material";
 import { Lock as LockIcon, LockOpen as LockOpenIcon } from '@mui/icons-material';
 
 import { useFetch, useAppDispatch }from 'hooks';
-import { setCurrentContent } from 'reducers/CurrentContentReducer';
+import { setCurrentChannelContent } from 'reducers/CurrentContentReducer';
 
 const ChannelItem = (props: ChannelItemProps): JSX.Element => {
     const dispatch = useAppDispatch();
@@ -13,7 +13,7 @@ const ChannelItem = (props: ChannelItemProps): JSX.Element => {
 
     const handleChannelContentDisplay = (): void => {
         getChannelData(name)
-            .then( resp => dispatch( setCurrentContent(resp) ) )
+            .then( resp => dispatch( setCurrentChannelContent(resp) ) )
     }
 
     return (

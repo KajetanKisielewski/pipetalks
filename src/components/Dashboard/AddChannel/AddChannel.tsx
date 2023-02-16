@@ -2,12 +2,15 @@ import React from "react";
 import { ListItemButton, ListItemIcon,ListItemText,MenuItem } from "@mui/material";
 import { Add as AddIcon } from "@mui/icons-material";
 
-import { useAppDispatch } from "hooks";
+import { useAppDispatch, useAppSelector } from "hooks";
 import { toggleCreateChannelModal } from "reducers/ChannelsListReducer";
+import { setBrowseChannelsContent } from 'reducers/CurrentContentReducer';
+
 import StyledMenu from "./style";
 
 const AddChannel = (): JSX.Element => {
   const dispatch = useAppDispatch();
+  const { channelsListData } = useAppSelector((state) => state.channelsList);
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
 
@@ -22,6 +25,8 @@ const AddChannel = (): JSX.Element => {
     handleClose();
     dispatch(toggleCreateChannelModal(true));
   };
+
+  const handleBrowseChannels = () => dispatch( setBrowseChannelsContent(channelsListData) )
 
   return (
     <div>
@@ -39,7 +44,9 @@ const AddChannel = (): JSX.Element => {
         <MenuItem onClick={handleCreateChannel} disableRipple>
           Create a new channel
         </MenuItem>
-        <MenuItem disableRipple>Browse Channels</MenuItem>
+        <MenuItem onClick={handleBrowseChannels} disableRipple>
+          Browse Channels
+        </MenuItem>
       </StyledMenu>
     </div>
   );

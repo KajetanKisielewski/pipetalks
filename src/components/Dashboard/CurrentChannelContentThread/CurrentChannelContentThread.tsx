@@ -3,16 +3,17 @@ import { Box, Avatar } from '@mui/material';
 
 import { useFetch } from 'hooks';
 
-
-const CurrentContentThread = (props: any): JSX.Element => {
+const CurrentChannelContentThread = (props: any): JSX.Element => {
     const [blob, setBlob] = React.useState<any>(null)
     const [text, setText] = React.useState<any>(null)
     const [userImage, setUserImage] = React.useState<any>(null)
     const { getTranscriptionFile, getRecording, getUserAvatar } = useFetch();
 
     const { name, createdAt, audioName, transcribeName, imageUrl } = props;
-
+    
     React.useEffect(() => {
+        if(!audioName) return;
+
         getRecording(audioName).then( resp => {
             const url = URL.createObjectURL(resp as Blob);
             setBlob(url);
@@ -20,6 +21,8 @@ const CurrentContentThread = (props: any): JSX.Element => {
     },[])
     
     React.useEffect(() => {
+        if(!transcribeName) return;
+
         getTranscriptionFile(transcribeName).then( resp => {
             const extractedTextData = extractTextData(resp.text);
             setText(extractedTextData[0][1]);
@@ -27,6 +30,8 @@ const CurrentContentThread = (props: any): JSX.Element => {
     },[])
 
     React.useEffect(() => {
+        if(!imageUrl) return;
+
         const imageFilename = imageUrl?.split('/').pop();
 
         getUserAvatar(imageFilename).then( resp => {
@@ -80,4 +85,4 @@ const CurrentContentThread = (props: any): JSX.Element => {
     )
 }
 
-export default CurrentContentThread;
+export default CurrentChannelContentThread;

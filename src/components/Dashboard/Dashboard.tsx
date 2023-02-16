@@ -4,13 +4,13 @@ import {Box, CssBaseline, Toolbar, List, Typography, Divider } from '@mui/materi
 
 import { setUserData } from 'reducers/UserDataReducer'
 import { useFetch, useAppDispatch } from 'hooks'
-import { setDirectMessagesListDisplay } from 'reducers/DirectMessagesListReducer';
 import { setUsersData } from 'reducers/UserDataReducer';
 
 import ChannelsList from './ChannelsList/ChannelsList';
 import DirectMessagesList from './DirectMessagesList/DirectMessageLists';
-import CurrentContent from './CurrentContent/CurrentContent';
+import CurrentChannelContent from './CurrentChannelContent/CurrentChannelContent';
 import Settings from './Settings/Settings';
+import BrowseChannels from './BrowseChannels/BrowseChannels';
 
 
 const Dashboard = (): JSX.Element => {
@@ -27,9 +27,9 @@ const Dashboard = (): JSX.Element => {
 
   const getAllUsersDataData = async (): Promise<void> => {
     const data = await getAllUsersData()
-    const usersData = data.records;
+    const usersData = data?.records;
 
-    usersData.forEach( (userData: UsersListData) =>  dispatch(setUsersData(userData)) )
+    usersData && usersData.forEach( (userData: UsersListData) =>  dispatch(setUsersData(userData)) )
   } 
 
   return (
@@ -51,7 +51,7 @@ const Dashboard = (): JSX.Element => {
 
         <Box component='div' sx={{ display: 'flex' }}>
 
-          <List component="nav" sx={{ backgroundColor: '#81d4fa', borderRight: '2px solid #01579b', overflowY: 'scroll' }}>
+          <List component="nav" sx={{ backgroundColor: '#81d4fa', borderRight: '2px solid #01579b' }}>
             <ChannelsList />
             <Divider sx={{ my: 1 }} />
             <DirectMessagesList />
@@ -65,7 +65,8 @@ const Dashboard = (): JSX.Element => {
               overflow: 'auto',
             }}
           >
-            <CurrentContent />
+            <CurrentChannelContent />
+            <BrowseChannels />
           </Box>
 
         </Box>

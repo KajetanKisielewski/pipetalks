@@ -22,9 +22,9 @@ const ChannelsList = (): JSX.Element => {
 
     const getAllChannelsDataData = async (): Promise<void> => {
         const data = await getAllChannelsData()
-        const channelsData = data.records;
+        const channelsData = data?.records;
 
-        channelsData.forEach( (channel: ChannelsListData) =>  dispatch(setChannelsListData(channel)) )
+        channelsData && channelsData.forEach( (channel: ChannelsListData) =>  dispatch(setChannelsListData(channel)) )
     }
 
     const handleListCollapse = (): void => {
