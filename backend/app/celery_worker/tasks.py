@@ -2,7 +2,6 @@ import logging
 from datetime import datetime
 
 from celery import Task
-from fastapi import HTTPException, status
 
 from langdetect import detect
 
@@ -74,7 +73,6 @@ def transcript(recording_name: str, user_email: str):
             f"[{timestamp}] - [{user.name}] - [{timestamps[:-1]}] - {words.strip()}.\n"
 
     save_autocorrected_text(transcription_text, transcription_filepath)
-    language = detect(transcription_text)
     languages = {
         'pl': 'pl-PL',
         'en': 'en-US',
@@ -82,11 +80,12 @@ def transcript(recording_name: str, user_email: str):
         'fr': 'fr-FR',
         'es': 'es-ES',
     }
+    language = languages.get(detect(transcription_text))
     transcription = Transcription(
         filename=transcription_filename,
         url=app_settings.domain + app_settings.root_path + "/transcriptions/file/" + transcription_filename,
         recording_id=recording.id,
-        language=languages[language]
+        language=language if language else user.settings.language.code
     )
     db_session.add(transcription)
     db_session.commit()
