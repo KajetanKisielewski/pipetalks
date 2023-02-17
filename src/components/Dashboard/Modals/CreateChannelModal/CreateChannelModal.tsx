@@ -18,9 +18,10 @@ const style = {
   borderRadius: '20px'
 };
 
-const CreateChannelModal = () => {
+const CreateChannelModal = (): JSX.Element => {
     const [isPublic, setIsPublic] = React.useState(true)
     const { createChannelModal } = useAppSelector((state) => state.channelsList);
+    const { usersData } = useAppSelector((state) => state.userData)
     const dispatch = useAppDispatch();
     const { createChannel } = useFetch();
 
@@ -33,7 +34,8 @@ const CreateChannelModal = () => {
         createChannel({ name, isPublic });
         handleClose();
         dispatch(setCurrentlyCreatedChannel(name));
-        dispatch(toggleAddUsersModal(true));
+        
+        usersData.length != 1 && dispatch(toggleAddUsersModal(true));
     }
 
   return (
@@ -66,7 +68,7 @@ const CreateChannelModal = () => {
               </Box>
             </Typography>
             <Typography id="transition-modal-description" sx={{ mt: 2 }}>
-                Channels are where your team communicates. They’re best when organized around a topic - #digimonkeys, for example.
+                Channels are where your team communicates. They’re best when organized around a topic - digimonkeys, for example.
             </Typography>
             <Box
                 component="form"

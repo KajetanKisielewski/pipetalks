@@ -9,8 +9,6 @@ const Settings = (): JSX.Element => {
   const [settingsOpen, isSettingsOpen] = React.useState<null | HTMLElement>(null);
   const { userData } = useAppSelector((state) => state.userData);
 
-//   console.log('us' , userData)
-
   const handleOpenUserMenu = (event: React.MouseEvent<HTMLElement>) => {
     isSettingsOpen(event.currentTarget);
   };

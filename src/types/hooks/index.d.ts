@@ -30,7 +30,7 @@ interface UseFetch {
     getUserAvatar: (filename: string) => Promise<unknown>;
     getUserData: () => Promise<unknown>;
     createChannel: ( {name: string, isPublic: boolean} ) => Promise<unknown>;
-    editChannelUsers: (channelName: string, usersEmails: any) => Promise<unknown>;
+    editChannelUsers: (channelName: string, usersEmails?: any) => Promise<unknown>;
     leaveChannel: (channelName: string) => Promise<unknow>;
     getDirectChannelInfo: (userEmail: string) => Promise<unknown>;
 }

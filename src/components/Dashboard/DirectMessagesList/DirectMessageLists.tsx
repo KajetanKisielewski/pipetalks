@@ -51,7 +51,7 @@ const DirectMessagesList = (): JSX.Element => {
                 <AddIcon />
               </ListItemIcon>
               <ListItemText
-                primary="Send DM"
+                primary="Create DM Instance"
                 sx={{ marginLeft: "-15px", paddingRight: "15px" }}
               />
             </ListItemButton>

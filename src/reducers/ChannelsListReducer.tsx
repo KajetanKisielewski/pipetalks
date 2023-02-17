@@ -17,8 +17,7 @@ const slice = createSlice({
       state.channelsListDisplay = action.payload;
     },
     setChannelsListData: (state, action) => {
-      if (!state.channelsListData.some( (channel) => channel.name === action.payload.name))
-      state.channelsListData.push(action.payload);
+      state.channelsListData = action.payload
     },
     toggleCreateChannelModal: (state, action) => {
       state.createChannelModal = action.payload;
@@ -30,8 +29,7 @@ const slice = createSlice({
       state.currentlyCreatedChannel = action.payload
     },
     setAllChannelsListData: (state, action) => {
-      if (!state.allChannelsListData.some( (channel) => channel.name === action.payload.name))
-      state.allChannelsListData.push(action.payload);
+      state.allChannelsListData = action.payload;
     },
   },
 });

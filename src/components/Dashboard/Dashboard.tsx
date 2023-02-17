@@ -3,7 +3,7 @@ import React from 'react';
 import {Box, CssBaseline, Toolbar, List, Typography, Divider } from '@mui/material';
 
 import { setUserData, setUsersData } from 'reducers/UserDataReducer'
-import { useFetch, useAppDispatch } from 'hooks'
+import { useFetch, useAppDispatch, useAppSelector } from 'hooks'
 import { setAllChannelsListData } from 'reducers/ChannelsListReducer'
 
 import ChannelsList from './ChannelsList/ChannelsList';
@@ -17,6 +17,7 @@ import DirectMessage from './DirectMessage/DirectMessage';
 const Dashboard = (): JSX.Element => {
   const dispatch = useAppDispatch();
   const { getUserData, getAllUsersData, getAllChannelsData  } = useFetch();
+  const { currentlyCreatedChannel } = useAppSelector((state) => state.channelsList)
 
   React.useEffect(() => {
     getUserData().then(resp => dispatch(setUserData(resp)))
@@ -28,13 +29,13 @@ const Dashboard = (): JSX.Element => {
   
   React.useEffect(() => {
     getDataOfAllChannels()
-  },[]);
+  },[currentlyCreatedChannel]);
 
 const getDataOfAllChannels = async (): Promise<void> => {
     const data = await getAllChannelsData()
     const channelsData = data?.records;
 
-    channelsData && channelsData.forEach( (channel: ChannelsListData) =>  dispatch(setAllChannelsListData(channel)) )
+    dispatch(setAllChannelsListData(channelsData))
 }
 
   const getAllUsersDataData = async (): Promise<void> => {
@@ -58,7 +59,7 @@ const getDataOfAllChannels = async (): Promise<void> => {
           >
             Pipetalks
           </Typography>
-          <Settings />
+          {/* <Settings /> */}
         </Toolbar>
 
         <Box component='div' sx={{ display: 'flex' }}>

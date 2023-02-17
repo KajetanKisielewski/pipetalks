@@ -21,11 +21,10 @@ const style = {
 };
 
 const AddUsersToChannelModal = (): JSX.Element => {
-    const { addUsersModal } = useAppSelector((state) => state.channelsList);
-    const dispatch = useAppDispatch();
+  const { addUsersModal } = useAppSelector((state) => state.channelsList);
+  const dispatch = useAppDispatch();
 
-    const handleClose = () => dispatch(toggleAddUsersModal(false))
-
+  const handleClose = () => dispatch(toggleAddUsersModal(false))
 
   return (
     <div>

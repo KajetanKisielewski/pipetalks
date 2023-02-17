@@ -2,30 +2,34 @@ import React from 'react';
 import { Box, Button, Container, List, ListItem , ListItemButton, ListItemIcon, ListItemText, Typography } from '@mui/material';
 import { Lock as LockIcon, LockOpen as LockOpenIcon } from '@mui/icons-material';
 
-import { toggleCreateChannelModal } from "reducers/ChannelsListReducer";
-import { setCurrentChannelContent } from 'reducers/CurrentContentReducer';
+import { toggleCreateChannelModal, setAllChannelsListData } from "reducers/ChannelsListReducer";
+import { setCurrentChannelContent, setBrowseChannelsContent } from 'reducers/CurrentContentReducer';
 import { useAppDispatch, useAppSelector, useFetch } from "hooks";
 
 const BrowseChannels = (): JSX.Element => {
     const dispatch = useAppDispatch();
-    const { editChannelUsers, getChannelData, leaveChannel } = useFetch();
+    const { editChannelUsers, getChannelData, leaveChannel, getAllChannelsData } = useFetch();
     const { browseChannelsContent } = useAppSelector((state) => state.currentContent);
+    const { allChannelsListData } = useAppSelector((state) => state.channelsList)
     const { userData } = useAppSelector((state) => state.userData);
 
-    if(!browseChannelsContent) return;
+    React.useEffect(() => {
+        dispatch( setBrowseChannelsContent(allChannelsListData) )
+    },[allChannelsListData])
 
     const handleCreateChannel = (): void => {
         dispatch(toggleCreateChannelModal(true));
     }
 
     const handleJoinChannel = (channelName: string): void => {
-        const { email } = userData
-        const usersEmails = { userEmails: [email] };
+        const usersEmails: { userEmails: string[] } = { userEmails: [] } ;
         editChannelUsers(channelName, usersEmails);
+        getDataOfAllChannels()
     }
 
-    const handleLeaveChannel = (channelName: string): void => {
-        leaveChannel(channelName);
+    const handleLeaveChannel = async (channelName: string): Promise<void> => {
+        leaveChannel(channelName)
+        getDataOfAllChannels()
     }
 
     const handleChannelContentDisplay = (channelName: string): void => {
@@ -34,13 +38,22 @@ const BrowseChannels = (): JSX.Element => {
     }
 
     const whetherUserBelongsToChannel = (usersList: UsersListData[]): boolean => {
+        if(!usersList || !userData) return;
+
         const { name } = userData
         if (usersList.some( (user) => user.name === name )) return true
     }
 
+    const getDataOfAllChannels = async (): Promise<void> => {
+        const data = await getAllChannelsData()
+        const channelsData = data?.records;
+    
+        dispatch(setAllChannelsListData(channelsData))
+    }
 
-    const renderChannelList = () => {
-        return browseChannelsContent.map( channel => {
+
+    const renderChannelList = (): JSX.Element[] => {
+        return browseChannelsContent?.map( channel => {
             const { isPublic, name, users  } = channel;
             const isBelongs = whetherUserBelongsToChannel(users)
 

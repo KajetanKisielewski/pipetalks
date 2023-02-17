@@ -1,11 +1,9 @@
 import React from "react";
-
 import { List, ListItemButton, ListItemIcon, ListItemText, Collapse } from '@mui/material';
 import { ExpandLess, ExpandMore } from '@mui/icons-material';
 
 import { useAppDispatch, useAppSelector, useFetch } from 'hooks';
 import { setChannelsListDisplay, setChannelsListData } from 'reducers/ChannelsListReducer';
-
 import ChannelItem from '../ChannelItem/ChannelItem';
 import AddChannel from '../AddChannel/AddChannel';
 import CreateChannelModal from '../Modals/CreateChannelModal/CreateChannelModal';
@@ -14,17 +12,16 @@ import AddUsersToChannelModal from '../Modals/AddUsersToChannelModal/AddUsersToC
 const ChannelsList = (): JSX.Element => {
     const dispatch = useAppDispatch();
     const { getDataOfAllUserChannels } = useFetch();
-    const { channelsListDisplay, channelsListData } = useAppSelector((state) => state.channelsList);
+    const { channelsListDisplay, channelsListData, currentlyCreatedChannel, allChannelsListData } = useAppSelector((state) => state.channelsList);
 
     React.useEffect(() => {
         getDataOfAllUserChannelsData()
-    },[]);
+    },[currentlyCreatedChannel, allChannelsListData]);
 
     const getDataOfAllUserChannelsData = async (): Promise<void> => {
         const data = await getDataOfAllUserChannels()
         const channelsData = data?.records;
-
-        channelsData && channelsData.forEach( (channel: ChannelsListData) =>  dispatch(setChannelsListData(channel)) )
+        dispatch(setChannelsListData(channelsData))
     }
 
     const handleListCollapse = (): void => {

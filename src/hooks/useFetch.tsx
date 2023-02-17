@@ -137,7 +137,7 @@ const useFetch = (): UseFetch => {
         return _fetch({ additionalPath, options })
     }
 
-    const editChannelUsers = (channelName: string, usersEmails: any ) => {
+    const editChannelUsers = (channelName: string, usersEmails?: any ) => {
         const additionalPath = `${channels}/${channelName}`;
         const options = { 
             method: 'PUT',
