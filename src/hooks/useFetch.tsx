@@ -4,7 +4,7 @@ import useLocalStorage from "./useLocalStorage";
 
 
 const useFetch = (): UseFetch => {
-    const { login, register, channels, usersData, recording, userData } = serverEndpoints;
+    const { login, register, channels, usersData, recording, userData, directMessages } = serverEndpoints;
     const { getLocalStorage } = useLocalStorage();
     const { access_token } = getLocalStorage() || {};
 
@@ -81,6 +81,18 @@ const useFetch = (): UseFetch => {
         };
         return _fetch({additionalPath, options});
     }
+
+    // DM's
+
+
+    const getDirectChannelInfo = (userEmail: string) => {
+        const additionalPath = `${directMessages}/${userEmail}`;
+        const options = { 
+            method: 'GET',
+            headers: { Authorization: `Bearer ${access_token}` } 
+        };
+        return _fetch({additionalPath, options});
+    } 
 
 
     // Rooms
@@ -164,7 +176,7 @@ const useFetch = (): UseFetch => {
     }
 
 
-    return { signIn, signUp, getDataOfAllUserChannels, getAllUsersData, getChannelData, getTranscriptionFile, getRecording, sendRecord, getUserAvatar, getUserData, createChannel, editChannelUsers, leaveChannel, getAllChannelsData };
+    return { signIn, signUp, getDataOfAllUserChannels, getAllUsersData, getChannelData, getTranscriptionFile, getRecording, sendRecord, getUserAvatar, getUserData, createChannel, editChannelUsers, leaveChannel, getAllChannelsData, getDirectChannelInfo };
 }
 
 export default useFetch;

@@ -2,9 +2,9 @@ import React from 'react';
 import { Backdrop, Box, Modal, Fade, Typography } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 
-import { useAppSelector, useAppDispatch } from 'hooks';
-import { toggleAddUsersModal } from 'reducers/ChannelsListReducer';
 
+import { toggleCreateDirectMessageModal } from 'reducers/DirectMessagesListReducer';
+import { useAppSelector, useAppDispatch } from 'hooks';
 import UsersList from 'components/Dashboard/UsersList/UsersList';
 
 const style = {
@@ -20,18 +20,18 @@ const style = {
   borderRadius: '20px'
 };
 
-const AddUsersToChannelModal = (): JSX.Element => {
-    const { addUsersModal } = useAppSelector((state) => state.channelsList);
+const CreateDirectMessageModal = (): JSX.Element => {
+    const { createDirectMessageModal } = useAppSelector((state) => state.directMessages);
     const dispatch = useAppDispatch();
 
-    const handleClose = () => dispatch(toggleAddUsersModal(false))
+    const handleClose = () => dispatch(toggleCreateDirectMessageModal(false))
 
 
   return (
     <div>
       <Modal
         aria-labelledby="transition-modal-title"
-        open={addUsersModal}
+        open={createDirectMessageModal}
         onClose={handleClose}
         closeAfterTransition
         slots={{
@@ -43,19 +43,19 @@ const AddUsersToChannelModal = (): JSX.Element => {
             }
         }}
       >
-        <Fade in={addUsersModal}>
+        <Fade in={createDirectMessageModal}>
           <Box sx={style}>
             <Typography id="transition-modal-title" variant="h6" component="h2">
               <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
-                <Box component="span">
-                    Add people to channel
+                <Box component="span" sx={{ pr: 2 }}>
+                    Create Direct Message Channel with:
                 </Box>
                 <Box component="span" onClick={handleClose} sx={{ cursor: 'pointer' }}>
                     <CloseIcon />
                 </Box>
               </Box>
             </Typography>
-            <UsersList isDM={false}/>
+            <UsersList isDM={true}/>
           </Box>
         </Fade>
       </Modal>
@@ -63,4 +63,4 @@ const AddUsersToChannelModal = (): JSX.Element => {
   );
 }
 
-export default AddUsersToChannelModal;
+export default CreateDirectMessageModal;

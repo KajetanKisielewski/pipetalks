@@ -3,7 +3,8 @@ import { createSlice } from '@reduxjs/toolkit';
 const initState: CurrentChannelContentInitState = {
   currentChannelContent: null,
   isRecording: false,
-  browseChannelsContent: null
+  browseChannelsContent: null,
+  directMessageContent: null,
 };
 
 const slice = createSlice({
@@ -12,6 +13,7 @@ const slice = createSlice({
   reducers: {
     setCurrentChannelContent: (state, action) => {
       state.browseChannelsContent = null;
+      state.directMessageContent = null;
       state.currentChannelContent = action.payload;
     },
     setIsRecording: (state, action) => {
@@ -19,11 +21,17 @@ const slice = createSlice({
     },
     setBrowseChannelsContent: (state, action) => {
       state.currentChannelContent = null;
+      state.directMessageContent = null;
       state.browseChannelsContent = action.payload;
+    },
+    setDirectmessageContent: (state, action) => {
+      state.currentChannelContent = null;
+      state.browseChannelsContent = null;
+      state.directMessageContent = action.payload;
     },
   },
 });
 
-export const { setCurrentChannelContent, setIsRecording, setBrowseChannelsContent } = slice.actions;
+export const { setCurrentChannelContent, setIsRecording, setBrowseChannelsContent, setDirectmessageContent } = slice.actions;
 
 export default slice.reducer;

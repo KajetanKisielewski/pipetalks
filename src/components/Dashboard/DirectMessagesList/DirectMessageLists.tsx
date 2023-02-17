@@ -1,17 +1,16 @@
 import React from 'react';
-
 import { List, ListItemButton, ListItemIcon, ListItemText, Collapse } from "@mui/material";
-import { ExpandLess, ExpandMore } from "@mui/icons-material";
+import { ExpandLess, ExpandMore, Add as AddIcon } from "@mui/icons-material";
 
 import { useAppDispatch, useAppSelector } from "hooks";
-import { setDirectMessagesListDisplay } from 'reducers/DirectMessagesListReducer';
-import { setUsersData } from 'reducers/UserDataReducer';
+import { setDirectMessagesListDisplay, toggleCreateDirectMessageModal } from 'reducers/DirectMessagesListReducer';
 
 import DirectMessageItem from '../DirectMessageItem/DirectMessageItem';
+import CreateDirectMessageModal from '../Modals/CreateDirectMessageModal/CreateDirectMessageModal';
 
 const DirectMessagesList = (): JSX.Element => {
     const dispatch = useAppDispatch();
-    const { directMessagesListDisplay } = useAppSelector((state) => state.directMessagesList);
+    const { directMessagesListDisplay, directMessagesListData } = useAppSelector((state) => state.directMessages);
     const { usersData } = useAppSelector((state) => state.userData);
 
     const handleListCollapse = (): void => {
@@ -19,14 +18,18 @@ const DirectMessagesList = (): JSX.Element => {
     };
 
     const renderDirectMessages = () => {
-        if(!usersData) return;
+        if(!directMessagesListData) return;
 
-        return usersData.map( userData => {
-            const { name } = userData;
-
-            return <DirectMessageItem key={name} name={name}/>
+        return directMessagesListData.map( directMessage => {
+            const { id, recordings, users, createdAt } = directMessage;
+            const direstMessageName = [ users[0].name , users[1].name ].join()
+            return <DirectMessageItem key={id} name={direstMessageName} recordings={recordings} users={users} createdAt={createdAt}/>
         })
     }
+
+    const handleOpenDirectMessagesModal = (): void => {
+      dispatch(toggleCreateDirectMessageModal(true));
+    };
 
     return (
         <List>
@@ -42,6 +45,18 @@ const DirectMessagesList = (): JSX.Element => {
             <List component="div" disablePadding>
                 {renderDirectMessages()}
             </List>
+
+            <ListItemButton onClick={handleOpenDirectMessagesModal}>
+              <ListItemIcon>
+                <AddIcon />
+              </ListItemIcon>
+              <ListItemText
+                primary="Send DM"
+                sx={{ marginLeft: "-15px", paddingRight: "15px" }}
+              />
+            </ListItemButton>
+
+            <CreateDirectMessageModal />
           </Collapse>
         </List>
       );

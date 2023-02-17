@@ -23,6 +23,9 @@ interface ChannelsListData {
 
 interface DirectMessageItemProps {
     name: string;
+    recordings: any;
+    users: any;
+    createdAt: any;
 }
 
 // DashBoard
@@ -37,4 +40,5 @@ interface UsersListData {
 
 interface UserItemProps {
     user: UsersData;
+    isDM: boolean;
 }

@@ -7,7 +7,7 @@ import UserDataReducer from 'reducers/UserDataReducer';
 
 const reducer = combineReducers({
   channelsList: ChannelsListReducer,
-  directMessagesList: DirectMessagesListReducer,
+  directMessages: DirectMessagesListReducer,
   currentContent: CurrentContentReducer,
   userData: UserDataReducer,
 });

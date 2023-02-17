@@ -3,17 +3,25 @@ import { List, Box, Button, TextField } from "@mui/material";
 
 import { useAppSelector, useAppDispatch } from "hooks";
 import { toggleAddUsersModal } from 'reducers/ChannelsListReducer';
+import { toggleCreateDirectMessageModal } from "reducers/DirectMessagesListReducer";
 
 import UserItem from "components/Dashboard/UserItem/UserItem";
 
-const UsersList = (): JSX.Element => {
+interface UserListProps {
+  isDM: boolean;
+}
+
+const UsersList = (props: UserListProps): JSX.Element => {
   const [searchedQuery, setSearchedQuery] = React.useState("");
   const { userData, usersData } = useAppSelector((state) => state.userData);
   const dispatch = useAppDispatch();
 
+  const { isDM } = props;
   const { name: loggedUserName , email: loggedUserEmail } = userData;
 
-  const handleClose = () => dispatch(toggleAddUsersModal(false))
+  const handleCloseAddUser = () => dispatch(toggleAddUsersModal(false))
+
+  const handleCloseDirectMessage = () => dispatch(toggleCreateDirectMessageModal(false))
 
   const searchededUsers = (searchQuery: string): UsersData[] => {
     const matchingUsers = [];
@@ -34,7 +42,7 @@ const UsersList = (): JSX.Element => {
       <List>
         {users.map((user) => {
             const { id, } = user
-            return ( <UserItem key={id} user={user} /> )
+            return (<UserItem key={id} user={user} isDM={isDM}/> )
         })}
       </List>
     );
@@ -49,7 +57,7 @@ const UsersList = (): JSX.Element => {
             const { id, email, name } = user
 
             if(name === loggedUserName || email === loggedUserEmail) return;
-            return (<UserItem key={id} user={user} /> );
+            return (<UserItem key={id} user={user} isDM={isDM}/> );
         })}
       </List>
     );
@@ -68,7 +76,7 @@ const UsersList = (): JSX.Element => {
       />
       { searchedQuery?.length ? renderSearchedUsers(searchedQuery) : renderUsersList() }
       <Box sx={{ mt: 2, textAlign: "right" }}>
-        <Button variant="contained" onClick={handleClose}>
+        <Button variant="contained" onClick={isDM ? handleCloseDirectMessage : handleCloseAddUser }>
           Done
         </Button>
       </Box>

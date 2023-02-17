@@ -11,6 +11,7 @@ import DirectMessagesList from './DirectMessagesList/DirectMessageLists';
 import CurrentChannelContent from './CurrentChannelContent/CurrentChannelContent';
 import Settings from './Settings/Settings';
 import BrowseChannels from './BrowseChannels/BrowseChannels';
+import DirectMessage from './DirectMessage/DirectMessage';
 
 
 const Dashboard = (): JSX.Element => {
@@ -78,6 +79,7 @@ const getDataOfAllChannels = async (): Promise<void> => {
           >
             <CurrentChannelContent />
             <BrowseChannels />
+            <DirectMessage />
           </Box>
 
         </Box>

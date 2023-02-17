@@ -23,8 +23,36 @@ interface ChannelsListInitState {
 
 // DirectMessagesListReducer
 
+interface DirectMessageListData {
+    createdAt: string;
+    id: number;
+    recordings: {
+        createdAt: string;
+        duration: number;
+        filename: string;
+        id: number;
+        roomName: string;
+        transcription: {
+            createdAt: string;
+            filename: string;
+            id: number;
+            language: string;
+            url: string;
+        }
+    }[]
+    users: {
+        name:string;
+        email: string;
+        settings: {
+            imageUrl: null 
+        }
+    }[]
+}
+
 interface DirectMessagesInitState {
     directMessagesListDisplay: boolean;
+    createDirectMessageModal: boolean;
+    directMessagesListData: DirectMessageListData[];
 }
 
 
@@ -67,6 +95,7 @@ interface CurrentChannelContentInitState {
     currentChannelContent: CurrentChannelContentData;
     isRecording: boolean;
     browseChannelsContent: ChannelsListData[];
+    directMessageContent: DirectMessageListData;
 }
 
 // UserDataReducer
