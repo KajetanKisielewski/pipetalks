@@ -8,7 +8,7 @@ from db.database import get_db
 from exceptions.exceptions import UserNotFound
 from auth.jwt_helper import check_if_active_user, check_if_superuser
 from settings import get_settings
-from utils.images_tasks import resize_image
+from utils.images_tasks import resize_image, convert_to_jpg_and_save_file
 
 
 app_settings = get_settings()
@@ -162,11 +162,8 @@ async def edit_user_settings(
     user_settings = user_to_edit.settings
 
     if profile_image:
-        filename = f"{user_to_edit.email}." + profile_image.filename.split('.')[-1]
-        with open(app_settings.profile_images_path + filename, "wb") as my_file:
-            content = await profile_image.read()
-            my_file.write(content)
-            my_file.close()
+        filename = f"{user_to_edit.email}.jpg"
+        await convert_to_jpg_and_save_file(file=profile_image, filename=filename)
         background_tasks.add_task(func=resize_image, image_path=f"{app_settings.profile_images_path}{filename}")
         user_settings.image_URL = app_settings.domain + app_settings.root_path + '/profile-image/' + filename
 
