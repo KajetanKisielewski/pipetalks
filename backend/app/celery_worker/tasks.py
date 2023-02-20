@@ -33,7 +33,7 @@ class SQLAlchemyTask(Task):
 
 
 @app.task(name="transcript", base=SQLAlchemyTask)
-def transcript(recording_name: str, user_email: str):
+def transcript(recording_name: str, user_email: str, sid: str):
     """
     Creates transcription for chosen recording via Google Cloud Speech-to-text.
     Saves transcription to txt file and stores path and whole info in db.

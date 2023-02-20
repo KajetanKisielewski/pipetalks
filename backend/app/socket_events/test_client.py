@@ -26,7 +26,7 @@ def event_name(data):
 def main():
     cl.connect(
         "http://localhost:8000/socket.io",
-        headers={'Authentication': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJhZG1pbkBhZG1pbi5jb20iLCJleHAiOjE2NzY2NzM4OTF9.ljIBu4D9pwedrplAbYHAUz30AnMM5AvQmKcHQfJAFrk'}
+        headers={'Authentication': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJhZG1pbkBhZG1pbi5jb20iLCJleHAiOjE2NzY5MTE4ODd9.WVupDBpRRFFglhmszg2o5VxkbltdoCuvaEYxSzWh7Uw'}
     )
     cl.wait()
 
