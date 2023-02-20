@@ -1,6 +1,7 @@
 import os
 
 from fastapi import APIRouter, status, Depends, HTTPException
+from fastapi.responses import Response
 from db.database import get_db
 from sqlalchemy.orm import Session
 from pydantic import parse_obj_as
@@ -56,6 +57,7 @@ async def get_all_direct_channels_for_user(
 )
 async def get_direct_channel_info(
         user_email: str,
+        response: Response,
         db: Session = Depends(get_db),
         current_user: user_schemas.User = Depends(check_if_active_user)
 ):
@@ -75,6 +77,7 @@ async def get_direct_channel_info(
     if not direct_channel:
         request = direct_channels_schemas.DirectChannelCreate(user_email=user_email)
         direct_channel = await create_direct_channel(request, current_user, db)
+        response.status_code = status.HTTP_201_CREATED
     return direct_channel
 
 

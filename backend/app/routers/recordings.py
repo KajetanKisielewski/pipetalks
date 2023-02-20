@@ -33,6 +33,7 @@ async def upload_recorded_audio_bytes(
         browser: str = Form(),
         room_name: str | None = Form(None),
         direct_channel_id: int | None = Form(None),
+        sid: str = Form(),
         current_user: user_schemas.User = Depends(check_if_active_user),
         db: Session = Depends(get_db)
 ):
@@ -43,6 +44,7 @@ async def upload_recorded_audio_bytes(
     - **browser** - string, name of used web browser
     - **room_name** - string, not required if direct_channel_id is provided
     - **direct_channel_id** - integer, not required if room_name is provided
+    - **sid** - string, socket id of logged user, required to send socket emit to client when transcription is ready
 
     User authentication required.
     """
@@ -74,7 +76,7 @@ async def upload_recorded_audio_bytes(
     db.commit()
     db.refresh(new_recording)
 
-    transcript.delay(recording_name=new_filename, user_email=current_user.email)
+    transcript.delay(recording_name=new_filename, user_email=current_user.email, sid=sid)
     return {"info": f"file saved at '{location}'"}
 
 
@@ -86,6 +88,7 @@ async def upload_new_recording_file(
         file: UploadFile,
         room_name: str | None = Form(None),
         direct_channel_id: int | None = Form(None),
+        sid: str = Form(),
         db: Session = Depends(get_db),
         current_user: user_schemas.User = Depends(check_if_active_user),
 ):
@@ -95,6 +98,7 @@ async def upload_new_recording_file(
     - **file** - bytes, .wav, .mp4, .mp3 or .m4a format
     - **room_name** - string, not required if direct_channel_id is provided
     - **direct_channel_id** - integer, not required if room_name is provided
+    - **sid** - string, socket id of logged user, required to send socket emit to client when transcription is ready
 
     User authentication required.
     """
@@ -142,7 +146,7 @@ async def upload_new_recording_file(
     db.commit()
     db.refresh(new_recording)
 
-    transcript.delay(recording_name=filename, user_email=current_user.email)
+    transcript.delay(recording_name=filename, user_email=current_user.email, sid=sid)
     return {"info": f"File saved as '{filename}'"}
 
 

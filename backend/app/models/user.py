@@ -9,6 +9,7 @@ from sqlalchemy.dialects.postgresql import UUID
 from fastapi import HTTPException, status
 
 from db.database import Base
+from .room import room_user_association_table
 
 
 class User(Base):
@@ -30,6 +31,11 @@ class User(Base):
     recordings = relationship(
         "Recording",
         back_populates="user"
+    )
+    rooms = relationship(
+        "Room",
+        secondary=room_user_association_table,
+        viewonly=True
     )
 
     def __repr__(self):
