@@ -148,9 +148,11 @@ async def edit_user_settings(
     ## Edit current user settings.
     FormData:
     - **profile_image** - bytes, optional
-    - **language** - string, optional, only available from ["pl-PL", "en-US", "de-DE", "fr-FR", "es-ES"]
+    - **language** - string, optional, only available from ["pl-PL", "en-US", "de-DE", "fr-FR", "es-ES"],
+    base language of user used for transcription and frontend graphics
     - **auto_translate** - bool, optional
-    - **translation_language** - string, optional, only available from ["pl-PL", "en-US", "de-DE", "fr-FR", "es-ES"]
+    - **translation_language** - string, optional, only available from ["pl-PL", "en-US", "de-DE", "fr-FR", "es-ES"],
+    language that user want transcriptions to be translated to if auto_translate is set to true
 
     User authentication required.
     """
@@ -160,7 +162,7 @@ async def edit_user_settings(
     user_settings = user_to_edit.settings
 
     if profile_image:
-        filename = f"{user_to_edit.email}" + profile_image.filename[-4:]
+        filename = f"{user_to_edit.email}." + profile_image.filename.split('.')[-1]
         with open(app_settings.profile_images_path + filename, "wb") as my_file:
             content = await profile_image.read()
             my_file.write(content)
