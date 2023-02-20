@@ -4,7 +4,7 @@ import useLocalStorage from "./useLocalStorage";
 
 
 const useFetch = (): UseFetch => {
-    const { login, register, channels, usersData, recording, userData, directMessages } = serverEndpoints;
+    const { login, register, channels, usersData, recording, userData, directMessages, settings } = serverEndpoints;
     const { getLocalStorage } = useLocalStorage();
     const { access_token } = getLocalStorage() || {};
 
@@ -77,6 +77,16 @@ const useFetch = (): UseFetch => {
         const additionalPath = userData;
         const options = { 
             method: 'GET',
+            headers: { Authorization: `Bearer ${access_token}` } 
+        };
+        return _fetch({additionalPath, options});
+    }
+
+    const editUserSettings = (userData: FormData) => {
+        const additionalPath = settings;
+        const options = { 
+            method: 'PUT',
+            body: userData,
             headers: { Authorization: `Bearer ${access_token}` } 
         };
         return _fetch({additionalPath, options});
@@ -176,7 +186,7 @@ const useFetch = (): UseFetch => {
     }
 
 
-    return { signIn, signUp, getDataOfAllUserChannels, getAllUsersData, getChannelData, getTranscriptionFile, getRecording, sendRecord, getUserAvatar, getUserData, createChannel, editChannelUsers, leaveChannel, getAllChannelsData, getDirectChannelInfo };
+    return { signIn, signUp, getDataOfAllUserChannels, getAllUsersData, getChannelData, getTranscriptionFile, getRecording, sendRecord, getUserAvatar, getUserData, createChannel, editChannelUsers, leaveChannel, getAllChannelsData, getDirectChannelInfo, editUserSettings };
 }
 
 export default useFetch;

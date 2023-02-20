@@ -1,27 +1,58 @@
 import React from "react";
-
+import { useNavigate } from "react-router-dom";
 import { Box, IconButton, Typography, Menu, Avatar, Tooltip, MenuItem } from "@mui/material";
-import { useAppSelector } from "hooks";
 
-const settings = ["Settings", "Logout"];
+import { setUserSettingsCotent } from 'reducers/CurrentContentReducer'
+import { useAppSelector, useFetch, useLocalStorage, useAppDispatch } from "hooks";
+import { path } from 'helpers/configs';
 
 const Settings = (): JSX.Element => {
   const [settingsOpen, isSettingsOpen] = React.useState<null | HTMLElement>(null);
   const { userData } = useAppSelector((state) => state.userData);
+  const [userImage, setUserImage] = React.useState<any>(null);
+  const { clearLocalStorage } = useLocalStorage();
+  const { getUserAvatar } = useFetch();
+  const navigate = useNavigate();
+  const dispatch = useAppDispatch();
+  const { signIn } = path;
+  
+  const { name, settings: { imageUrl } } = userData || { name: '' , settings: { imageUrl: null } };
 
-  const handleOpenUserMenu = (event: React.MouseEvent<HTMLElement>) => {
+  React.useEffect(() => {
+    if(!imageUrl) return;
+    const imageFilename = imageUrl?.split('/').pop();
+
+    getUserAvatar(imageFilename).then( resp => {
+        const img = URL.createObjectURL(resp as Blob);
+        setUserImage(img)
+    })
+  },[userData])
+
+  
+  const handleOpenUserMenu = (event: React.MouseEvent<HTMLElement>): void => {
     isSettingsOpen(event.currentTarget);
   };
 
-  const handleCloseUserMenu = () => {
+  const handleCloseUserMenu = (): void => {
     isSettingsOpen(null);
   };
+
+  const handleLogout = (): void => {
+    clearLocalStorage()
+    navigate(signIn);
+    handleCloseUserMenu()
+  }
+
+  const handleUserSettingsDisplay = () => {
+    handleCloseUserMenu();
+    dispatch(setUserSettingsCotent(true))
+  }
 
   return (
     <Box sx={{ flexGrow: 0 }}>
       <Tooltip title="Open settings">
         <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-          <Avatar alt="K" src="/static/images/avatar/2.jpg" />
+          <Avatar alt={name} src={userImage} sx={{ width: 56, height: 56, backgroundColor: 'rgba(255, 255, 255, 0.4)' }}/>
         </IconButton>
       </Tooltip>
       <Menu
@@ -40,13 +71,15 @@ const Settings = (): JSX.Element => {
         open={Boolean(settingsOpen)}
         onClose={handleCloseUserMenu}
       >
-        {settings.map((setting) => (
-          <MenuItem key={setting} onClick={handleCloseUserMenu}>
-            <Typography textAlign="center">{setting}</Typography>
+          <MenuItem onClick={handleUserSettingsDisplay}>
+            <Typography textAlign="center">Settings</Typography>
           </MenuItem>
-        ))}
+          <MenuItem onClick={handleLogout}>
+            <Typography textAlign="center">Logout</Typography>
+          </MenuItem>
       </Menu>
     </Box>
   );
 };
+
 export default Settings;

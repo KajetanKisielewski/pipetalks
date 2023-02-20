@@ -13,11 +13,14 @@ import Settings from './Settings/Settings';
 import BrowseChannels from './BrowseChannels/BrowseChannels';
 import DirectMessage from './DirectMessage/DirectMessage';
 
+import UserSettings from './UserSettings/UserSettings';
+
 
 const Dashboard = (): JSX.Element => {
   const dispatch = useAppDispatch();
   const { getUserData, getAllUsersData, getAllChannelsData  } = useFetch();
   const { currentlyCreatedChannel } = useAppSelector((state) => state.channelsList)
+  const { userSettingsContentDisplay } = useAppSelector((state) => state.currentContent)
 
   React.useEffect(() => {
     getUserData().then(resp => dispatch(setUserData(resp)))
@@ -59,7 +62,7 @@ const getDataOfAllChannels = async (): Promise<void> => {
           >
             Pipetalks
           </Typography>
-          {/* <Settings /> */}
+          <Settings />
         </Toolbar>
 
         <Box component='div' sx={{ display: 'flex' }}>
@@ -78,9 +81,10 @@ const getDataOfAllChannels = async (): Promise<void> => {
               overflow: 'auto',
             }}
           >
-            <CurrentChannelContent />
-            <BrowseChannels />
-            <DirectMessage />
+            {!userSettingsContentDisplay && <CurrentChannelContent /> }
+            {!userSettingsContentDisplay && <BrowseChannels /> }
+            {!userSettingsContentDisplay && <DirectMessage /> }
+            {userSettingsContentDisplay && <UserSettings />}
           </Box>
 
         </Box>

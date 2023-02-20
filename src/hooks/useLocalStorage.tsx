@@ -5,7 +5,9 @@ const useLocalStorage = (): UseLocalStorage => {
   const getLocalStorage = (): SignInResponse =>
     JSON.parse(window.localStorage.getItem('signInResponse') as string);
 
-  return { getLocalStorage, setLocalStorage };
+  const clearLocalStorage = ():void => window.localStorage.clear();  
+
+  return { getLocalStorage, setLocalStorage, clearLocalStorage };
 };
 
 export default useLocalStorage;

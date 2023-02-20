@@ -33,6 +33,7 @@ interface UseFetch {
     editChannelUsers: (channelName: string, usersEmails?: any) => Promise<unknown>;
     leaveChannel: (channelName: string) => Promise<unknow>;
     getDirectChannelInfo: (userEmail: string) => Promise<unknown>;
+    editUserSettings: (userData: any) => Promise<unknown>
 }
 
 interface SignInAndUpResponse {
@@ -127,6 +128,7 @@ interface SignInResponse {
 interface UseLocalStorage {
     getLocalStorage: () => SignInResponse;
     setLocalStorage: (signInResponse: SignInResponse) => void;
+    clearLocalStorage: () => void;
 }
 
 

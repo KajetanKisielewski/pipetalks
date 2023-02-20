@@ -5,6 +5,7 @@ const initState: CurrentChannelContentInitState = {
   isRecording: false,
   browseChannelsContent: null,
   directMessageContent: null,
+  userSettingsContentDisplay: false,
 };
 
 const slice = createSlice({
@@ -15,6 +16,7 @@ const slice = createSlice({
       state.browseChannelsContent = null;
       state.directMessageContent = null;
       state.currentChannelContent = action.payload;
+      state.userSettingsContentDisplay = false;
     },
     setIsRecording: (state, action) => {
       state.isRecording = action.payload
@@ -23,15 +25,23 @@ const slice = createSlice({
       state.currentChannelContent = null;
       state.directMessageContent = null;
       state.browseChannelsContent = action.payload;
+      state.userSettingsContentDisplay = false;
     },
     setDirectmessageContent: (state, action) => {
       state.currentChannelContent = null;
       state.browseChannelsContent = null;
       state.directMessageContent = action.payload;
+      state.userSettingsContentDisplay = false;
     },
+    setUserSettingsCotent: (state, action) => {
+      state.currentChannelContent = null;
+      state.browseChannelsContent = null;
+      state.directMessageContent = null;
+      state.userSettingsContentDisplay = action.payload;
+    }
   },
 });
 
-export const { setCurrentChannelContent, setIsRecording, setBrowseChannelsContent, setDirectmessageContent } = slice.actions;
+export const { setCurrentChannelContent, setIsRecording, setBrowseChannelsContent, setDirectmessageContent, setUserSettingsCotent } = slice.actions;
 
 export default slice.reducer;

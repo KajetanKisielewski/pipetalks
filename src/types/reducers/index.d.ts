@@ -96,6 +96,7 @@ interface CurrentChannelContentInitState {
     isRecording: boolean;
     browseChannelsContent: ChannelsListData[];
     directMessageContent: DirectMessageListData;
+    userSettingsContentDisplay: boolean;
 }
 
 // UserDataReducer

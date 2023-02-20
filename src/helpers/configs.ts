@@ -6,7 +6,8 @@ export const serverEndpoints = {
     usersData: 'users',
     recording: 'recordings',
     userData: 'me',
-    directMessages: 'direct-channels'
+    directMessages: 'direct-channels',
+    settings: 'me/settings'
 };
 
 export const path = {

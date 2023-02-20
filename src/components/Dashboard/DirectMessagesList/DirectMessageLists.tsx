@@ -31,6 +31,8 @@ const DirectMessagesList = (): JSX.Element => {
       dispatch(toggleCreateDirectMessageModal(true));
     };
 
+    if(usersData?.length === 1) return; 
+
     return (
         <List>
     
