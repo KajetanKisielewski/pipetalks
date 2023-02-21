@@ -13,7 +13,7 @@ import Settings from './Settings/Settings';
 import BrowseChannels from './BrowseChannels/BrowseChannels';
 import DirectMessage from './DirectMessage/DirectMessage';
 import UserSettings from './UserSettings/UserSettings';
-
+import { io } from "socket.io-client";
 
 const Dashboard = (): JSX.Element => {
   const dispatch = useAppDispatch();
@@ -27,11 +27,23 @@ const Dashboard = (): JSX.Element => {
   //   auth: { token: access_token }
   // });
 
-  const socket = socketio("http://localhost:8000", {
+
+  const socket = io("ws://localhost:3000", {
+    path: "/sockets/",
+//     transports: ["websocket", "polling"],
     extraHeaders: {
       Authentication: access_token
     }
   });
+
+
+//   const socket = socketio("http://localhost:8000", {
+//     path: "/socket.io/",
+//     transports: ["websocket", "polling"],
+//     extraHeaders: {
+//       Authentication: access_token
+//     }
+//   });
 
   React.useEffect(() => {
     getUserData().then(resp => dispatch(setUserData(resp)))

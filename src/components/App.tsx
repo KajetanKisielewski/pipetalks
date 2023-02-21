@@ -10,7 +10,7 @@ import SignUp from './SignUp/SignUp'
 
 import { path } from "helpers/configs";
 
-import './app.css';
+import './App.css';
 
 const App = (): JSX.Element => {
   const { homePage, dashboard, signUp } = path;
