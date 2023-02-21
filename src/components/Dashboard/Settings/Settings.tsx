@@ -14,7 +14,7 @@ const Settings = (): JSX.Element => {
   const { getUserAvatar } = useFetch();
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
-  const { signIn } = path;
+  const { homePage } = path;
   
   const { name, settings: { imageUrl } } = userData || { name: '' , settings: { imageUrl: null } };
 
@@ -39,7 +39,7 @@ const Settings = (): JSX.Element => {
 
   const handleLogout = (): void => {
     clearLocalStorage()
-    navigate(signIn);
+    navigate(homePage);
     handleCloseUserMenu()
   }
 
@@ -52,7 +52,7 @@ const Settings = (): JSX.Element => {
     <Box sx={{ flexGrow: 0 }}>
       <Tooltip title="Open settings">
         <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-          <Avatar alt={name} src={userImage} sx={{ width: 56, height: 56, backgroundColor: 'rgba(255, 255, 255, 0.4)' }}/>
+          <Avatar alt={name} src={userImage} sx={{ width: 46, height: 46, backgroundColor: 'rgba(255, 255, 255, 0.4)' }}/>
         </IconButton>
       </Tooltip>
       <Menu

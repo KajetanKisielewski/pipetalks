@@ -13,7 +13,7 @@ const SignIn = (): JSX.Element => {
   const navigate = useNavigate();
   const { signIn } = useFetch();
   const { setLocalStorage } = useLocalStorage();
-  const { homePage, signUp } = path;
+  const { dashboard, signUp } = path;
 
   
   const handleSubmit = async (e: any): Promise<void> => {
@@ -32,7 +32,7 @@ const SignIn = (): JSX.Element => {
 
     if(signedInUserData) {
         setLocalStorage(signedInUserData);
-        navigate(homePage);
+        navigate(dashboard);
     }
 }
 

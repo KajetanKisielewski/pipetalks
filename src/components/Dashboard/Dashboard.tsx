@@ -1,9 +1,9 @@
 import React from 'react';
-
+import socketio from "socket.io-client";
 import {Box, CssBaseline, Toolbar, List, Typography, Divider } from '@mui/material';
 
 import { setUserData, setUsersData } from 'reducers/UserDataReducer'
-import { useFetch, useAppDispatch, useAppSelector } from 'hooks'
+import { useFetch, useAppDispatch, useAppSelector, useLocalStorage } from 'hooks'
 import { setAllChannelsListData } from 'reducers/ChannelsListReducer'
 
 import ChannelsList from './ChannelsList/ChannelsList';
@@ -12,7 +12,6 @@ import CurrentChannelContent from './CurrentChannelContent/CurrentChannelContent
 import Settings from './Settings/Settings';
 import BrowseChannels from './BrowseChannels/BrowseChannels';
 import DirectMessage from './DirectMessage/DirectMessage';
-
 import UserSettings from './UserSettings/UserSettings';
 
 
@@ -21,6 +20,18 @@ const Dashboard = (): JSX.Element => {
   const { getUserData, getAllUsersData, getAllChannelsData  } = useFetch();
   const { currentlyCreatedChannel } = useAppSelector((state) => state.channelsList)
   const { userSettingsContentDisplay } = useAppSelector((state) => state.currentContent)
+  const { getLocalStorage } = useLocalStorage();
+  const { access_token } = getLocalStorage();
+
+  // const socket = socketio("http://localhost:8000/socket.io", {
+  //   auth: { token: access_token }
+  // });
+
+  const socket = socketio("http://localhost:8000", {
+    extraHeaders: {
+      Authentication: access_token
+    }
+  });
 
   React.useEffect(() => {
     getUserData().then(resp => dispatch(setUserData(resp)))

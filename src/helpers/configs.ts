@@ -12,6 +12,6 @@ export const serverEndpoints = {
 
 export const path = {
     homePage: '/',
-    signIn: '/sign-in',
+    dashboard: '/dashboard',
     signUp: '/sign-up',
 };

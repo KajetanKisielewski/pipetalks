@@ -13,13 +13,13 @@ import { path } from "helpers/configs";
 import './app.css';
 
 const App = (): JSX.Element => {
-  const { homePage, signIn, signUp } = path;
+  const { homePage, dashboard, signUp } = path;
 
   return (
     <Router>
       <Routes>
-        <Route path={homePage} element={<Dashboard />} />
-        <Route path={signIn} element={<SignIn />} />
+        <Route path={homePage} element={<SignIn />} />
+        <Route path={dashboard} element={<Dashboard />} />
         <Route path={signUp} element={<SignUp />} />
       </Routes>
     </Router>

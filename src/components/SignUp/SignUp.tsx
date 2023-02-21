@@ -12,7 +12,7 @@ import { path } from 'helpers/configs';
 const SignUp = (): JSX.Element => {
     const navigate = useNavigate();
     const { signUp } = useFetch();
-    const { signIn } = path;
+    const { homePage } = path;
 
     const handleSubmit = async (e:any): Promise<void> => {
         e.preventDefault();
@@ -30,7 +30,7 @@ const SignUp = (): JSX.Element => {
         const signedUpUserData = await signUp(userData);
 
 
-        signedUpUserData && navigate(signIn);
+        signedUpUserData && navigate(homePage);
     }
 
     return (
@@ -90,7 +90,7 @@ const SignUp = (): JSX.Element => {
               </Button>
               <Grid container justifyContent="flex-end">
                 <Grid item>
-                  <Link onClick={() => navigate(signIn)} variant="body2">
+                  <Link onClick={() => navigate(homePage)} variant="body2">
                     {"Already have an account? Sign in"}
                   </Link>
                 </Grid>
