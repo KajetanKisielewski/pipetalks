@@ -12,6 +12,7 @@ from schemas import direct_channels_schemas, user_schemas
 from auth.jwt_helper import check_if_active_user
 from settings import get_settings
 from exceptions.exceptions import UserNotFound
+from socket_events.socket_events import sio, users_sid
 
 app_settings = get_settings()
 router = APIRouter(prefix=f"{app_settings.root_path}", tags=["Direct Channels"])
@@ -78,6 +79,13 @@ async def get_direct_channel_info(
         request = direct_channels_schemas.DirectChannelCreate(user_email=user_email)
         direct_channel = await create_direct_channel(request, current_user, db)
         response.status_code = status.HTTP_201_CREATED
+
+        sids1 = users_sid.get(current_user.email)
+        sids2 = users_sid.get(second_user.email)
+        sids = (sids1 if sids1 else []) + (sids2 if sids2 else [])
+        for sid in sids:
+            sio.enter_room(sid, direct_channel.id)
+
     return direct_channel
 
 

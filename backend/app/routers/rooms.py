@@ -12,6 +12,7 @@ from schemas import room_schemas, user_schemas
 from auth.jwt_helper import check_if_active_user, check_if_superuser
 from settings import get_settings
 from exceptions.exceptions import RoomNotFound, WrongRoomName, UserNotFound
+from socket_events.socket_events import sio, users_sid
 
 app_settings = get_settings()
 router = APIRouter(prefix=f"{app_settings.root_path}", tags=["Rooms"])
@@ -106,6 +107,8 @@ async def create_room(
         db.add(room)
         db.commit()
         db.refresh(room)
+        if users_sid.get(user.email):
+            [sio.enter_room(i, room.name) for i in users_sid.get(user.email)]
     except IntegrityError:
         raise WrongRoomName(request.name)
     if not os.path.exists(f"{app_settings.rooms_path}{request.name}/"):
@@ -194,6 +197,13 @@ async def edit_room_users(
         raise RoomNotFound(room_name)
     db.commit()
     db.refresh(room_to_edit)
+
+    for email in request.user_emails:
+        if users_sid.get(email):
+            [sio.enter_room(i, room_to_edit.name) for i in users_sid.get(email)]
+    if users_sid.get(user.email):
+        [sio.enter_room(i, room_to_edit.name) for i in users_sid.get(user.email)]
+
     return {"info": f"Room '{room_name}' edited."}
 
 
@@ -221,4 +231,8 @@ async def leave_room(
     room_to_edit.users.remove(user)
     db.commit()
     db.refresh(room_to_edit)
+
+    if users_sid.get(user.email):
+        [sio.leave_room(i, room_to_edit.name) for i in users_sid.get(user.email)]
+
     return {"info": f"Successfully left room '{room_name}'"}

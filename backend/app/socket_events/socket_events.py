@@ -14,6 +14,8 @@ socket_app = socketio.ASGIApp(
     socketio_path="/sockets/"
 )
 
+users_sid = {}
+
 
 @sio.event
 async def connect(sid, environ):
@@ -27,6 +29,9 @@ async def connect(sid, environ):
         return False
     try:
         user = get_current_user(token, db_session)
+        if not users_sid.get(user.email):
+            users_sid[user.email] = []
+        users_sid[user.email].append(sid)
         for room in user.rooms:
             sio.enter_room(sid, room=room.name)
             print(f"'RoomEvent: user has joined the room '{room.name}'\n'")
@@ -38,11 +43,15 @@ async def connect(sid, environ):
         print(e)
     finally:
         db_session.close()
-    return False if not user else print(sid, 'connected')
+    return False if not user else print(sid, 'connected', users_sid)
 
 
 @sio.event
 async def disconnect(sid):
+    global users_sid
+    for k, v in users_sid.items():
+        if sid in users_sid[k]:
+            v.remove(sid)
     print(sid, 'disconnected')
 
 
