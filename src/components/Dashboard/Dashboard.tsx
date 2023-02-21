@@ -28,7 +28,7 @@ const Dashboard = (): JSX.Element => {
   // });
 
 
-  const socket = io("ws://localhost:3000", {
+  const socket = io("http://localhost:8000", {
     path: "/sockets/",
 //     transports: ["websocket", "polling"],
     extraHeaders: {

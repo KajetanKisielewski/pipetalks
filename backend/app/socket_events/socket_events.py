@@ -7,6 +7,7 @@ from models.direct_channel import DirectChannel
 
 sio = socketio.AsyncServer(
     async_mode="asgi",
+    cors_allowed_origins=[]
 )
 socket_app = socketio.ASGIApp(
     socketio_server=sio,
