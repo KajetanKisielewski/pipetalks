@@ -19,9 +19,12 @@ from auth.jwt_helper import check_if_active_user
 from settings import get_settings
 from exceptions.exceptions import RecordingNotFound, RoomNotFound, DirectChannelNotFound
 from celery_worker.tasks import transcript
+from pika_client.pika_client import get_pika_client
 
 app_settings = get_settings()
 router = APIRouter(prefix=f"{app_settings.root_path}", tags=["Recordings"])
+
+rabbit_client = get_pika_client()
 
 
 @router.post(
@@ -33,7 +36,6 @@ async def upload_recorded_audio_bytes(
         browser: str = Form(),
         room_name: str | None = Form(None),
         direct_channel_id: int | None = Form(None),
-        sid: str = Form(),
         current_user: user_schemas.User = Depends(check_if_active_user),
         db: Session = Depends(get_db)
 ):
@@ -46,6 +48,7 @@ async def upload_recorded_audio_bytes(
     - **direct_channel_id** - integer, not required if room_name is provided
     - **sid** - string, socket id of logged user, required to send socket emit to client when transcription is ready
 
+    Publishes rabbitmq messages to appropriate queues for users that belong to specified room or direct channel.
     User authentication required.
     """
     if (room_name and direct_channel_id) or (not room_name and not direct_channel_id):
@@ -56,11 +59,15 @@ async def upload_recorded_audio_bytes(
         if not room or current_user not in room.users:
             raise RoomNotFound(room_name)
         number = len(room.recordings)
+        users = room.users
+        channel = room_name
     else:
         direct_channel = DirectChannel.get_direct_channel_by_id_for_user(db, current_user, direct_channel_id)
         if not direct_channel:
             raise DirectChannelNotFound()
         number = len(direct_channel.recordings)
+        users = direct_channel.users
+        channel = direct_channel_id
 
     new_filename, location, duration = convert_and_save_file(browser, file, room_name, direct_channel_id, number)
 
@@ -76,7 +83,17 @@ async def upload_recorded_audio_bytes(
     db.commit()
     db.refresh(new_recording)
 
-    transcript.delay(recording_name=new_filename, user_email=current_user.email, sid=sid)
+    transcript.delay(recording_name=new_filename, user_email=current_user.email)
+    if not rabbit_client.connection or rabbit_client.connection.is_closed:
+        rabbit_client.setup()
+    for user in users:
+        if user.email != current_user.email:
+            rabbit_client.publish_msg(
+                {
+                    "receiver": user.email,
+                    "room": channel
+                }
+            )
     return {"info": f"file saved at '{location}'"}
 
 
@@ -88,7 +105,6 @@ async def upload_new_recording_file(
         file: UploadFile,
         room_name: str | None = Form(None),
         direct_channel_id: int | None = Form(None),
-        sid: str = Form(),
         db: Session = Depends(get_db),
         current_user: user_schemas.User = Depends(check_if_active_user),
 ):
@@ -100,6 +116,7 @@ async def upload_new_recording_file(
     - **direct_channel_id** - integer, not required if room_name is provided
     - **sid** - string, socket id of logged user, required to send socket emit to client when transcription is ready
 
+    Publishes rabbitmq messages to appropriate queues for users that belong to specified room or direct channel.
     User authentication required.
     """
     if (room_name and direct_channel_id) or (not room_name and not direct_channel_id):
@@ -112,6 +129,8 @@ async def upload_new_recording_file(
         number = len(room.recordings)
         filename = f"{datetime.now().strftime('%d-%m-%Y')}-{room_name}-{str(number + 1)}" + file.filename[-4:]
         filepath = f"{app_settings.rooms_path}{room_name}/{app_settings.recordings_path}"
+        users = room.users
+        channel = room_name
     else:
         direct_channel = DirectChannel.get_direct_channel_by_id_for_user(db, current_user, direct_channel_id)
         if not direct_channel:
@@ -119,6 +138,8 @@ async def upload_new_recording_file(
         number = len(direct_channel.recordings)
         filename = f"{datetime.now().strftime('%d-%m-%Y')}-{direct_channel_id}-{str(number + 1)}" + file.filename[-4:]
         filepath = f"{app_settings.direct_channels_path}{direct_channel_id}/{app_settings.recordings_path}"
+        users = direct_channel.users
+        channel = direct_channel_id
 
     temp_dir = "data/temp/"
 
@@ -146,7 +167,17 @@ async def upload_new_recording_file(
     db.commit()
     db.refresh(new_recording)
 
-    transcript.delay(recording_name=filename, user_email=current_user.email, sid=sid)
+    transcript.delay(recording_name=filename, user_email=current_user.email)
+    if not rabbit_client.connection or rabbit_client.connection.is_closed:
+        rabbit_client.setup()
+    for user in users:
+        if user.email != current_user.email:
+            rabbit_client.publish_msg(
+                {
+                    "receiver": user.email,
+                    "room": channel
+                }
+            )
     return {"info": f"File saved as '{filename}'"}
 
 

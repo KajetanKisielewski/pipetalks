@@ -13,9 +13,12 @@ from auth.jwt_helper import check_if_active_user, check_if_superuser
 from settings import get_settings
 from exceptions.exceptions import RoomNotFound, WrongRoomName, UserNotFound
 from socket_events.socket_events import sio, users_sid
+from pika_client.pika_client import get_pika_client
 
 app_settings = get_settings()
 router = APIRouter(prefix=f"{app_settings.root_path}", tags=["Rooms"])
+
+rabbit_client = get_pika_client()
 
 
 @router.get(
@@ -33,11 +36,15 @@ async def get_room_info(
     Path parameters:
     - **room_name** - string
 
+    Clears user's dedicated rabbitmq queue with unread messages count for this room.
     User authentication required.
     """
     room = Room.get_room_by_name_for_user(db, room_name, current_user)
     if not room:
         raise RoomNotFound(room_name)
+    if not rabbit_client.connection or rabbit_client.connection.is_closed:
+        rabbit_client.setup()
+    rabbit_client.clear_queue(user_email=current_user.email, room=room_name)
     return room
 
 
