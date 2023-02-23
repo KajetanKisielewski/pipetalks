@@ -1,4 +1,5 @@
 app/*.json
+app/socket_events/test_client.py
 app/kredor/
 socket_server/kredor/
 socket_server/*.json

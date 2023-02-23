@@ -12,9 +12,13 @@ from schemas import direct_channels_schemas, user_schemas
 from auth.jwt_helper import check_if_active_user
 from settings import get_settings
 from exceptions.exceptions import UserNotFound
+from socket_events.socket_events import sio, users_sid
+from pika_client.pika_client import get_pika_client
 
 app_settings = get_settings()
 router = APIRouter(prefix=f"{app_settings.root_path}", tags=["Direct Channels"])
+
+rabbit_client = get_pika_client()
 
 
 @router.get(
@@ -67,6 +71,8 @@ async def get_direct_channel_info(
     - **user_email** - string - email of second participant of direct channel
 
     Important - if direct channel with chosen user_email doesn't exist yet, it will be automatically created.
+    Also clears user's dedicated rabbitmq queue with unread messages count for this direct channel.
+
 
     User authentication required.
     """
@@ -78,6 +84,16 @@ async def get_direct_channel_info(
         request = direct_channels_schemas.DirectChannelCreate(user_email=user_email)
         direct_channel = await create_direct_channel(request, current_user, db)
         response.status_code = status.HTTP_201_CREATED
+
+        sids1 = users_sid.get(current_user.email)
+        sids2 = users_sid.get(second_user.email)
+        sids = (sids1 if sids1 else []) + (sids2 if sids2 else [])
+        for sid in sids:
+            sio.enter_room(sid, direct_channel.id)
+
+    if not rabbit_client.connection or rabbit_client.connection.is_closed:
+        rabbit_client.setup()
+    rabbit_client.clear_queue(user_email=current_user.email, room=str(direct_channel.id))
     return direct_channel
 
 

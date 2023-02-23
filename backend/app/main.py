@@ -3,7 +3,7 @@ import uvicorn
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from routers import transcriptions, auth, recordings, users, rooms, images, direct_channels
+from routers import transcriptions, auth, recordings, users, rooms, images, direct_channels, utils
 from settings import get_settings
 from socket_events.socket_events import socket_app
 
@@ -27,6 +27,7 @@ app.include_router(rooms.router)
 app.include_router(recordings.router)
 app.include_router(transcriptions.router)
 app.include_router(images.router)
+app.include_router(utils.router)
 
 # CORS middleware
 origins = [
