@@ -1,6 +1,7 @@
 import React from "react";
 import { List, ListItemButton, ListItemIcon, ListItemText, Collapse } from '@mui/material';
 import { ExpandLess, ExpandMore } from '@mui/icons-material';
+import useMediaQuery  from '@mui/material/useMediaQuery';
 
 import { useAppDispatch, useAppSelector, useFetch } from 'hooks';
 import { setChannelsListDisplay, setChannelsListData } from 'reducers/ChannelsListReducer';
@@ -13,6 +14,7 @@ const ChannelsList = (): JSX.Element => {
     const dispatch = useAppDispatch();
     const { getDataOfAllUserChannels } = useFetch();
     const { channelsListDisplay, channelsListData, currentlyCreatedChannel, allChannelsListData } = useAppSelector((state) => state.channelsList);
+    const isMobile = useMediaQuery('(max-width: 600px)');
 
     React.useEffect(() => {
         getDataOfAllUserChannelsData()
@@ -38,14 +40,23 @@ const ChannelsList = (): JSX.Element => {
     }
 
   return (
-    <List>
+    <List >
 
-      <ListItemButton onClick={handleListCollapse}>
-        <ListItemIcon>
-            {channelsListDisplay ? <ExpandLess /> : <ExpandMore />}
-        </ListItemIcon>
-        <ListItemText primary="Channels List" sx={{ marginLeft: '-15px', paddingRight: '15px' }} />
-      </ListItemButton>
+      { isMobile ?
+        <ListItemButton onClick={handleListCollapse} >
+          <ListItemText primary="Channels" />
+          <ListItemIcon sx={{ pl: 2.5 }}>
+            {channelsListDisplay ? <ExpandLess sx={{color: 'rgba(255, 255, 255, 0.7)'}} /> : <ExpandMore sx={{color: 'rgba(255, 255, 255, 0.7)'}} />}
+          </ListItemIcon>
+        </ListItemButton>
+      :
+        <ListItemButton onClick={handleListCollapse}>
+          <ListItemIcon>
+            {channelsListDisplay ? <ExpandLess sx={{color: 'rgba(255, 255, 255, 0.7)'}} /> : <ExpandMore sx={{color: 'rgba(255, 255, 255, 0.7)'}} />}
+          </ListItemIcon>
+          <ListItemText primary="Channels" sx={{ marginLeft: '-15px', paddingRight: '15px' }} />
+        </ListItemButton>
+      }
 
       <Collapse in={channelsListDisplay} timeout="auto" unmountOnExit>
         <List component="div" disablePadding>

@@ -31,8 +31,8 @@ const AddChannel = (): JSX.Element => {
 
   return (
     <div>
-      <ListItemButton onClick={handleOpen}>
-        <ListItemIcon>
+      <ListItemButton onClick={handleOpen} sx={{ pl: 4 }}>
+        <ListItemIcon sx={{ color: 'rgba(255, 255, 255, 0.7)' }}>
           <AddIcon />
         </ListItemIcon>
         <ListItemText

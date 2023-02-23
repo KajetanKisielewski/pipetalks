@@ -97,6 +97,10 @@ interface CurrentChannelContentInitState {
     browseChannelsContent: ChannelsListData[];
     directMessageContent: DirectMessageListData;
     userSettingsContentDisplay: boolean;
+
+
+    isNavView: boolean;
+    isCurrentChannelView: boolean;
 }
 
 // UserDataReducer

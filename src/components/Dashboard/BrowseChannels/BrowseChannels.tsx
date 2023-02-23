@@ -1,10 +1,11 @@
 import React from 'react';
 import { Box, Button, Container, List, ListItem , ListItemButton, ListItemIcon, ListItemText, Typography } from '@mui/material';
 import { Lock as LockIcon, LockOpen as LockOpenIcon } from '@mui/icons-material';
+import { io } from "socket.io-client";
 
 import { toggleCreateChannelModal, setAllChannelsListData } from "reducers/ChannelsListReducer";
 import { setCurrentChannelContent, setBrowseChannelsContent } from 'reducers/CurrentContentReducer';
-import { useAppDispatch, useAppSelector, useFetch } from "hooks";
+import { useAppDispatch, useAppSelector, useFetch, useLocalStorage } from "hooks";
 
 const BrowseChannels = (): JSX.Element => {
     const dispatch = useAppDispatch();
@@ -12,6 +13,15 @@ const BrowseChannels = (): JSX.Element => {
     const { browseChannelsContent } = useAppSelector((state) => state.currentContent);
     const { allChannelsListData } = useAppSelector((state) => state.channelsList)
     const { userData } = useAppSelector((state) => state.userData);
+    const { getLocalStorage } = useLocalStorage();
+    const { access_token } = getLocalStorage();
+
+    // const socket = io("ws://localhost:8000", {
+    //     path: "/sockets/",
+    //     extraHeaders: {
+    //         Authentication: access_token
+    //     }
+    // });
 
     React.useEffect(() => {
         dispatch( setBrowseChannelsContent(allChannelsListData) )
@@ -25,11 +35,13 @@ const BrowseChannels = (): JSX.Element => {
         const usersEmails: { userEmails: string[] } = { userEmails: [] } ;
         editChannelUsers(channelName, usersEmails);
         getDataOfAllChannels()
+        // socket.emit('join', channelName);
     }
 
     const handleLeaveChannel = async (channelName: string): Promise<void> => {
         leaveChannel(channelName)
         getDataOfAllChannels()
+        // socket.emit('leave', channelName);
     }
 
     const handleChannelContentDisplay = (channelName: string): void => {

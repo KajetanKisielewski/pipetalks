@@ -52,7 +52,7 @@ const Settings = (): JSX.Element => {
     <Box sx={{ flexGrow: 0 }}>
       <Tooltip title="Open settings">
         <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-          <Avatar alt={name} src={userImage} sx={{ width: 46, height: 46, backgroundColor: 'rgba(255, 255, 255, 0.4)' }}/>
+          <Avatar alt={name} src={userImage} sx={{ width: 36, height: 36, backgroundColor: 'rgba(255, 255, 255, 0.3)' }}/>
         </IconButton>
       </Tooltip>
       <Menu

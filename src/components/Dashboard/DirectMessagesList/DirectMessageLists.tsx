@@ -1,6 +1,7 @@
 import React from 'react';
 import { List, ListItemButton, ListItemIcon, ListItemText, Collapse } from "@mui/material";
 import { ExpandLess, ExpandMore, Add as AddIcon } from "@mui/icons-material";
+import useMediaQuery  from '@mui/material/useMediaQuery';
 
 import { useAppDispatch, useAppSelector } from "hooks";
 import { setDirectMessagesListDisplay, toggleCreateDirectMessageModal } from 'reducers/DirectMessagesListReducer';
@@ -12,6 +13,7 @@ const DirectMessagesList = (): JSX.Element => {
     const dispatch = useAppDispatch();
     const { directMessagesListDisplay, directMessagesListData } = useAppSelector((state) => state.directMessages);
     const { usersData } = useAppSelector((state) => state.userData);
+    const isMobile = useMediaQuery('(max-width: 600px)');
 
     const handleListCollapse = (): void => {
         dispatch(setDirectMessagesListDisplay(!directMessagesListDisplay) )
@@ -36,20 +38,29 @@ const DirectMessagesList = (): JSX.Element => {
     return (
         <List>
     
-          <ListItemButton onClick={handleListCollapse}>
-            <ListItemIcon>
-                {directMessagesListDisplay ? <ExpandLess /> : <ExpandMore />}
-            </ListItemIcon>
-            <ListItemText primary="Direct Messages" sx={{ marginLeft: '-15px', paddingRight: '15px' }} />
-          </ListItemButton>
+          { isMobile ? 
+            <ListItemButton onClick={handleListCollapse} >
+              <ListItemText primary="Direct Messages" />
+              <ListItemIcon sx={{ pl: 2.5 }} >
+                {directMessagesListDisplay ? <ExpandLess sx={{color: 'rgba(255, 255, 255, 0.7)'}} /> : <ExpandMore sx={{color: 'rgba(255, 255, 255, 0.7)'}} />}
+              </ListItemIcon>
+            </ListItemButton>
+          :
+            <ListItemButton onClick={handleListCollapse}>
+              <ListItemIcon>
+                {directMessagesListDisplay ? <ExpandLess sx={{color: 'rgba(255, 255, 255, 0.7)'}} /> : <ExpandMore sx={{color: 'rgba(255, 255, 255, 0.7)'}} />}
+              </ListItemIcon>
+              <ListItemText primary="Direct Messages" sx={{ marginLeft: '-15px', paddingRight: '15px' }} />
+            </ListItemButton>
+          }
     
           <Collapse in={directMessagesListDisplay} timeout="auto" unmountOnExit>
             <List component="div" disablePadding>
                 {renderDirectMessages()}
             </List>
 
-            <ListItemButton onClick={handleOpenDirectMessagesModal}>
-              <ListItemIcon>
+            <ListItemButton onClick={handleOpenDirectMessagesModal} sx={{ pl: 4 }} >
+              <ListItemIcon sx={{ color: 'rgba(255, 255, 255, 0.7)' }}>
                 <AddIcon />
               </ListItemIcon>
               <ListItemText

@@ -1,7 +1,9 @@
 import React from 'react';
 import { Container, Box, Typography, Button } from '@mui/material';
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import useMediaQuery  from '@mui/material/useMediaQuery';
 
-import { setIsRecording } from 'reducers/CurrentContentReducer';
+import { setIsRecording, setCurrentChannelView, setNavView } from 'reducers/CurrentContentReducer';
 import { useAppSelector, useMediaRecorder, useAppDispatch, useFetch } from 'hooks';
 import { setBrowseChannelsContent } from 'reducers/CurrentContentReducer';
 import CurrentChannelContentThread from '../CurrentChannelContentThread/CurrentChannelContentThread'
@@ -12,6 +14,7 @@ const CurrentChannelContent = (): JSX.Element => {
     const { allChannelsListData } = useAppSelector((state) => state.channelsList);
     const { startRecordingAudio, stopRecordingAudio, clearMediaRecorderState } = useMediaRecorder();
     const dispatch = useAppDispatch();
+    const isMobile = useMediaQuery('(max-width: 600px)');
 
     const { editChannelUsers } = useFetch();
     
@@ -74,11 +77,18 @@ const CurrentChannelContent = (): JSX.Element => {
         })
     }
 
-    return(
-        <Container component="main" sx={{ maxWidth: '1920px !important', height: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', marginLeft: '0', marginRight: '0' }}>
-            <Box sx={{ textAlign: 'center' }} >
+    const handleBackToPrevSection = () => {
+        dispatch(setNavView(true))
+        dispatch(setCurrentChannelView(false))
+    }
 
-                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '5px', borderBottom: '2px solid #01579b' }}>
+    return(
+        <Container component="main" sx={{ position: 'relative', maxWidth: '1920px !important', height: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', marginLeft: '0', marginRight: '0' }}>
+                      
+            <Box sx={{ textAlign: 'center' }} >
+            <ArrowBackIcon onClick={handleBackToPrevSection} sx={{ display: isMobile ? 'block' : 'none', position: 'absolute' as 'absolute', top: 10, left: 10 }} />
+
+                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '5px', mt: isMobile ? 8 : 0, borderBottom: '2px solid #01579b' }}>
                     <Typography component="h2" variant="body1">
                         {name}
                     </Typography>

@@ -1,11 +1,12 @@
 import React from "react";
 import { ListItemButton, ListItemIcon, Avatar, ListItemText } from "@mui/material";
 
-import { useFetch, useAppSelector, useAppDispatch } from "hooks";
+import { useFetch, useAppSelector, useAppDispatch, useLocalStorage } from "hooks";
 import { setDirectMessagesListData } from "reducers/DirectMessagesListReducer";
 
+
 const UserItem = ( { user, isDM }: UserItemProps ): JSX.Element => {
-    const { name, email} = user;
+    const { name, email } = user;
     const { editChannelUsers, getDirectChannelInfo } = useFetch();
     const dispatch = useAppDispatch()
     const { currentlyCreatedChannel } = useAppSelector((state) => state.channelsList);
