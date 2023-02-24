@@ -6,8 +6,10 @@ from fastapi.middleware.cors import CORSMiddleware
 from routers import transcriptions, auth, recordings, users, rooms, images, direct_channels, utils
 from settings import get_settings
 from socket_events.socket_events import socket_app
+from redis_client.redis_sid import get_redis_sid_client
 
 app_settings = get_settings()
+redis_sid = get_redis_sid_client()
 
 
 # Settings
@@ -43,6 +45,9 @@ app.add_middleware(
 
 # Socket.io
 app.mount("/", socket_app)
+
+# Clear socket ids from redis
+redis_sid.clear_db()
 
 # Create directories
 data_dir = "data/"

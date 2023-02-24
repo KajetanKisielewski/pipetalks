@@ -46,7 +46,6 @@ async def upload_recorded_audio_bytes(
     - **browser** - string, name of used web browser
     - **room_name** - string, not required if direct_channel_id is provided
     - **direct_channel_id** - integer, not required if room_name is provided
-    - **sid** - string, socket id of logged user, required to send socket emit to client when transcription is ready
 
     Publishes rabbitmq messages to appropriate queues for users that belong to specified room or direct channel.
     User authentication required.
@@ -114,7 +113,6 @@ async def upload_new_recording_file(
     - **file** - bytes, .wav, .mp4, .mp3 or .m4a format
     - **room_name** - string, not required if direct_channel_id is provided
     - **direct_channel_id** - integer, not required if room_name is provided
-    - **sid** - string, socket id of logged user, required to send socket emit to client when transcription is ready
 
     Publishes rabbitmq messages to appropriate queues for users that belong to specified room or direct channel.
     User authentication required.

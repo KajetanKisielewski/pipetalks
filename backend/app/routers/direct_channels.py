@@ -12,13 +12,15 @@ from schemas import direct_channels_schemas, user_schemas
 from auth.jwt_helper import check_if_active_user
 from settings import get_settings
 from exceptions.exceptions import UserNotFound
-from socket_events.socket_events import sio, users_sid
+from socket_events.socket_events import sio
 from pika_client.pika_client import get_pika_client
+from redis_client.redis_sid import get_redis_sid_client
 
 app_settings = get_settings()
 router = APIRouter(prefix=f"{app_settings.root_path}", tags=["Direct Channels"])
 
 rabbit_client = get_pika_client()
+redis_sid = get_redis_sid_client()
 
 
 @router.get(
@@ -85,10 +87,9 @@ async def get_direct_channel_info(
         direct_channel = await create_direct_channel(request, current_user, db)
         response.status_code = status.HTTP_201_CREATED
 
-        sids1 = users_sid.get(current_user.email)
-        sids2 = users_sid.get(second_user.email)
-        sids = (sids1 if sids1 else []) + (sids2 if sids2 else [])
+        sids = redis_sid.get_user_sids(current_user.email) + redis_sid.get_user_sids(second_user.email)
         for sid in sids:
+            sid = sid.decode("utf-8")
             sio.enter_room(sid, direct_channel.id)
 
     if not rabbit_client.connection or rabbit_client.connection.is_closed:

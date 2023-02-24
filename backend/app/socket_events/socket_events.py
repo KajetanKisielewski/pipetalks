@@ -3,6 +3,7 @@ import socketio
 from auth.jwt_helper import get_current_user
 from db.database import db_session
 from models.direct_channel import DirectChannel
+from redis_client.redis_sid import get_redis_sid_client
 
 
 sio = socketio.AsyncServer(
@@ -14,7 +15,7 @@ socket_app = socketio.ASGIApp(
     socketio_path="/sockets/"
 )
 
-users_sid = {}
+redis_sid = get_redis_sid_client()
 
 
 @sio.event
@@ -29,9 +30,7 @@ async def connect(sid, environ):
         return False
     try:
         user = get_current_user(token, db_session)
-        if not users_sid.get(user.email):
-            users_sid[user.email] = []
-        users_sid[user.email].append(sid)
+        redis_sid.add_user_sid(user_email=user.email, sid=sid)
         for room in user.rooms:
             sio.enter_room(sid, room=room.name)
             print(f"'RoomEvent: user has joined the room '{room.name}'\n'")
@@ -43,15 +42,16 @@ async def connect(sid, environ):
         print(e)
     finally:
         db_session.close()
-    return False if not user else print(sid, 'connected', users_sid)
+    return False if not user else print(sid, 'connected')
 
 
 @sio.event
 async def disconnect(sid):
-    global users_sid
-    for k, v in users_sid.items():
-        if sid in users_sid[k]:
-            v.remove(sid)
+    for email in redis_sid.get_all_users():
+        redis_sid.remove_user_sid(
+            user_email=email,
+            sid=sid
+        )
     print(sid, 'disconnected')
 
 

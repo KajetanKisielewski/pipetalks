@@ -17,7 +17,7 @@ services:
   app:
     container_name: app
     build: ./app
-    command: bash -c "wait-for-it --service db:5432 --timeout 60 && alembic upgrade head && python main.py"
+    command: bash -c "wait-for-it --service redis:6379 --timeout 60 && wait-for-it --service db:5432 --timeout 60 && alembic upgrade head && python main.py"
     tty: True
     volumes:
       - ./app:/app
@@ -80,7 +80,18 @@ services:
     logging:
       driver: none
 
+  redis:
+    container_name: redis
+    image: redis:7.0.8
+    ports:
+      - '6379:6379'
+    command: redis-server --loglevel warning --requirepass password
+    volumes:
+      - redis:/data
+    hostname: redishost
+
 volumes:
   db_data:
   rabbitmq_data:
   pgadmin_data:
+  redis:
