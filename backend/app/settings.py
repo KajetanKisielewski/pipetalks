@@ -11,8 +11,6 @@ class Settings(BaseSettings):
 
     celery_broker_url: str
     celery_result_backend: str
-    amqp_host: str
-    amqp_uri: str
 
     secret_key: str
     algorithm: str
