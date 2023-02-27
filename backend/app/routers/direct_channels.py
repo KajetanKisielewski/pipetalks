@@ -13,13 +13,13 @@ from auth.jwt_helper import check_if_active_user
 from settings import get_settings
 from exceptions.exceptions import UserNotFound
 from socket_events.socket_events import sio
-from pika_client.pika_client import get_pika_client
+from redis_client.redis_msg import get_redis_msg_client
 from redis_client.redis_sid import get_redis_sid_client
 
 app_settings = get_settings()
 router = APIRouter(prefix=f"{app_settings.root_path}", tags=["Direct Channels"])
 
-rabbit_client = get_pika_client()
+redis_msg = get_redis_msg_client()
 redis_sid = get_redis_sid_client()
 
 
@@ -73,8 +73,7 @@ async def get_direct_channel_info(
     - **user_email** - string - email of second participant of direct channel
 
     Important - if direct channel with chosen user_email doesn't exist yet, it will be automatically created.
-    Also clears user's dedicated rabbitmq queue with unread messages count for this direct channel.
-
+    Also clears user's dedicated redis value with unread messages count for this direct channel.
 
     User authentication required.
     """
@@ -92,9 +91,7 @@ async def get_direct_channel_info(
             sid = sid.decode("utf-8")
             sio.enter_room(sid, direct_channel.id)
 
-    if not rabbit_client.connection or rabbit_client.connection.is_closed:
-        rabbit_client.setup()
-    rabbit_client.clear_queue(user_email=current_user.email, room=str(direct_channel.id))
+    redis_msg.reset_room_msg_count_for_user(user_email=current_user.email, room_name=direct_channel.id)
     return direct_channel
 
 

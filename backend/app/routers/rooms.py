@@ -13,13 +13,13 @@ from auth.jwt_helper import check_if_active_user, check_if_superuser
 from settings import get_settings
 from exceptions.exceptions import RoomNotFound, WrongRoomName, UserNotFound
 from socket_events.socket_events import sio
-from pika_client.pika_client import get_pika_client
+from redis_client.redis_msg import get_redis_msg_client
 from redis_client.redis_sid import get_redis_sid_client
 
 app_settings = get_settings()
 router = APIRouter(prefix=f"{app_settings.root_path}", tags=["Rooms"])
 
-rabbit_client = get_pika_client()
+redis_msg = get_redis_msg_client()
 redis_sid = get_redis_sid_client()
 
 
@@ -38,15 +38,13 @@ async def get_room_info(
     Path parameters:
     - **room_name** - string
 
-    Clears user's dedicated rabbitmq queue with unread messages count for this room.
+    Clears user's dedicated redis value with unread messages count for this room.
     User authentication required.
     """
     room = Room.get_room_by_name_for_user(db, room_name, current_user)
     if not room:
         raise RoomNotFound(room_name)
-    if not rabbit_client.connection or rabbit_client.connection.is_closed:
-        rabbit_client.setup()
-    rabbit_client.clear_queue(user_email=current_user.email, room=room_name)
+    redis_msg.reset_room_msg_count_for_user(user_email=current_user.email, room_name=room_name)
     return room
 
 

@@ -19,12 +19,12 @@ from auth.jwt_helper import check_if_active_user
 from settings import get_settings
 from exceptions.exceptions import RecordingNotFound, RoomNotFound, DirectChannelNotFound
 from celery_worker.tasks import transcript
-from pika_client.pika_client import get_pika_client
+from redis_client.redis_msg import get_redis_msg_client
 
 app_settings = get_settings()
 router = APIRouter(prefix=f"{app_settings.root_path}", tags=["Recordings"])
 
-rabbit_client = get_pika_client()
+redis_msg = get_redis_msg_client()
 
 
 @router.post(
@@ -47,7 +47,7 @@ async def upload_recorded_audio_bytes(
     - **room_name** - string, not required if direct_channel_id is provided
     - **direct_channel_id** - integer, not required if room_name is provided
 
-    Publishes rabbitmq messages to appropriate queues for users that belong to specified room or direct channel.
+    Increments redis unread messages count for users that belong to specified room or direct channel.
     User authentication required.
     """
     if (room_name and direct_channel_id) or (not room_name and not direct_channel_id):
@@ -83,16 +83,9 @@ async def upload_recorded_audio_bytes(
     db.refresh(new_recording)
 
     transcript.delay(recording_name=new_filename, user_email=current_user.email)
-    if not rabbit_client.connection or rabbit_client.connection.is_closed:
-        rabbit_client.setup()
     for user in users:
         if user.email != current_user.email:
-            rabbit_client.publish_msg(
-                {
-                    "receiver": user.email,
-                    "room": channel
-                }
-            )
+            redis_msg.increment_room_msg_count_for_user(user_email=user.email, room_name=channel)
     return {"info": f"file saved at '{location}'"}
 
 
@@ -114,7 +107,7 @@ async def upload_new_recording_file(
     - **room_name** - string, not required if direct_channel_id is provided
     - **direct_channel_id** - integer, not required if room_name is provided
 
-    Publishes rabbitmq messages to appropriate queues for users that belong to specified room or direct channel.
+    Increments redis unread messages count for users that belong to specified room or direct channel.
     User authentication required.
     """
     if (room_name and direct_channel_id) or (not room_name and not direct_channel_id):
@@ -166,16 +159,9 @@ async def upload_new_recording_file(
     db.refresh(new_recording)
 
     transcript.delay(recording_name=filename, user_email=current_user.email)
-    if not rabbit_client.connection or rabbit_client.connection.is_closed:
-        rabbit_client.setup()
     for user in users:
         if user.email != current_user.email:
-            rabbit_client.publish_msg(
-                {
-                    "receiver": user.email,
-                    "room": channel
-                }
-            )
+            redis_msg.increment_room_msg_count_for_user(user_email=user.email, room_name=channel)
     return {"info": f"File saved as '{filename}'"}
 
 

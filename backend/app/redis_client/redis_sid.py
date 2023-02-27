@@ -14,27 +14,24 @@ class RedisForSid:
         self.client = redis.Redis(
             host=host,
             port=port,
-            db=0,
+            db=1,
             password=password
         )
 
     def clear_db(self):
         self.client.flushdb(asynchronous=False)
 
-    def get_all_users(self):
-        return self.client.keys(pattern="*")
-
     def add_user_sid(self, user_email, sid):
         self.client.rpush(user_email, sid)
 
     def remove_user_sid(self, user_email, sid):
-        self.client.lrem(user_email, count=0, value=sid)
+        self.client.lrem(name=user_email, count=0, value=sid)
 
     def get_user_sids(self, user_email):
-        return self.client.lrange(user_email, 0, -1)
+        return self.client.lrange(name=user_email, start=0, end=-1)
 
-    def get_user_sids_count(self, user_email):
-        return self.client.llen(user_email)
+    def get_all_users(self):
+        return self.client.keys(pattern="*")
 
 
 @lru_cache

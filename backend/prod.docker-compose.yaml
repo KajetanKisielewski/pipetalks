@@ -75,7 +75,7 @@ services:
     image: redis:7.0.8
     ports:
       - '6379:6379'
-    command: redis-server --loglevel warning --requirepass password
+    command: redis-server --save 300 10 --loglevel warning --requirepass password
     volumes:
       - redis:/data
     hostname: redishost
