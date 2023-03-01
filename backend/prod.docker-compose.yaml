@@ -70,5 +70,4 @@ services:
 
 volumes:
   db_data:
-  rabbitmq_data:
   redis:

@@ -14,11 +14,14 @@ from models.user import User
 from utils.cloud_storage_client import get_client
 from utils.cloud_transcript_file import transcript_big_bucket_file_gcp
 from utils.autocorrect_nlp import save_autocorrected_text
+from redis_client.redis_sid import get_redis_sid_client
+from socket_events.socket_events import sio
 
 logging.getLogger(__name__)
 app_settings = get_settings()
 
 storage_client = get_client()
+redis_sid = get_redis_sid_client()
 
 
 class SQLAlchemyTask(Task):
@@ -47,6 +50,7 @@ def transcript(recording_name: str, user_email: str):
             f"{app_settings.rooms_path}{recording.room_name}/{app_settings.recordings_path}{recording.filename}"
         transcription_filepath = \
             f"{app_settings.rooms_path}{recording.room_name}/{app_settings.transcriptions_path}{transcription_filename}"
+        users = recording.room.users
     else:
         recording_filepath = \
             f"{app_settings.direct_channels_path}{recording.direct_channel_id}/" \
@@ -54,6 +58,7 @@ def transcript(recording_name: str, user_email: str):
         transcription_filepath = \
             f"{app_settings.direct_channels_path}{recording.direct_channel_id}/" \
             f"{app_settings.transcriptions_path}{transcription_filename}"
+        users = recording.direct_channel.users
 
     storage_client.upload(recording.filename, recording_filepath)
     blob_uri = storage_client.get_blob_uri(recording.filename)
@@ -92,3 +97,8 @@ def transcript(recording_name: str, user_email: str):
     db_session.refresh(transcription)
 
     storage_client.delete_blob(recording.filename)
+
+    # TO BE EDITED
+    for user in users:
+        users_sids = redis_sid.get_user_sids(user.email)
+        [sio.emit("message", to=sid.decode("utf-8")) for sid in users_sids]

@@ -27,7 +27,7 @@ def authenticate_user(
         email: str,
         password: str,
         db: Session = Depends(get_db)
-):
+) -> User | bool:
     user = User.get_user_by_email(db, email)
     if not user:
         return False
@@ -36,7 +36,7 @@ def authenticate_user(
     return user
 
 
-def create_token(data: dict, expires_delta=timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)):
+def create_token(data: dict, expires_delta=timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)) -> str:
     to_encode = data.copy()
     expire = datetime.utcnow() + expires_delta
     to_encode.update({"exp": expire})
@@ -47,7 +47,7 @@ def create_token(data: dict, expires_delta=timedelta(minutes=ACCESS_TOKEN_EXPIRE
 def get_current_user(
         token: str = Depends(auth_scheme),
         db: Session = Depends(get_db)
-):
+) -> User:
     try:
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
         email: str = payload.get("sub")

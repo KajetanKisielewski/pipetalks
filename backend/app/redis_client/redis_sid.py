@@ -35,7 +35,7 @@ class RedisForSid:
 
 
 @lru_cache
-def get_redis_sid_client():
+def get_redis_sid_client() -> RedisForSid:
     return RedisForSid(
         host=app_settings.redis_host,
         port=app_settings.redis_port,

@@ -39,7 +39,7 @@ class RedisForMsg:
 
 
 @lru_cache
-def get_redis_msg_client():
+def get_redis_msg_client() -> RedisForMsg:
     return RedisForMsg(
         host=app_settings.redis_host,
         port=app_settings.redis_port,
