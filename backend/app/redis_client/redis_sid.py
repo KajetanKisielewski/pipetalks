@@ -10,11 +10,11 @@ class RedisForSid:
     """
     Class used to store, write and read user's socket ids into redis database.
     """
-    def __init__(self, host, port, password):
+    def __init__(self, host, port, password,db):
         self.client = redis.Redis(
             host=host,
             port=port,
-            db=1,
+            db=db,
             password=password
         )
 
@@ -39,5 +39,6 @@ def get_redis_sid_client() -> RedisForSid:
     return RedisForSid(
         host=app_settings.redis_host,
         port=app_settings.redis_port,
-        password=app_settings.redis_password
+        password=app_settings.redis_password,
+        db=1
     )

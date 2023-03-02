@@ -51,6 +51,7 @@ def transcript(recording_name: str, user_email: str):
         transcription_filepath = \
             f"{app_settings.rooms_path}{recording.room_name}/{app_settings.transcriptions_path}{transcription_filename}"
         users = recording.room.users
+        channel = recording.room_name
     else:
         recording_filepath = \
             f"{app_settings.direct_channels_path}{recording.direct_channel_id}/" \
@@ -59,6 +60,7 @@ def transcript(recording_name: str, user_email: str):
             f"{app_settings.direct_channels_path}{recording.direct_channel_id}/" \
             f"{app_settings.transcriptions_path}{transcription_filename}"
         users = recording.direct_channel.users
+        channel = recording.direct_channel_id
 
     storage_client.upload(recording.filename, recording_filepath)
     blob_uri = storage_client.get_blob_uri(recording.filename)
@@ -101,4 +103,6 @@ def transcript(recording_name: str, user_email: str):
     # TO BE EDITED
     for user in users:
         users_sids = redis_sid.get_user_sids(user.email)
-        [sio.emit("message", to=sid.decode("utf-8")) for sid in users_sids]
+        [sio.emit("notification", data={'user': user_email, 'channel': channel},
+                  to=sid.decode("utf-8")) for sid in users_sids]
+        sio.emit()
