@@ -6,6 +6,7 @@ import { useAppDispatch, useFetch } from 'hooks';
 
 const DirectMessageItem = (props: DirectMessageItemProps): JSX.Element => {
     const { name } = props;
+    console.log('props' , props)
     const dispatch = useAppDispatch()
     const { getNewMessagesCount } = useFetch();
 

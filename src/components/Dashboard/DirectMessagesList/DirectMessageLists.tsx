@@ -32,9 +32,6 @@ const DirectMessagesList = (): JSX.Element => {
       dispatch(setAllDirectChannelsListData(channelsData))
     }
 
-
-
-
     const renderDirectMessages = (): JSX.Element[] => {
         if(!allDirectChannelsListData) return;
 
