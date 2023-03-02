@@ -12,6 +12,9 @@ app_settings = get_settings()
 redis_sid = get_redis_sid_client()
 
 
+# Clear socket ids from redis
+redis_sid.clear_db()
+
 # Settings
 settings = get_settings()
 
@@ -45,9 +48,6 @@ app.add_middleware(
 
 # Socket.io
 app.mount("/", socket_app)
-
-# Clear socket ids from redis
-redis_sid.clear_db()
 
 # Create directories
 data_dir = "data/"
