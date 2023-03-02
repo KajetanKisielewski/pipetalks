@@ -12,13 +12,15 @@ from schemas import room_schemas, user_schemas
 from auth.jwt_helper import check_if_active_user, check_if_superuser
 from settings import get_settings
 from exceptions.exceptions import RoomNotFound, WrongRoomName, UserNotFound
-from socket_events.socket_events import sio, users_sid
-from pika_client.pika_client import get_pika_client
+from socket_events.socket_events import sio
+from redis_client.redis_msg import get_redis_msg_client
+from redis_client.redis_sid import get_redis_sid_client
 
 app_settings = get_settings()
 router = APIRouter(prefix=f"{app_settings.root_path}", tags=["Rooms"])
 
-rabbit_client = get_pika_client()
+redis_msg = get_redis_msg_client()
+redis_sid = get_redis_sid_client()
 
 
 @router.get(
@@ -36,15 +38,13 @@ async def get_room_info(
     Path parameters:
     - **room_name** - string
 
-    Clears user's dedicated rabbitmq queue with unread messages count for this room.
+    Clears user's dedicated redis value with unread messages count for this room.
     User authentication required.
     """
     room = Room.get_room_by_name_for_user(db, room_name, current_user)
     if not room:
         raise RoomNotFound(room_name)
-    if not rabbit_client.connection or rabbit_client.connection.is_closed:
-        rabbit_client.setup()
-    rabbit_client.clear_queue(user_email=current_user.email, room=room_name)
+    redis_msg.reset_room_msg_count_for_user(user_email=current_user.email, room_name=room_name)
     return room
 
 
@@ -114,8 +114,7 @@ async def create_room(
         db.add(room)
         db.commit()
         db.refresh(room)
-        if users_sid.get(user.email):
-            [sio.enter_room(i, room.name) for i in users_sid.get(user.email)]
+        [sio.enter_room(sid.decode("utf-8"), room.name) for sid in redis_sid.get_user_sids(user.email)]
     except IntegrityError:
         raise WrongRoomName(request.name)
     if not os.path.exists(f"{app_settings.rooms_path}{request.name}/"):
@@ -206,10 +205,8 @@ async def edit_room_users(
     db.refresh(room_to_edit)
 
     for email in request.user_emails:
-        if users_sid.get(email):
-            [sio.enter_room(i, room_to_edit.name) for i in users_sid.get(email)]
-    if users_sid.get(user.email):
-        [sio.enter_room(i, room_to_edit.name) for i in users_sid.get(user.email)]
+        [sio.enter_room(sid.decode("utf-8"), room_to_edit.name) for sid in redis_sid.get_user_sids(email)]
+    [sio.enter_room(sid.decode("utf-8"), room_to_edit.name) for sid in redis_sid.get_user_sids(user.email)]
 
     return {"info": f"Room '{room_name}' edited."}
 
@@ -239,7 +236,5 @@ async def leave_room(
     db.commit()
     db.refresh(room_to_edit)
 
-    if users_sid.get(user.email):
-        [sio.leave_room(i, room_to_edit.name) for i in users_sid.get(user.email)]
-
+    [sio.leave_room(sid.decode("utf-8"), room_to_edit.name) for sid in redis_sid.get_user_sids(user.email)]
     return {"info": f"Successfully left room '{room_name}'"}

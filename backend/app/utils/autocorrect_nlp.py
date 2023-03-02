@@ -28,20 +28,20 @@ class CustomSpeller(Speller):
 
 
 @lru_cache
-def custom_speller_pl():
+def custom_speller_pl() -> CustomSpeller:
     return CustomSpeller(lang=language, fast=True)
 
 
 @lru_cache
-def custom_punctuation_model_pl():
+def custom_punctuation_model_pl() -> PunctuationModel:
     return PunctuationModel(model="kredor/punctuate-all")
 
 
-def auto_capitalize(text: str):
+def auto_capitalize(text: str) -> str:
     return '. '.join(list(map(lambda x: x.strip().capitalize(), text.split('.'))))
 
 
-def autocorrect_with_punctuation(text: str):
+def autocorrect_with_punctuation(text: str) -> str:
     spell_pl = custom_speller_pl()
     punctuation_model_pl = custom_punctuation_model_pl()
     autocorrected_text = spell_pl(text)
