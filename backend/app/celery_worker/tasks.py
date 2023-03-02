@@ -1,4 +1,6 @@
+import json
 import logging
+import requests
 from datetime import datetime
 
 from celery import Task
@@ -14,14 +16,11 @@ from models.user import User
 from utils.cloud_storage_client import get_client
 from utils.cloud_transcript_file import transcript_big_bucket_file_gcp
 from utils.autocorrect_nlp import save_autocorrected_text
-from redis_client.redis_sid import get_redis_sid_client
-from socket_events.socket_events import sio
 
 logging.getLogger(__name__)
 app_settings = get_settings()
 
 storage_client = get_client()
-redis_sid = get_redis_sid_client()
 
 
 class SQLAlchemyTask(Task):
@@ -100,9 +99,14 @@ def transcript(recording_name: str, user_email: str):
 
     storage_client.delete_blob(recording.filename)
 
-    # TO BE EDITED
-    for user in users:
-        users_sids = redis_sid.get_user_sids(user.email)
-        [sio.emit("notification", data={'user': user_email, 'channel': channel},
-                  to=sid.decode("utf-8")) for sid in users_sids]
-        sio.emit()
+    users_emails = [other_user.email for other_user in users if not other_user.email == user.email]
+    requests.post(
+        url=f"http://app:8000/api/v1/utils/emit-notifications",
+        data=json.dumps(
+            {
+                "secret_key": app_settings.secret_key,
+                "users": users_emails,
+                "channel": channel
+            }
+        )
+    )
