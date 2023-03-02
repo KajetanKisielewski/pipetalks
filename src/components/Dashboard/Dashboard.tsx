@@ -24,11 +24,8 @@ import UserSettings from "./UserSettings/UserSettings";
 const Dashboard = (): JSX.Element => {
   const dispatch = useAppDispatch();
   const { getUserData, getAllUsersData, getAllChannelsData } = useFetch();
-  const { currentlyCreatedChannel } = useAppSelector(
-    (state) => state.channelsList
-  );
-  const { userSettingsContentDisplay, isCurrentChannelView, isNavView } =
-    useAppSelector((state) => state.currentContent);
+  const { currentlyCreatedChannel } = useAppSelector((state) => state.channelsList);
+  const { userSettingsContentDisplay, isCurrentChannelView, isNavView, isBrowseChannelsView, isDirectMessageView, isUserSettingsView } = useAppSelector((state) => state.currentContent);
   const isMobile = useMediaQuery("(max-width: 600px)");
 
   React.useEffect(() => {
@@ -132,10 +129,9 @@ const Dashboard = (): JSX.Element => {
           }}
         >
           {isCurrentChannelView && <CurrentChannelContent />}
-          {/* {!userSettingsContentDisplay && <CurrentChannelContent /> }
-          {!userSettingsContentDisplay && <BrowseChannels /> }
-          {!userSettingsContentDisplay && <DirectMessage /> }
-          {userSettingsContentDisplay && <UserSettings />} */}
+          {isBrowseChannelsView && <BrowseChannels /> }
+          {isDirectMessageView && <DirectMessage /> }
+          {isUserSettingsView && <UserSettings />}
         </Box>
       </Box>
     </Box>

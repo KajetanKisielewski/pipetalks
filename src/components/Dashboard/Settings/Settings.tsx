@@ -2,7 +2,7 @@ import React from "react";
 import { useNavigate } from "react-router-dom";
 import { Box, IconButton, Typography, Menu, Avatar, Tooltip, MenuItem } from "@mui/material";
 
-import { setUserSettingsCotent } from 'reducers/CurrentContentReducer'
+import { setUserSettingsCotent, setNavView, setUserSettingsView } from 'reducers/CurrentContentReducer'
 import { useAppSelector, useFetch, useLocalStorage, useAppDispatch } from "hooks";
 import { path } from 'helpers/configs';
 
@@ -46,6 +46,8 @@ const Settings = (): JSX.Element => {
   const handleUserSettingsDisplay = () => {
     handleCloseUserMenu();
     dispatch(setUserSettingsCotent(true))
+    dispatch(setNavView(false))
+    dispatch(setUserSettingsView(true))
   }
 
   return (

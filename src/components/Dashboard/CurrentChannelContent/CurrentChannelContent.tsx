@@ -53,18 +53,18 @@ const CurrentChannelContent = (): JSX.Element => {
         return formattedTime;
     }
 
-    const handleStartRecording = () => {
+    const handleStartRecording = (): void => {
         startRecordingAudio()
         dispatch(setIsRecording(true))
     }
 
-    const handleStopRecording = () => {
+    const handleStopRecording = (): void => {
         stopRecordingAudio();
         clearMediaRecorderState();
         dispatch(setIsRecording(false));
     }
 
-    const renderContent = () => {
+    const renderContent = (): JSX.Element[] => {
         return recordings.map( record => {
             const {id, user: { name, settings: { imageUrl } }, createdAt, filename, transcription } = record;
 
@@ -77,7 +77,7 @@ const CurrentChannelContent = (): JSX.Element => {
         })
     }
 
-    const handleBackToPrevSection = () => {
+    const handleBackToPrevSection = (): void => {
         dispatch(setNavView(true))
         dispatch(setCurrentChannelView(false))
     }
@@ -86,9 +86,9 @@ const CurrentChannelContent = (): JSX.Element => {
         <Container component="main" sx={{ position: 'relative', maxWidth: '1920px !important', height: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', marginLeft: '0', marginRight: '0' }}>
                       
             <Box sx={{ textAlign: 'center' }} >
-            <ArrowBackIcon onClick={handleBackToPrevSection} sx={{ display: isMobile ? 'block' : 'none', position: 'absolute' as 'absolute', top: 10, left: 10 }} />
+            <ArrowBackIcon onClick={handleBackToPrevSection} sx={{ display: isMobile ? 'block' : 'none', color: '#ffffffb2', mt: 2 }} />
 
-                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '5px', mt: isMobile ? 8 : 0, borderBottom: '2px solid #01579b' }}>
+                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '5px', mt: isMobile ? 2 : 0, borderBottom: '1px solid #ffffffb2' }}>
                     <Typography component="h2" variant="body1">
                         {name}
                     </Typography>
@@ -106,11 +106,11 @@ const CurrentChannelContent = (): JSX.Element => {
             {whetherUserBelongsToChannel(users) ? 
                 <Box component="span" sx={{ marginBottom: '50px' }}>
                 {isRecording ? 
-                    <Button variant="contained" onClick={ handleStopRecording }>
+                    <Button variant="contained" onClick={ handleStopRecording } sx={{ backgroundColor: 'rgba(0, 0, 0, 0.54)' }}>
                         Send a voice message
                     </Button>
                     :
-                    <Button variant="contained" onClick={ handleStartRecording }>
+                    <Button variant="contained" onClick={ handleStartRecording }  sx={{ backgroundColor: 'rgba(0, 0, 0, 0.54)' }}>
                         Record a voice message
                     </Button>
                 }

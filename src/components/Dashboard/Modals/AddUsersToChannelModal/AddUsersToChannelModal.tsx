@@ -17,7 +17,9 @@ const style = {
   border: '2px solid #000',
   boxShadow: 24,
   p: 4,
-  borderRadius: '20px'
+  borderRadius: '20px',
+  backgroundColor: 'rgba(0, 0, 0, 0.5)',
+  color: '#ffffffb2',
 };
 
 const AddUsersToChannelModal = (): JSX.Element => {

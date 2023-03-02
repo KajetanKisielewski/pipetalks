@@ -1,5 +1,5 @@
 import React from "react";
-import { List, Box, Button, TextField } from "@mui/material";
+import { List, Box, Button, TextField, styled } from "@mui/material";
 
 import { useAppSelector, useAppDispatch } from "hooks";
 import { toggleAddUsersModal } from 'reducers/ChannelsListReducer';
@@ -10,6 +10,26 @@ import UserItem from "components/Dashboard/UserItem/UserItem";
 interface UserListProps {
   isDM: boolean;
 }
+
+const StyledTextField = styled(TextField)({
+  '& label.Mui-focused': {
+    color: '#ffffffb2',
+  },
+  '& .MuiInput-underline:after': {
+    borderBottomColor: '#ffffffb2',
+  },
+  '& .MuiOutlinedInput-root': {
+    '& fieldset': {
+      borderColor: '#ffffffb2',
+    },
+    '&:hover fieldset': {
+      borderColor: '#ffffffb2',
+    },
+    '&.Mui-focused fieldset': {
+      borderColor: '#ffffffb2',
+    },
+  },
+});
 
 const UsersList = (props: UserListProps): JSX.Element => {
   const [searchedQuery, setSearchedQuery] = React.useState("");
@@ -65,18 +85,20 @@ const UsersList = (props: UserListProps): JSX.Element => {
 
   return (
     <Box component="form" sx={{ mt: 5 }} noValidate autoComplete="off">
-      <TextField
+      <StyledTextField
         required
         id="outlined-required"
         label="Enter a name or email"
         sx={{
-          width: "100%",
+          width: '100%',
+          input: { color: '#ffffffb2' },
+          label: { color: '#ffffffb2' },
         }}
         onChange={(e) => setSearchedQuery(e.target.value)}
       />
       { searchedQuery?.length ? renderSearchedUsers(searchedQuery) : renderUsersList() }
       <Box sx={{ mt: 2, textAlign: "right" }}>
-        <Button variant="contained" onClick={isDM ? handleCloseDirectMessage : handleCloseAddUser }>
+        <Button variant="contained" color='success' onClick={isDM ? handleCloseDirectMessage : handleCloseAddUser }>
           Done
         </Button>
       </Box>

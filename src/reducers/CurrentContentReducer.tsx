@@ -9,7 +9,9 @@ const initState: CurrentChannelContentInitState = {
 
   isNavView: true,
   isCurrentChannelView: false,
-
+  isBrowseChannelsView: false,
+  isDirectMessageView: false,
+  isUserSettingsView: false,
 };
 
 const slice = createSlice({
@@ -51,18 +53,18 @@ const slice = createSlice({
     setCurrentChannelView: (state, action) => {
       state.isCurrentChannelView = action.payload;
     },
-    // setBrowseChannelsView: (state, action) => {
-    //   state.isNavView = !state.isMobileView
-    // },
-    // setDirectMessageView: (state, action) => {
-    //   state.isNavView = !state.isMobileView
-    // },
-    // setUserSettingsView: (state, action) => {
-    //   state.isNavView = !state.isMobileView
-    // }
+    setBrowseChannelsView: (state, action) => {
+      state.isBrowseChannelsView = action.payload
+    },
+    setDirectMessageView: (state, action) => {
+      state.isDirectMessageView = action.payload
+    },
+    setUserSettingsView: (state, action) => {
+      state.isUserSettingsView = action.payload
+    }
   },
 });
 
-export const { setCurrentChannelContent, setIsRecording, setBrowseChannelsContent, setDirectmessageContent, setUserSettingsCotent, setNavView, setCurrentChannelView } = slice.actions;
+export const { setCurrentChannelContent, setIsRecording, setBrowseChannelsContent, setDirectmessageContent, setUserSettingsCotent, setNavView, setCurrentChannelView, setBrowseChannelsView, setDirectMessageView, setUserSettingsView  } = slice.actions;
 
 export default slice.reducer;

@@ -1,13 +1,38 @@
 import React from "react";
-import { Box, Typography, InputLabel, MenuItem, FormControl, Select, Button, FormControlLabel, Switch } from "@mui/material";
+import { Box, Typography, InputLabel, MenuItem, FormControl, Select, Button, FormControlLabel, Switch, styled } from "@mui/material";
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import useMediaQuery  from '@mui/material/useMediaQuery';
 
-import { useFetch } from 'hooks'
+import { setUserSettingsView, setNavView } from 'reducers/CurrentContentReducer';
+import { useAppDispatch, useFetch } from 'hooks';
+
+const StyledFormControl = styled(FormControl)({
+    '& label.Mui-focused': {
+      color: '#ffffffb2',
+    },
+    '& .MuiInput-underline:after': {
+      borderBottomColor: '#ffffffb2',
+    },
+    '& .MuiOutlinedInput-root': {
+      '& fieldset': {
+        borderColor: '#ffffffb2',
+      },
+      '&:hover fieldset': {
+        borderColor: '#ffffffb2',
+      },
+      '&.Mui-focused fieldset': {
+        borderColor: '#ffffffb2',
+      },
+    },
+  });
 
 const UserSettings = (): JSX.Element => {
     const [language, setLanguage] = React.useState('');
     const [additionalLanguage, setAdditionalLanguage ] = React.useState('');
     const [isTranslate, setIsTranslate] = React.useState(false);
     const [userImage, setUserImage] = React.useState(null);
+    const dispatch = useAppDispatch();
+    const isMobile = useMediaQuery('(max-width: 600px)');
 
     const { editUserSettings } = useFetch();
 
@@ -26,10 +51,17 @@ const UserSettings = (): JSX.Element => {
 
         editUserSettings(settingsData);
     }
-      
+
+    const handleBackToPrevSection = (): void => {
+        dispatch(setNavView(true))
+        dispatch(setUserSettingsView(false))
+    }
 
     return (
-        <Box component='div' sx={{ display: 'flex' , flexDirection: 'column', justifyContent: 'center' , alignItems: 'center', m: 5 }}>
+        <Box component='div' sx={{ display: 'flex' , flexDirection: 'column', justifyContent: 'center' , alignItems: 'center', mb: 5 }}>
+            <Box sx={{ width: '100%', ml: 2, mb: 2 }}>
+                <ArrowBackIcon onClick={handleBackToPrevSection} sx={{ display: isMobile ? 'block' : 'none', color: '#ffffffb2', mt: 2 }} />
+            </Box>
             <Typography variant='h4'>
                 Customize your settings
             </Typography>
@@ -44,15 +76,17 @@ const UserSettings = (): JSX.Element => {
                         onChange={handleImageUpload}
                     />
                     <label htmlFor="upload__image">
-                        <Button variant="contained" component="span" >
+                        <Button variant="contained" component="span" sx={{ backgroundColor: 'rgba(0, 0, 0, 0.54)' }} >
                             Change your profile picture
                         </Button>
                     </label> 
                 </Box>
 
 
-                <FormControl fullWidth sx={{ mt: 2, mb: 2 }} >
-                    <InputLabel id="select__language--label">Select a transcription language</InputLabel>
+                <StyledFormControl fullWidth sx={{ mt: 2, mb: 2 }} >
+                    <InputLabel id="select__language--label" sx={{ color: '#ffffffb2' }} >
+                        Select a transcription language
+                    </InputLabel>
                     <Select
                         labelId="select__language--label"
                         id="select__language"
@@ -66,17 +100,19 @@ const UserSettings = (): JSX.Element => {
                         <MenuItem value={'fr-FR'}>FR</MenuItem>
                         <MenuItem value={'es-ES'}>ES</MenuItem>
                     </Select>
-                </FormControl>
+                </StyledFormControl>
 
                 <FormControlLabel
                     control={
-                        <Switch onChange={ () => setIsTranslate(!isTranslate) } />
+                        <Switch onChange={ () => setIsTranslate(!isTranslate) } color='success'/>
                     }
                     label={!isTranslate ? 'Turn on translation' : 'Turn off translation'}
                 />
 
-                <FormControl fullWidth sx={{ mt: 2, mb: 2 }}>
-                    <InputLabel id="select__additionalLanguage--label">Select a translation language</InputLabel>
+                <StyledFormControl fullWidth sx={{ mt: 2, mb: 2 }}>
+                    <InputLabel id="select__additionalLanguage--label" sx={{ color: '#ffffffb2' }} >
+                        Select a translation language
+                    </InputLabel>
                     <Select
                         labelId="select__additionalLanguage--label"
                         id="select__additionalLanguage"
@@ -90,7 +126,7 @@ const UserSettings = (): JSX.Element => {
                         <MenuItem value={'fr-FR'}>FR</MenuItem>
                         <MenuItem value={'es-ES'}>ES</MenuItem>
                     </Select>
-                </FormControl>
+                </StyledFormControl>
 
                 <Box sx={{ textAlign: 'center', mt: 5 }}>
                     <Button variant="contained" color="success" onClick={handleSaveChanges}>

@@ -1,5 +1,5 @@
 import React from 'react';
-import { TextField, Backdrop, Box, Modal, Fade, Typography, Switch, Button } from '@mui/material';
+import { TextField, Backdrop, Box, Modal, Fade, Typography, Switch, Button, styled } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import { io } from "socket.io-client";
 
@@ -13,11 +13,33 @@ const style = {
   transform: 'translate(-50%, -50%)',
   minWidth: 400,
   bgcolor: 'background.paper',
-  border: '2px solid #000',
+  border: '1px solid #ffffffb2',
   boxShadow: 24,
   p: 4,
-  borderRadius: '20px'
+  borderRadius: '20px',
+  backgroundColor: 'rgba(0, 0, 0, 0.7)',
+  color: '#ffffffb2',
 };
+
+const StyledTextField = styled(TextField)({
+  '& label.Mui-focused': {
+    color: '#ffffffb2',
+  },
+  '& .MuiInput-underline:after': {
+    borderBottomColor: '#ffffffb2',
+  },
+  '& .MuiOutlinedInput-root': {
+    '& fieldset': {
+      borderColor: '#ffffffb2',
+    },
+    '&:hover fieldset': {
+      borderColor: '#ffffffb2',
+    },
+    '&.Mui-focused fieldset': {
+      borderColor: '#ffffffb2',
+    },
+  },
+});
 
 const CreateChannelModal = (): JSX.Element => {
     const [isPublic, setIsPublic] = React.useState(true)
@@ -88,14 +110,14 @@ const CreateChannelModal = (): JSX.Element => {
                 noValidate
                 autoComplete="off"
             >
-                <TextField
-                    required
-                    id="outlined-required"
-                    label="Required Channel Name"
-                    sx={{
-                        width: '100%'
-                    }}
-                />
+                <StyledTextField 
+                  label="Required Channel Name" 
+                  id="custom-css-outlined-required-input" 
+                  sx={{
+                        width: '100%',
+                        input: { color: '#ffffffb2' },
+                        label: { color: '#ffffffb2' },
+                    }} />
                 <Typography id="transition-modal-title" variant="h6" component="h2" sx={{mt: 5 }}>
                     Make private
                 </Typography>
@@ -103,10 +125,10 @@ const CreateChannelModal = (): JSX.Element => {
                     <Typography sx={{ mt: 2, width: '60%' }} >
                         { !isPublic ? 'This can’t be undone. A private channel cannot be made public later on.' : 'When a channel is set to private, it can only be viewed or joined by invitation.'}
                     </Typography>
-                    <Switch onClick={() => setIsPublic(!isPublic)} />
+                    <Switch onClick={() => setIsPublic(!isPublic)} color='success'/>
                 </Box>
                 <Box sx={{ mt: 2, textAlign: 'right' }}>
-                    <Button variant='contained' onClick={createNewChannel}>
+                    <Button variant='contained' color='success' onClick={createNewChannel}>
                         Create
                     </Button>
                 </Box>

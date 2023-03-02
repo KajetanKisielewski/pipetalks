@@ -58,7 +58,7 @@ const CurrentChannelContentThread = (props: any): JSX.Element => {
     if(!blob || !text) return;
 
     return(
-        <Box sx={{ margin: '5px 5px', borderBottom: '1px solid #01579b' }}>
+        <Box sx={{ margin: '5px 5px', borderBottom: '1px solid #ffffffb2', mt: 2, pb: 2 }}>
             <Box component="div" sx={{ display: 'flex', justifyContent: 'flex-start', alignItems: 'center', fontSize: '12px', marginBottom: '5px', padding: '10px 0' }}>
                 <Avatar src={userImage} />
                 <Box>

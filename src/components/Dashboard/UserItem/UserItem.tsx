@@ -23,7 +23,7 @@ const UserItem = ( { user, isDM }: UserItemProps ): JSX.Element => {
     }
 
     return (
-        <ListItemButton sx={{ mt: 1, width: "100%" }} onClick={() => {isDM? createDirestMessageInstance() : addUserToChannel(email)} } >
+        <ListItemButton sx={{ mt: 1, width: "100%", backgroundColor: 'rgba(255, 255, 255, 0.1)', borderRadius: '20px', '&:hover': { backgroundColor: "rgba(255, 255, 255, 0.2)" } }} onClick={() => {isDM? createDirestMessageInstance() : addUserToChannel(email)} } >
           <ListItemIcon>
             <Avatar />
           </ListItemIcon>

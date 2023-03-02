@@ -4,7 +4,7 @@ import { Add as AddIcon } from "@mui/icons-material";
 
 import { useAppDispatch, useAppSelector } from "hooks";
 import { toggleCreateChannelModal } from "reducers/ChannelsListReducer";
-import { setBrowseChannelsContent } from 'reducers/CurrentContentReducer';
+import { setBrowseChannelsContent, setNavView, setBrowseChannelsView  } from 'reducers/CurrentContentReducer';
 
 import StyledMenu from "./style";
 
@@ -27,7 +27,12 @@ const AddChannel = (): JSX.Element => {
     dispatch(toggleCreateChannelModal(true));
   };
 
-  const handleBrowseChannels = () => dispatch( setBrowseChannelsContent(allChannelsListData) )
+  const handleBrowseChannels = (): void => {
+    dispatch( setBrowseChannelsContent(allChannelsListData) ) 
+    dispatch(setNavView(false))
+    dispatch(setBrowseChannelsView(true))
+    handleClose();
+  }
 
   return (
     <div>
