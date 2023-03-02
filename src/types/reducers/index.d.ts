@@ -24,6 +24,7 @@ interface ChannelsListInitState {
 // DirectMessagesListReducer
 
 interface DirectMessageListData {
+    name: string;
     createdAt: string;
     id: number;
     recordings: {

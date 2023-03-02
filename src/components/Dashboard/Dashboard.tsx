@@ -51,9 +51,9 @@ const Dashboard = (): JSX.Element => {
   }, [currentlyCreatedChannel]);
 
 
-  // socket.on('notification', (data) => {
-  //   console.log('data' , data)
-  // })
+  socket.on('notification', (data) => {
+    console.log('data' , data)
+  })
 
 
   const getDataOfAllChannels = async (): Promise<void> => {
