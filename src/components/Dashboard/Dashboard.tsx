@@ -8,9 +8,10 @@ import {
   Divider,
 } from "@mui/material";
 import useMediaQuery from "@mui/material/useMediaQuery";
+import { io } from "socket.io-client";
 
 import { setUserData, setUsersData } from "reducers/UserDataReducer";
-import { useFetch, useAppDispatch, useAppSelector } from "hooks";
+import { useFetch, useAppDispatch, useAppSelector, useLocalStorage } from "hooks";
 import { setAllChannelsListData } from "reducers/ChannelsListReducer";
 
 import ChannelsList from "./ChannelsList/ChannelsList";
@@ -24,9 +25,18 @@ import UserSettings from "./UserSettings/UserSettings";
 const Dashboard = (): JSX.Element => {
   const dispatch = useAppDispatch();
   const { getUserData, getAllUsersData, getAllChannelsData } = useFetch();
+  const { getLocalStorage } = useLocalStorage();
   const { currentlyCreatedChannel } = useAppSelector((state) => state.channelsList);
   const { userSettingsContentDisplay, isCurrentChannelView, isNavView, isBrowseChannelsView, isDirectMessageView, isUserSettingsView } = useAppSelector((state) => state.currentContent);
   const isMobile = useMediaQuery("(max-width: 600px)");
+  const { access_token } = getLocalStorage();
+
+  const socket = io("ws://localhost:3000", {
+    path: "/sockets/",
+      extraHeaders: {
+        Authentication: access_token
+      }
+  });
 
   React.useEffect(() => {
     getUserData().then((resp) => dispatch(setUserData(resp)));
@@ -39,6 +49,12 @@ const Dashboard = (): JSX.Element => {
   React.useEffect(() => {
     getDataOfAllChannels();
   }, [currentlyCreatedChannel]);
+
+
+  socket.on('notification', (data) => {
+    console.log('data' , data)
+  })
+
 
   const getDataOfAllChannels = async (): Promise<void> => {
     const data = await getAllChannelsData();
@@ -64,7 +80,7 @@ const Dashboard = (): JSX.Element => {
         flexDirection: "column",
         backgroundColor: "rgba(0, 0, 0, 0.8)",
         color: "rgba(255, 255, 255, 0.7)",
-        height: "100vh",
+        maxHeight: "100vh",
         overflow: "hidden",
       }}
     >
@@ -94,7 +110,7 @@ const Dashboard = (): JSX.Element => {
         <List
           component="nav"
           sx={{
-            display: isNavView ? "block" : "none",
+            display: isNavView ? "block" : "block",
             borderRight: "1px solid #ffffffb2",
             width: isMobile ? "100%" : 'inherit',
           }}

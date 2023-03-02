@@ -3,7 +3,8 @@ import { createSlice } from '@reduxjs/toolkit';
 const initState: DirectMessagesInitState = {
   directMessagesListDisplay: true,
   createDirectMessageModal: false,
-  directMessagesListData: []
+  directMessagesListData: [],
+  allDirectChannelsListData: [],
 };
 
 const slice = createSlice({
@@ -20,9 +21,12 @@ const slice = createSlice({
       if (!state.directMessagesListData.some( (directMessage) => directMessage.id === action.payload.id))
       state.directMessagesListData.push(action.payload);
     },
+    setAllDirectChannelsListData: (state, action) => {
+      state.allDirectChannelsListData = action.payload;
+    },
   },
 });
 
-export const { setDirectMessagesListDisplay, toggleCreateDirectMessageModal, setDirectMessagesListData } = slice.actions;
+export const { setDirectMessagesListDisplay, toggleCreateDirectMessageModal, setDirectMessagesListData, setAllDirectChannelsListData } = slice.actions;
 
 export default slice.reducer;

@@ -53,6 +53,7 @@ interface DirectMessagesInitState {
     directMessagesListDisplay: boolean;
     createDirectMessageModal: boolean;
     directMessagesListData: DirectMessageListData[];
+    allDirectChannelsListData: any[];
 }
 
 

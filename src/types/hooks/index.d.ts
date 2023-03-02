@@ -33,7 +33,9 @@ interface UseFetch {
     editChannelUsers: (channelName: string, usersEmails?: any) => Promise<unknown>;
     leaveChannel: (channelName: string) => Promise<unknow>;
     getDirectChannelInfo: (userEmail: string) => Promise<unknown>;
-    editUserSettings: (userData: any) => Promise<unknown>
+    editUserSettings: (userData: any) => Promise<unknown>;
+    getAllDirectChannelsForUser: () => Promise<unknown>;
+    getNewMessagesCount: () => Promise<unknown>;
 }
 
 interface SignInAndUpResponse {

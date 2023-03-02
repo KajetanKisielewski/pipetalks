@@ -1,9 +1,8 @@
 import React from 'react';
 import { TextField, Backdrop, Box, Modal, Fade, Typography, Switch, Button, styled } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
-import { io } from "socket.io-client";
 
-import { useAppSelector, useAppDispatch, useFetch, useLocalStorage } from 'hooks';
+import { useAppSelector, useAppDispatch, useFetch } from 'hooks';
 import { toggleCreateChannelModal, toggleAddUsersModal, setCurrentlyCreatedChannel } from 'reducers/ChannelsListReducer';
 
 const style = {
@@ -47,29 +46,17 @@ const CreateChannelModal = (): JSX.Element => {
     const { usersData } = useAppSelector((state) => state.userData)
     const dispatch = useAppDispatch();
     const { createChannel } = useFetch();
-    const { getLocalStorage } = useLocalStorage();
-    const { access_token } = getLocalStorage();
-  
-    // const socket = io("ws://localhost:3000", {
-    //   path: "/sockets/",
-    //   extraHeaders: {
-    //     Authentication: access_token
-    //   }
-    // });
 
     const handleClose = () => dispatch(toggleCreateChannelModal(false))
 
     const createNewChannel = (): void => {
       const name = ( document.querySelector('#outlined-required') as HTMLInputElement )?.value;
 
-        createChannel({ name, isPublic });
-
-        // socket.emit('join', name);
-
-        handleClose();
-        dispatch(setCurrentlyCreatedChannel(name));
+      createChannel({ name, isPublic });
+      handleClose();
+      dispatch(setCurrentlyCreatedChannel(name));
         
-        usersData.length != 1 && dispatch(toggleAddUsersModal(true));
+      usersData.length != 1 && dispatch(toggleAddUsersModal(true));
     }
 
   return (
@@ -112,7 +99,7 @@ const CreateChannelModal = (): JSX.Element => {
             >
                 <StyledTextField 
                   label="Required Channel Name" 
-                  id="custom-css-outlined-required-input" 
+                  id="outlined-required" 
                   sx={{
                         width: '100%',
                         input: { color: '#ffffffb2' },

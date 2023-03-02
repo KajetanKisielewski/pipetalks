@@ -3,28 +3,45 @@ import { List, ListItemButton, ListItemIcon, ListItemText, Collapse } from "@mui
 import { ExpandLess, ExpandMore, Add as AddIcon } from "@mui/icons-material";
 import useMediaQuery  from '@mui/material/useMediaQuery';
 
-import { useAppDispatch, useAppSelector } from "hooks";
-import { setDirectMessagesListDisplay, toggleCreateDirectMessageModal } from 'reducers/DirectMessagesListReducer';
+import { useAppDispatch, useAppSelector, useFetch } from "hooks";
+import { setDirectMessagesListDisplay, toggleCreateDirectMessageModal, setAllDirectChannelsListData } from 'reducers/DirectMessagesListReducer';
 
 import DirectMessageItem from '../DirectMessageItem/DirectMessageItem';
 import CreateDirectMessageModal from '../Modals/CreateDirectMessageModal/CreateDirectMessageModal';
 
 const DirectMessagesList = (): JSX.Element => {
     const dispatch = useAppDispatch();
-    const { directMessagesListDisplay, directMessagesListData } = useAppSelector((state) => state.directMessages);
+    const { directMessagesListDisplay, directMessagesListData, allDirectChannelsListData } = useAppSelector((state) => state.directMessages);
     const { usersData } = useAppSelector((state) => state.userData);
     const isMobile = useMediaQuery('(max-width: 600px)');
+    const { getAllDirectChannelsForUser } = useFetch();
 
     const handleListCollapse = (): void => {
         dispatch(setDirectMessagesListDisplay(!directMessagesListDisplay) )
     };
 
-    const renderDirectMessages = () => {
-        if(!directMessagesListData) return;
+    React.useEffect(() => {
+      getDataOfAllUserDirectChannels()
+    },[directMessagesListData]);
 
-        return directMessagesListData.map( directMessage => {
+    const getDataOfAllUserDirectChannels = async (): Promise<void> => {
+      const data = await getAllDirectChannelsForUser()
+      console.log('abc')
+      // @ts-ignore
+      const channelsData = data?.records;
+      dispatch(setAllDirectChannelsListData(channelsData))
+    }
+
+
+
+
+    const renderDirectMessages = (): JSX.Element[] => {
+        if(!allDirectChannelsListData) return;
+
+        return allDirectChannelsListData.map( directMessage => {
             const { id, recordings, users, createdAt } = directMessage;
-            const direstMessageName = [ users[0].name , users[1].name ].join()
+            console.log('direct' , directMessage)
+            const direstMessageName = users[1].name
             return <DirectMessageItem key={id} name={direstMessageName} recordings={recordings} users={users} createdAt={createdAt}/>
         })
     }
