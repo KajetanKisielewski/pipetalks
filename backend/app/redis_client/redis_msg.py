@@ -10,11 +10,11 @@ class RedisForMsg:
     """
     Class used to store, write and read user's unread messages count into redis database.
     """
-    def __init__(self, host, port, password):
+    def __init__(self, host, port, password, db):
         self.client = redis.Redis(
             host=host,
             port=port,
-            db=2,
+            db=db,
             password=password
         )
 
@@ -43,5 +43,6 @@ def get_redis_msg_client() -> RedisForMsg:
     return RedisForMsg(
         host=app_settings.redis_host,
         port=app_settings.redis_port,
-        password=app_settings.redis_password
+        password=app_settings.redis_password,
+        db=2
     )
