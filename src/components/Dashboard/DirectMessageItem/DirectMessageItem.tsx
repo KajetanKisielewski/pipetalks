@@ -15,12 +15,11 @@ const DirectMessageItem = (props: DirectMessageItemProps): JSX.Element => {
 
     React.useEffect(() => {
         isUnreadMessage()
-    })
+    },[])
 
     const handleDirectMessageContentDisplay = (): void => {
         getDirectChannelInfo (email)
             .then( resp => {
-                console.log('r' ,resp)
                 dispatch( dispatch(setDirectmessageContent(resp)) ) 
     });
     
@@ -33,7 +32,7 @@ const DirectMessageItem = (props: DirectMessageItemProps): JSX.Element => {
 
     const isUnreadMessage = async () => {
         const abc = await getNewMessagesCount();
-        // console.log('abc' , abc)
+        console.log('abc' , abc)
     }
 
     return (

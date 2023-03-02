@@ -36,7 +36,6 @@ const DirectMessagesList = (): JSX.Element => {
 
         return allDirectChannelsListData.map( directMessage => {
             const { id, recordings, users, createdAt } = directMessage;
-            console.log('direct' , directMessage)
             const direstMessageName = users[1].name
             return <DirectMessageItem key={id} name={direstMessageName} users={users} createdAt={createdAt}/>
         })
