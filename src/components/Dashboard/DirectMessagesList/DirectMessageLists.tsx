@@ -26,7 +26,6 @@ const DirectMessagesList = (): JSX.Element => {
 
     const getDataOfAllUserDirectChannels = async (): Promise<void> => {
       const data = await getAllDirectChannelsForUser()
-      console.log('abc')
       // @ts-ignore
       const channelsData = data?.records;
       dispatch(setAllDirectChannelsListData(channelsData))
@@ -39,7 +38,7 @@ const DirectMessagesList = (): JSX.Element => {
             const { id, recordings, users, createdAt } = directMessage;
             console.log('direct' , directMessage)
             const direstMessageName = users[1].name
-            return <DirectMessageItem key={id} name={direstMessageName} recordings={recordings} users={users} createdAt={createdAt}/>
+            return <DirectMessageItem key={id} name={direstMessageName} users={users} createdAt={createdAt}/>
         })
     }
 

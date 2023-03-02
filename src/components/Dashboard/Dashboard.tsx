@@ -31,12 +31,12 @@ const Dashboard = (): JSX.Element => {
   const isMobile = useMediaQuery("(max-width: 600px)");
   const { access_token } = getLocalStorage();
 
-  const socket = io("ws://localhost:3000", {
-    path: "/sockets/",
-      extraHeaders: {
-        Authentication: access_token
-      }
-  });
+  // const socket = io("ws://localhost:3000", {
+  //   path: "/sockets/",
+  //     extraHeaders: {
+  //       Authentication: access_token
+  //     }
+  // });
 
   React.useEffect(() => {
     getUserData().then((resp) => dispatch(setUserData(resp)));
@@ -51,9 +51,9 @@ const Dashboard = (): JSX.Element => {
   }, [currentlyCreatedChannel]);
 
 
-  socket.on('notification', (data) => {
-    console.log('data' , data)
-  })
+  // socket.on('notification', (data) => {
+  //   console.log('data' , data)
+  // })
 
 
   const getDataOfAllChannels = async (): Promise<void> => {

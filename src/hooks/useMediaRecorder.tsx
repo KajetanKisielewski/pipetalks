@@ -11,10 +11,8 @@ const useMediaRecorder = (): MediaRecorderData => {
     const { sendRecord } = useFetch();
     const constraints = { audio: true, video: false };
     const browserName = detectBrowserName();
-    const name = currentChannelContent?.name || directMessageContent?.name || '';
-
-    console.log('dddd' , directMessageContent )
-    
+    const name = currentChannelContent?.name || '';
+    const id = directMessageContent?.id.toString();
 
     React.useEffect(() => {
         if(!currentChannelContent) return;
@@ -55,6 +53,7 @@ const useMediaRecorder = (): MediaRecorderData => {
                     const newAudioUrl = URL.createObjectURL(newBlob);
                     const recordData = new FormData();
 
+                    recordData.append('direct_channel_id', id)
                     recordData.append('room_name' , name);
                     recordData.append('browser' , browserName);
                     recordData.append('file' , newBlob);

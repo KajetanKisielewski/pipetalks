@@ -23,7 +23,6 @@ interface ChannelsListData {
 
 interface DirectMessageItemProps {
     name: string;
-    recordings: any;
     users: any;
     createdAt: any;
 }

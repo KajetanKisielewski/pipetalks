@@ -1,29 +1,39 @@
 import React from 'react'
 import { ListItemButton, ListItemText, Avatar } from "@mui/material";
+import useMediaQuery  from '@mui/material/useMediaQuery';
 
 import { setBrowseChannelsView, setDirectmessageContent, setDirectMessageView, setNavView } from 'reducers/CurrentContentReducer';
 import { useAppDispatch, useFetch } from 'hooks';
 
 const DirectMessageItem = (props: DirectMessageItemProps): JSX.Element => {
-    const { name } = props;
-    console.log('props' , props)
+    const { name, users } = props;
     const dispatch = useAppDispatch()
-    const { getNewMessagesCount } = useFetch();
+    const { getNewMessagesCount, getDirectChannelInfo  } = useFetch();
+    const isMobile = useMediaQuery('(max-width: 600px)');
+
+    const email = users[0]?.email
 
     React.useEffect(() => {
         isUnreadMessage()
     })
 
     const handleDirectMessageContentDisplay = (): void => {
-        dispatch(setDirectmessageContent(props));
-        dispatch(setDirectMessageView(true));
-        dispatch(setNavView(false));
-        dispatch(setBrowseChannelsView(false))
+        getDirectChannelInfo (email)
+            .then( resp => {
+                console.log('r' ,resp)
+                dispatch( dispatch(setDirectmessageContent(resp)) ) 
+    });
+    
+        if(isMobile) {
+            dispatch(setDirectMessageView(true));
+            dispatch(setNavView(false));
+            dispatch(setBrowseChannelsView(false))
+        }
     }
 
     const isUnreadMessage = async () => {
         const abc = await getNewMessagesCount();
-        console.log('abc' , abc)
+        // console.log('abc' , abc)
     }
 
     return (

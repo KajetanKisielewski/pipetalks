@@ -10,7 +10,7 @@ const CurrentChannelContentThread = (props: any): JSX.Element => {
     const { getTranscriptionFile, getRecording, getUserAvatar } = useFetch();
 
     const { name, createdAt, audioName, transcribeName, imageUrl } = props;
-    
+
     React.useEffect(() => {
         if(!audioName) return;
 
@@ -61,7 +61,7 @@ const CurrentChannelContentThread = (props: any): JSX.Element => {
         <Box sx={{ margin: '5px 5px', borderBottom: '1px solid #ffffffb2', mt: 2, pb: 2 }}>
             <Box component="div" sx={{ display: 'flex', justifyContent: 'flex-start', alignItems: 'center', fontSize: '12px', marginBottom: '5px', padding: '10px 0' }}>
                 <Avatar src={userImage} />
-                <Box>
+                <Box sx={{ ml: 1.5 }}>
                     <Box component="span" m="{1}">
                         {name}
                     </Box>

@@ -16,8 +16,10 @@ const DirectMessage = (): JSX.Element => {
 
     if(!directMessageContent) return;
 
+    console.log('dir' , directMessageContent)
+
     const { id, createdAt, recordings, users } = directMessageContent;
-    const name = [ users[0].name , users[1].name ].join()
+    const name = users[0]?.name;
 
     const convertData = (): string => {
         const date = new Date(createdAt);
