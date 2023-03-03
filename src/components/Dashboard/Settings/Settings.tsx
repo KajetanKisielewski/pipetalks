@@ -1,8 +1,9 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import { Box, IconButton, Typography, Menu, Avatar, Tooltip, MenuItem } from "@mui/material";
+import useMediaQuery  from '@mui/material/useMediaQuery';
 
-import { setUserSettingsCotent, setNavView, setUserSettingsView } from 'reducers/CurrentContentReducer'
+import { setUserSettingsCotent, setNavView, setUserSettingsView, setCurrentChannelViewDesktop, setBrowseChannelsViewDesktop, setDirectMessageViewDesktop, setUserSettingsViewDesktop } from 'reducers/CurrentContentReducer'
 import { useAppSelector, useFetch, useLocalStorage, useAppDispatch } from "hooks";
 import { path } from 'helpers/configs';
 
@@ -15,6 +16,7 @@ const Settings = (): JSX.Element => {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const { homePage } = path;
+  const isMobile = useMediaQuery('(max-width: 600px)');
   
   const { name, settings: { imageUrl } } = userData || { name: '' , settings: { imageUrl: null } };
 
@@ -46,8 +48,18 @@ const Settings = (): JSX.Element => {
   const handleUserSettingsDisplay = () => {
     handleCloseUserMenu();
     dispatch(setUserSettingsCotent(true))
-    dispatch(setNavView(false))
-    dispatch(setUserSettingsView(true))
+
+    if(isMobile) { 
+      dispatch(setNavView(false))
+      dispatch(setUserSettingsView(true))
+    }
+
+    if(!isMobile) {
+      dispatch(setCurrentChannelViewDesktop(false))      
+      dispatch(setBrowseChannelsViewDesktop(true))
+      dispatch(setDirectMessageViewDesktop(false))      
+      dispatch(setUserSettingsViewDesktop(false))
+    }
   }
 
   return (

@@ -2,7 +2,7 @@ import React from 'react'
 import { ListItemButton, ListItemText, Avatar } from "@mui/material";
 import useMediaQuery  from '@mui/material/useMediaQuery';
 
-import { setBrowseChannelsView, setDirectmessageContent, setDirectMessageView, setNavView } from 'reducers/CurrentContentReducer';
+import { setBrowseChannelsView, setBrowseChannelsViewDesktop, setCurrentChannelViewDesktop, setDirectmessageContent, setDirectMessageView, setDirectMessageViewDesktop, setNavView, setUserSettingsViewDesktop } from 'reducers/CurrentContentReducer';
 import { useAppDispatch, useFetch } from 'hooks';
 
 const DirectMessageItem = (props: DirectMessageItemProps): JSX.Element => {
@@ -28,11 +28,17 @@ const DirectMessageItem = (props: DirectMessageItemProps): JSX.Element => {
             dispatch(setNavView(false));
             dispatch(setBrowseChannelsView(false))
         }
+
+        if(!isMobile) {
+            dispatch(setCurrentChannelViewDesktop(false))      
+            dispatch(setBrowseChannelsViewDesktop(false))
+            dispatch(setDirectMessageViewDesktop(true))      
+            dispatch(setUserSettingsViewDesktop(false))
+        }
     }
 
     const isUnreadMessage = async () => {
         const abc = await getNewMessagesCount();
-        console.log('abc' , abc)
     }
 
     return (

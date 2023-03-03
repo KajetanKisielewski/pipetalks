@@ -16,8 +16,6 @@ const DirectMessage = (): JSX.Element => {
 
     if(!directMessageContent) return;
 
-    console.log('dir' , directMessageContent)
-
     const { id, createdAt, recordings, users } = directMessageContent;
     const name = users[0]?.name;
 
@@ -90,11 +88,11 @@ const DirectMessage = (): JSX.Element => {
 
             <Box component="span" sx={{ marginBottom: '50px' }}>
                 {isRecording ? 
-                    <Button variant="contained" onClick={ handleStopRecording } sx={{ backgroundColor: 'rgba(0, 0, 0, 0.54)' }}>
+                    <Button variant="contained" onClick={ handleStopRecording } sx={{ backgroundColor: 'rgba(0, 0, 0, 0.54)', '&:hover': { backgroundColor: 'rgba(0, 0, 0, 0.1)' } }}>
                         Send a voice message
                     </Button>
                     :
-                    <Button variant="contained" onClick={ handleStartRecording } sx={{ backgroundColor: 'rgba(0, 0, 0, 0.54)' }}>
+                    <Button variant="contained" onClick={ handleStartRecording } sx={{ backgroundColor: 'rgba(0, 0, 0, 0.54)', '&:hover': { backgroundColor: 'rgba(0, 0, 0, 0.1)' } }}>
                         Record a voice message
                     </Button>
                 }

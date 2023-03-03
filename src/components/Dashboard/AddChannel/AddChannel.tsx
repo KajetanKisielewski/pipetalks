@@ -1,10 +1,11 @@
 import React from "react";
 import { ListItemButton, ListItemIcon,ListItemText,MenuItem } from "@mui/material";
 import { Add as AddIcon } from "@mui/icons-material";
+import useMediaQuery  from '@mui/material/useMediaQuery';
 
 import { useAppDispatch, useAppSelector } from "hooks";
 import { toggleCreateChannelModal } from "reducers/ChannelsListReducer";
-import { setBrowseChannelsContent, setNavView, setBrowseChannelsView  } from 'reducers/CurrentContentReducer';
+import { setBrowseChannelsContent, setNavView, setBrowseChannelsView, setCurrentChannelViewDesktop, setBrowseChannelsViewDesktop, setDirectMessageViewDesktop, setUserSettingsViewDesktop  } from 'reducers/CurrentContentReducer';
 
 import StyledMenu from "./style";
 
@@ -13,6 +14,7 @@ const AddChannel = (): JSX.Element => {
   const { allChannelsListData } = useAppSelector((state) => state.channelsList);
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
+  const isMobile = useMediaQuery('(max-width: 600px)');
 
   const handleOpen = (event: React.MouseEvent<HTMLElement>): void => {
     setAnchorEl(event.currentTarget);
@@ -29,9 +31,19 @@ const AddChannel = (): JSX.Element => {
 
   const handleBrowseChannels = (): void => {
     dispatch( setBrowseChannelsContent(allChannelsListData) ) 
-    dispatch(setNavView(false))
-    dispatch(setBrowseChannelsView(true))
     handleClose();
+
+    if(isMobile) {
+      dispatch(setNavView(false))
+      dispatch(setBrowseChannelsView(true))
+    }
+
+    if(!isMobile) {
+      dispatch(setCurrentChannelViewDesktop(false))      
+      dispatch(setBrowseChannelsViewDesktop(true))
+      dispatch(setDirectMessageViewDesktop(false))      
+      dispatch(setUserSettingsViewDesktop(false))
+    }
   }
 
   return (
@@ -59,3 +71,7 @@ const AddChannel = (): JSX.Element => {
 };
 
 export default AddChannel;
+function ssetUserSettingsViewDesktop(arg0: boolean): any {
+  throw new Error("Function not implemented.");
+}
+

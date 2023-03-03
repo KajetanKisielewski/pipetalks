@@ -106,6 +106,12 @@ interface CurrentChannelContentInitState {
     isBrowseChannelsView: boolean;
     isDirectMessageView: boolean;
     isUserSettingsView: boolean;
+
+
+    isCurrentChannelViewDesktop: boolean;
+    isBrowseChannelsViewDesktop: boolean;
+    isDirectMessageViewDesktop: boolean;
+    isUserSettingsViewDesktop: boolean;
 }
 
 // UserDataReducer

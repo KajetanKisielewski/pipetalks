@@ -12,6 +12,11 @@ const initState: CurrentChannelContentInitState = {
   isBrowseChannelsView: false,
   isDirectMessageView: false,
   isUserSettingsView: false,
+
+  isCurrentChannelViewDesktop: false,
+  isBrowseChannelsViewDesktop: true,
+  isDirectMessageViewDesktop: false,
+  isUserSettingsViewDesktop: false,
 };
 
 const slice = createSlice({
@@ -61,10 +66,23 @@ const slice = createSlice({
     },
     setUserSettingsView: (state, action) => {
       state.isUserSettingsView = action.payload
+    },
+
+    setCurrentChannelViewDesktop: (state, action) => {
+      state.isCurrentChannelViewDesktop = action.payload;
+    },
+    setBrowseChannelsViewDesktop: (state, action) => {
+      state.isBrowseChannelsViewDesktop = action.payload
+    },
+    setDirectMessageViewDesktop: (state, action) => {
+      state.isDirectMessageViewDesktop = action.payload
+    },
+    setUserSettingsViewDesktop: (state, action) => {
+      state.isUserSettingsViewDesktop = action.payload
     }
   },
 });
 
-export const { setCurrentChannelContent, setIsRecording, setBrowseChannelsContent, setDirectmessageContent, setUserSettingsCotent, setNavView, setCurrentChannelView, setBrowseChannelsView, setDirectMessageView, setUserSettingsView  } = slice.actions;
+export const { setCurrentChannelContent, setIsRecording, setBrowseChannelsContent, setDirectmessageContent, setUserSettingsCotent, setNavView, setCurrentChannelView, setBrowseChannelsView, setDirectMessageView, setUserSettingsView, setCurrentChannelViewDesktop, setBrowseChannelsViewDesktop, setDirectMessageViewDesktop, setUserSettingsViewDesktop } = slice.actions;
 
 export default slice.reducer;

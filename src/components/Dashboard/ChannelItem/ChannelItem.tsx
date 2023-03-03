@@ -5,7 +5,7 @@ import useMediaQuery  from '@mui/material/useMediaQuery';
 
 
 import { useFetch, useAppDispatch }from 'hooks';
-import { setCurrentChannelContent, setCurrentChannelView, setNavView } from 'reducers/CurrentContentReducer';
+import { setBrowseChannelsViewDesktop, setCurrentChannelContent, setCurrentChannelView, setCurrentChannelViewDesktop, setDirectMessageViewDesktop, setNavView, setUserSettingsViewDesktop } from 'reducers/CurrentContentReducer';
 
 const ChannelItem = (props: ChannelItemProps): JSX.Element => {
     const dispatch = useAppDispatch();
@@ -20,6 +20,13 @@ const ChannelItem = (props: ChannelItemProps): JSX.Element => {
         if(isMobile) {
             dispatch(setNavView(false))
             dispatch(setCurrentChannelView(true))
+        }
+
+        if(!isMobile) {
+            dispatch(setCurrentChannelViewDesktop(true))      
+            dispatch(setBrowseChannelsViewDesktop(false))
+            dispatch(setDirectMessageViewDesktop(false))      
+            dispatch(setUserSettingsViewDesktop(false))
         }
     }
 

@@ -27,11 +27,11 @@ const Dashboard = (): JSX.Element => {
   const { getUserData, getAllUsersData, getAllChannelsData } = useFetch();
   const { getLocalStorage } = useLocalStorage();
   const { currentlyCreatedChannel } = useAppSelector((state) => state.channelsList);
-  const { userSettingsContentDisplay, isCurrentChannelView, isNavView, isBrowseChannelsView, isDirectMessageView, isUserSettingsView } = useAppSelector((state) => state.currentContent);
+  const { userSettingsContentDisplay, isCurrentChannelView, isNavView, isBrowseChannelsView, isDirectMessageView, isUserSettingsView, isCurrentChannelViewDesktop, isBrowseChannelsViewDesktop, isDirectMessageViewDesktop, isUserSettingsViewDesktop } = useAppSelector((state) => state.currentContent);
   const isMobile = useMediaQuery("(max-width: 600px)");
   const { access_token } = getLocalStorage();
 
-  const socket = io("ws://localhost:3000", {
+  const socket = io("ws://localhost:8000", {
     path: "/sockets/",
       extraHeaders: {
         Authentication: access_token
@@ -72,6 +72,8 @@ const Dashboard = (): JSX.Element => {
         dispatch(setUsersData(userData))
       );
   };
+
+  console.log('userSettingsContentDisplay' , userSettingsContentDisplay)
 
   return (
     <Box
@@ -129,10 +131,10 @@ const Dashboard = (): JSX.Element => {
             display: isMobile ? "none" : "block",
           }}
         >
-          {!userSettingsContentDisplay && <CurrentChannelContent />}
-          {!userSettingsContentDisplay && <BrowseChannels />}
-          {!userSettingsContentDisplay && <DirectMessage />}
-          {userSettingsContentDisplay && <UserSettings />}
+          {isCurrentChannelViewDesktop && <CurrentChannelContent />}
+          {isBrowseChannelsViewDesktop && <BrowseChannels />}
+          {isDirectMessageViewDesktop && <DirectMessage />}
+          {isUserSettingsViewDesktop && <UserSettings />}
         </Box>
 
         <Box

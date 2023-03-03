@@ -106,24 +106,24 @@ const CurrentChannelContent = (): JSX.Element => {
             {whetherUserBelongsToChannel(users) ? 
                 <Box component="span" sx={{ marginBottom: '50px' }}>
                 {isRecording ? 
-                    <Button variant="contained" onClick={ handleStopRecording } sx={{ backgroundColor: 'rgba(0, 0, 0, 0.54)' }}>
+                    <Button variant="contained" onClick={ handleStopRecording } sx={{ backgroundColor: 'rgba(0, 0, 0, 0.54)', '&:hover': { backgroundColor: 'rgba(0, 0, 0, 0.1)' } }}>
                         Send a voice message
                     </Button>
                     :
-                    <Button variant="contained" onClick={ handleStartRecording }  sx={{ backgroundColor: 'rgba(0, 0, 0, 0.54)' }}>
+                    <Button variant="contained" onClick={ handleStartRecording }  sx={{ backgroundColor: 'rgba(0, 0, 0, 0.54)', '&:hover': { backgroundColor: 'rgba(0, 0, 0, 0.1)' } }}>
                         Record a voice message
                     </Button>
                 }
                 </Box>
                 :
-                <Box sx={{ marginBottom: '50px', display: 'flex' , flexDirection: 'column', alignItems: 'center', backgroundColor: 'rgba(149, 149, 149, 0.5)' }}>
+                <Box sx={{ marginBottom: '50px', display: 'flex' , flexDirection: 'column', alignItems: 'center', backgroundColor: 'rgba(149, 149, 149, 0.1)' }}>
                     <Typography variant='h5'>
                         Channel: {name}
                     </Typography>
-                    <Button onClick={() => handleJoinChannel(name)} variant="contained" sx={{ mt: 2, mb: 2 }}>
+                    <Button onClick={() => handleJoinChannel(name)} variant="contained" sx={{ mt: 2, mb: 2, backgroundColor: 'rgba(0, 0, 0, 0.54)', '&:hover': { backgroundColor: 'rgba(0, 0, 0, 0.1)' } }}>
                         Join
                     </Button>
-                    <Button variant="text" onClick={handleBrowseChannels}>
+                    <Button variant="text" onClick={handleBrowseChannels} sx={{ color: '#ffffffb2' }}>
                         Back To All Channels
                     </Button>
                 </Box>
