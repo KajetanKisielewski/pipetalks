@@ -36,7 +36,7 @@ async def connect(sid, environ):
             print(f"'RoomEvent: user has joined the room '{room.name}'\n'")
         direct_channels = DirectChannel.get_all_direct_channels_for_user(db_session, user)
         for direct_channel in direct_channels:
-            sio.enter_room(sid, room=direct_channel.id)
+            sio.enter_room(sid, room=str(direct_channel.id))
             print(f"RoomEvent: user has joined the room '{direct_channel.id}'\n")
     except Exception as e:
         print(e)

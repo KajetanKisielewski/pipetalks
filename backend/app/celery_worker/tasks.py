@@ -49,7 +49,6 @@ def transcript(recording_name: str, user_email: str):
             f"{app_settings.rooms_path}{recording.room_name}/{app_settings.recordings_path}{recording.filename}"
         transcription_filepath = \
             f"{app_settings.rooms_path}{recording.room_name}/{app_settings.transcriptions_path}{transcription_filename}"
-        users = recording.room.users
         channel = recording.room_name
     else:
         recording_filepath = \
@@ -58,7 +57,6 @@ def transcript(recording_name: str, user_email: str):
         transcription_filepath = \
             f"{app_settings.direct_channels_path}{recording.direct_channel_id}/" \
             f"{app_settings.transcriptions_path}{transcription_filename}"
-        users = recording.direct_channel.users
         channel = recording.direct_channel_id
 
     storage_client.upload(recording.filename, recording_filepath)
@@ -99,14 +97,13 @@ def transcript(recording_name: str, user_email: str):
 
     storage_client.delete_blob(recording.filename)
 
-    users_emails = [other_user.email for other_user in users if not other_user.email == user.email]
     requests.post(
         url=f"http://app:8000/api/v1/utils/emit-notifications",
         data=json.dumps(
             {
                 "secret_key": app_settings.secret_key,
-                "users": users_emails,
-                "channel": channel
+                "channel": channel,
+                "sender": user_email
             }
         )
     )

@@ -17,7 +17,7 @@ services:
   app:
     container_name: app
     build: ./app
-    command: bash -c "wait-for-it --service redis:6379 --timeout 60 && wait-for-it --service db:5432 --timeout 60 && alembic upgrade head && python main.py"
+    command: bash -c "wait-for-it --service redis:6379 --timeout 60 && wait-for-it --service db:5432 --timeout 60 && alembic upgrade head && python run.py"
     tty: True
     volumes:
       - ./app:/app

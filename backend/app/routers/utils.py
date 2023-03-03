@@ -36,7 +36,4 @@ async def emit_notifications(
         request: utils_schemas.EmitNotifications
 ):
     if request.secret_key == app_settings.secret_key:
-        for user_email in request.users:
-            users_sids = redis_sid.get_user_sids(user_email)
-            [sio.emit("notification", data={'user': user_email, 'channel': request.channel},
-                      to=sid.decode("utf-8")) for sid in users_sids]
+        await sio.emit("notification", data={"sender": request.sender, "channel": request.channel}, to=request.channel)
