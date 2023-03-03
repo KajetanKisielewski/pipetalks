@@ -66,7 +66,7 @@ async def upload_recorded_audio_bytes(
             raise DirectChannelNotFound()
         number = len(direct_channel.recordings)
         users = direct_channel.users
-        channel = direct_channel_id
+        channel = str(direct_channel_id)
 
     new_filename, location, duration = convert_and_save_file(browser, file, room_name, direct_channel_id, number)
 
@@ -130,7 +130,7 @@ async def upload_new_recording_file(
         filename = f"{datetime.now().strftime('%d-%m-%Y')}-{direct_channel_id}-{str(number + 1)}" + file.filename[-4:]
         filepath = f"{app_settings.direct_channels_path}{direct_channel_id}/{app_settings.recordings_path}"
         users = direct_channel.users
-        channel = direct_channel_id
+        channel = str(direct_channel_id)
 
     temp_dir = "data/temp/"
 

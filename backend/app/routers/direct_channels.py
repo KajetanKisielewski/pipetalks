@@ -87,9 +87,7 @@ async def get_direct_channel_info(
         response.status_code = status.HTTP_201_CREATED
 
         sids = redis_sid.get_user_sids(current_user.email) + redis_sid.get_user_sids(second_user.email)
-        for sid in sids:
-            sid = sid.decode("utf-8")
-            sio.enter_room(sid, direct_channel.id)
+        [sio.enter_room(sid.decode("utf-8"), str(direct_channel.id)) for sid in sids]
 
     redis_msg.reset_room_msg_count_for_user(user_email=current_user.email, room_name=direct_channel.id)
     return direct_channel
